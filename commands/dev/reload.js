@@ -1,4 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
+const logger = require('../../logger');
+const path = require('path');
+const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,11 +16,14 @@ module.exports = {
 
         if (!commandName) {
             // Reload all commands
-            const commands = interaction.client.commands.map(command => command.data.name);
-            for (const command of commands) {
-                delete require.cache[require.resolve(`./${command}.js`)];
-                const newCommand = require(`./${command}.js`);
-                interaction.client.commands.set(newCommand.data.name, newCommand);
+            const commandDirectories = ['dev', 'global'];
+            for (const directory of commandDirectories) {
+                const commandFiles = fs.readdirSync(path.join(__dirname, '..', directory)).filter(file => file.endsWith('.js'));
+                for (const file of commandFiles) {
+                    const command = require(`../${directory}/${file}`);
+                    delete require.cache[require.resolve(`../${directory}/${file}`)];
+                    interaction.client.commands.set(command.data.name, command);
+                }
             }
             await interaction.reply('All commands have been reloaded!');
         } else {
@@ -28,15 +34,17 @@ module.exports = {
                 return interaction.reply(`There is no command with name \`${commandName}\`!`);
             }
 
-            delete require.cache[require.resolve(`./${command.data.name}.js`)];
+            const directory = command.category === 'dev' ? 'dev' : 'global';
+            const filePath = path.join(__dirname, '..', directory, `${command.data.name}.js`);
+            delete require.cache[require.resolve(filePath)];
 
             try {
                 interaction.client.commands.delete(command.data.name);
-                const newCommand = require(`./${command.data.name}.js`);
+                const newCommand = require(filePath);
                 interaction.client.commands.set(newCommand.data.name, newCommand);
                 await interaction.reply(`Command \`${newCommand.data.name}\` was reloaded!`);
             } catch (error) {
-                console.error(error);
+                logger.error(error);
                 await interaction.reply(`There was an error while reloading a command \`${command.data.name}\`:\n\`${error.message}\``);
             }
         }

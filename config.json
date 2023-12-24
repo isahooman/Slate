@@ -1,6 +1,6 @@
 {
-  "token": "token-here",
-  "guildId": "guildId-here",
-  "clientId": "clientId-here"
+  "token": "bot's token here",
+  "clientId": "bot application client id here",
+  "ownerId": "owner id here",
+  "guildId": "home/dev server id here"
 }
-

@@ -1,26 +1,41 @@
-const fs = require('fs');
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token } = require('./config.json');
-const commands = [];
+const { REST, Routes } = require('discord.js');
+const logger = require('./logger');
+const fs = require('fs');
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const globalCommands = [];
+const guildCommands = [];
+const globalCommandFiles = fs.readdirSync('./commands/global').filter(file => file.endsWith('.js'));
+const guildCommandFiles = fs.readdirSync('./commands/dev').filter(file => file.endsWith('.js'));
 
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  commands.push(command.data.toJSON());
+for (const file of globalCommandFiles) {
+  const command = require(`./commands/global/${file}`);
+  globalCommands.push(command.data.toJSON());
 }
 
-const rest = new REST({ version: '9' }).setToken(token);
+for (const file of guildCommandFiles) {
+  const command = require(`./commands/dev/${file}`);
+  guildCommands.push(command.data.toJSON());
+}
+
+const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
   try {
+    // Deploy global commands
+    await rest.put(
+      Routes.applicationCommands(clientId),
+      { body: globalCommands },
+    );
+    logger.info('Registered global slash commands!');
+
+    // Deploy dev commands
     await rest.put(
       Routes.applicationGuildCommands(clientId, guildId),
-      { body: commands },
+      { body: guildCommands },
     );
-    console.log('Registered slash commands!');
+    logger.info(`Registered guild slash commands for guildId: ${guildId}`);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 })();
