@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../logger.js');
+const logger = require('../../../logger.js');
+const path = require('path');
 const fs = require('fs');
 
 module.exports = {
@@ -17,7 +18,7 @@ module.exports = {
                 return interaction.reply({ content: 'Please enter a valid number of lines to retrieve (greater than 0).', ephemeral: true });
             }
 
-            const logFilePath = '../../bot.log';
+            const logFilePath = path.join(__dirname, '../../../bot.log'); 
             const logData = fs.readFileSync(logFilePath, 'utf8');
             const logLines = logData.split('\n').slice(-linesToRetrieve).join('\n');
             await interaction.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``, ephemeral: true });

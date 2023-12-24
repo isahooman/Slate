@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { spawn } = require("child_process");
-const logger = require('../../logger');
+const logger = require('../../../logger');
 
 module.exports = {
     data: new SlashCommandBuilder()

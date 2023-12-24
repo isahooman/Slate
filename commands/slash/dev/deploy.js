@@ -1,6 +1,6 @@
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
-const { clientId, guildId, token } = require('../../config.json');
-const logger = require('../../logger');
+const { clientId, guildId, token } = require('../../../config.json');
+const logger = require('../../../logger');
 const fs = require('fs');
 
 module.exports = {
@@ -11,16 +11,16 @@ module.exports = {
     async execute(interaction) {
         const globalCommands = [];
         const guildCommands = [];
-        const globalCommandFiles = fs.readdirSync('./commands/global').filter(file => file.endsWith('.js'));
-        const guildCommandFiles = fs.readdirSync('./commands/dev').filter(file => file.endsWith('.js'));
+        const globalCommandFiles = fs.readdirSync('./commands/slash/global').filter(file => file.endsWith('.js'));
+        const guildCommandFiles = fs.readdirSync('./commands/slash/dev').filter(file => file.endsWith('.js'));
 
         for (const file of globalCommandFiles) {
-            const command = require(`../../commands/global/${file}`);
+            const command = require(`../../../commands/slash/global/${file}`);
             globalCommands.push(command.data.toJSON());
         }
 
         for (const file of guildCommandFiles) {
-            const command = require(`../../commands/dev/${file}`);
+            const command = require(`../../../commands/slash/dev/${file}`);
             guildCommands.push(command.data.toJSON());
         }
 
