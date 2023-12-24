@@ -28,7 +28,7 @@ module.exports = {
 
                         if (type === 'prefix') {
                             interaction.client.prefixCommands.set(newCommand.name, newCommand);
-                        } else { // Assume 'slash'
+                        } else {
                             interaction.client.slashCommands.set(newCommand.data.name, newCommand);
                         }
                     } catch (error) {

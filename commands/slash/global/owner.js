@@ -173,10 +173,12 @@ module.exports = {
             }
             case 'fail': {
                 try {
+                    await interaction.reply('Failed successfully')
                     throw new Error('Forced failure for testing purposes');
                 } catch (error) {
                     logger.error(error.message);
                     throw error;
+                        
                 }
                 break;
             }

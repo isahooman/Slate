@@ -34,7 +34,7 @@ const rest = new REST({ version: '10' }).setToken(token);
       Routes.applicationGuildCommands(clientId, guildId),
       { body: guildCommands },
     );
-    logger.info(`Registered dev slash commands for guildId: ${guildId}`);
+    logger.info(`Registered dev slash commands for: ${guildId}`);
   } catch (error) {
     logger.error(error);
   }

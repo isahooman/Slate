@@ -39,32 +39,32 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
     const timestamp = new Date().toISOString();
 
     // Format the timestamp
-    const formattedTimestamp = chalk.cyan(`[${timestamp}]`);
+    const logtime = chalk.cyan(`[${timestamp}]`);
 
-    // Format the log level based on the level
-    let formattedLevel;
+    // change color based on level
+    let logLevel;
     switch (level) {
         case levels.INFO:
-            formattedLevel = chalk.white(level);
+            logLevel = chalk.white(level);
             break;
         case levels.WARN:
-            formattedLevel = chalk.yellow(level);
+            logLevel = chalk.yellow(level);
             break;
         case levels.ERROR:
-            formattedLevel = chalk.red(level);
+            logLevel = chalk.bgRed(level);
             break;
         case levels.DEBUG:
-            formattedLevel = chalk.blue(level);
+            logLevel = chalk.blue(level);
             break;
         default:
-            formattedLevel = level; // No color for unknown level
+            logLevel = level; // No color for unknown level
     }
 
     // Format the log message
-    const formattedMessage = chalk.yellow(message);
+    const formattedMessage = chalk.hex('#f3de8e')(message);
 
     // Combine parts for the console log entry
-    const consoleLogEntry = `${formattedTimestamp} <${formattedLevel}> ${formattedMessage}`;
+    const consoleLogEntry = `${logtime} <${logLevel}> ${formattedMessage}`;
     console.log(consoleLogEntry);
 
     // Log format for file

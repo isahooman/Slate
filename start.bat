@@ -1,18 +1,22 @@
 @ECHO OFF
+echo ==================================== >> bot.log
+echo %date% %time% >> bot.log
+echo ==================================== >> bot.log
+echo. >> bot.log
+
 echo Updating Node.js packages...
-call npm install >> log.txt 2>&1
+echo Updating Node.js packages... >> bot.log
+call npm install > NUL 2>&1
 echo Node.js packages updated.
+echo Node.js packages updated. >> bot.log
 
 :loop
 echo Starting Role Manager
 call node bot.js
+echo. 
 echo Discord bot has stopped. Restarting...
-echo. >> log.txt
-echo ==================================== >> log.txt
-echo %date% %time% >> log.txt
-type log.txt | find /v /c "" >> log.txt
-echo ==================================== >> log.txt
-type log.txt | find /v /c "" >> log.txt
-type log.txt | find /v /c "" >> log.txt
-echo. >> log.txt
+echo. >> bot.log
+echo ==================================== >> bot.log
+echo %date% %time% >> bot.log
+echo ==================================== >> bot.log
 goto loop
