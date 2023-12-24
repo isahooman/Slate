@@ -16,8 +16,11 @@ const client = new Client({
     partials: [Partials.Channel],
 });
 
+logger.debug('Bot started.');
+
 // Read commands
 function readCommands(directory) {
+    logger.debug(`Reading command files from: ${path.relative(process.cwd(), directory)}`);
     const files = fs.readdirSync(directory);
     let commandFiles = [];
 
@@ -63,6 +66,8 @@ for (const fileData of prefixCommandFiles) {
     }
 }
 
+logger.debug('Commands loaded.');
+
 // Separate global and dev slash commands
 const globalCommands = [];
 const devCommands = [];
@@ -82,6 +87,7 @@ const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
     try {
+        logger.debug('Deploying slash commands...');
         // Register global commands
         if (globalCommands.length) {
             await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
@@ -94,12 +100,13 @@ const rest = new REST({ version: '10' }).setToken(token);
             logger.info(`Successfully reloaded ${devCommands.length} dev commands.`);
         }
     } catch (error) {
-        logger.error(error);
+        logger.error(`Error deploying commands: ${error}`);
     }
 })();
 
 client.once('ready', () => {
     logger.info(`Logged in as ${client.user.tag}!`);
+    logger.debug('Bot is ready and online.');
 });
 
 /*
@@ -109,10 +116,15 @@ logs using './logger.js'
 reports errors to owner using logger.js 
 */
 client.on('interactionCreate', async interaction => {
+    logger.debug(`Received interaction: ${interaction.id}`);
     if (!interaction.isCommand()) return;
 
+    logger.debug(`Processing slash command: ${interaction.commandName}`);
     const command = client.slashCommands.get(interaction.commandName);
-    if (!command) return;
+    if (!command) {
+        logger.debug(`Slash command not found: ${interaction.commandName}`);
+        return;
+    }
 
     logger.info(`Slash command ${interaction.commandName} used by ${interaction.user.tag}`, client, 'slash', { interaction });
 
@@ -126,8 +138,10 @@ client.on('interactionCreate', async interaction => {
 
 // Prefix command handler
 client.on('messageCreate', async message => {
+    logger.debug(`Received message: ${message.id}`);
     if (message.author.bot) return;
 
+    logger.debug(`Processing prefix command in message: ${message.content}`);
     const mentionRegex = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommandRegex = new RegExp(`^<@!?${client.user.id}> `);
 
@@ -144,7 +158,10 @@ client.on('messageCreate', async message => {
     const commandName = args.shift().toLowerCase();
 
     const command = client.prefixCommands.get(commandName);
-    if (!command) return;
+    if (!command) {
+        logger.debug(`Prefix command not found: ${commandName}`);
+        return;
+    }
 
     try {
         logger.info(`Executing prefix command: ${commandName}`, client, 'prefix', { commandName, args, context: message });
@@ -159,8 +176,10 @@ client.on('messageCreate', async message => {
 });
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
+    logger.debug(`Message updated: ${newMessage.id}`);
     if (newMessage.author.bot || !newMessage.guild) return;
 
+    logger.debug(`Processing edited message: ${newMessage.content}`);
     const mentionRegex = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommandRegex = new RegExp(`^<@!?${client.user.id}> `);
 
@@ -177,7 +196,10 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     const commandName = args.shift().toLowerCase();
 
     const command = client.prefixCommands.get(commandName);
-    if (!command) return;
+    if (!command) {
+        logger.debug(`Edited prefix command not found: ${commandName}`);
+        return;
+    }
 
     try {
         logger.info(`Executing edited prefix command: ${commandName}`, client, 'prefix', { commandName, args, context: newMessage });

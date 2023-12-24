@@ -15,5 +15,4 @@ echo ==================================== >> log.txt
 type log.txt | find /v /c "" >> log.txt
 type log.txt | find /v /c "" >> log.txt
 echo. >> log.txt
-timeout /t 5
 goto loop

@@ -9,7 +9,7 @@ module.exports = {
         .setDescription('Deploys global and guild-specific commands'),
 
     async execute(interaction) {
-        // Log the start of the deployment process
+        // Log the start of the deployment
         logger.debug(`Starting to deploy commands`, interaction.client, 'slash', { interaction });
 
         const globalCommands = [];
@@ -20,12 +20,14 @@ module.exports = {
         for (const file of globalCommandFiles) {
             const command = require(`../../../commands/slash/global/${file}`);
             globalCommands.push(command.data.toJSON());
+            // Log global commands being deployed
             logger.debug(`Preparing global command: ${file}`, interaction.client, 'slash', { interaction });
         }
 
         for (const file of guildCommandFiles) {
             const command = require(`../../../commands/slash/dev/${file}`);
             guildCommands.push(command.data.toJSON());
+            // Log dev commands deing deployed
             logger.debug(`Preparing dev command: ${file}`, interaction.client, 'slash', { interaction });
         }
 

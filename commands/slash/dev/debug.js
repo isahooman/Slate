@@ -8,16 +8,11 @@ module.exports = {
 
     async execute(interaction) {
         const currentDebugState = logger.isDebugEnabled();
-        // Log current debug state
-        logger.debug(`Current debug state before toggling: ${currentDebugState}`, interaction.client, 'slash', { interaction });
-
-        // Toggle the debug state
+        
+        // toggle the debug state
         logger.setDebugEnabled(!currentDebugState);
 
-        // Log new debug state
-        logger.debug(`New debug state after toggling: ${!currentDebugState}`, interaction.client, 'slash', { interaction });
-
-        // Respond to the interaction
+        // tell user new state
         await interaction.reply(`Debug logging is now ${currentDebugState ? 'disabled' : 'enabled'}.`);
     },
 };

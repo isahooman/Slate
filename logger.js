@@ -15,7 +15,7 @@ const levels = {
     DEBUG: 'DEBUG',
 };
 
-// Read the initial debug state from config.json
+// Check debug state
 let isDebugLoggingEnabled = config.debug || false;
 
 function readConfig() {
@@ -23,7 +23,7 @@ function readConfig() {
         return JSON.parse(fs.readFileSync(configFile, 'utf8'));
     } catch (err) {
         console.error(`Error reading config file: ${err}`);
-        return {}; // Default to an empty object if there's an error
+        return {};
     }
 }
 
@@ -37,39 +37,40 @@ function writeConfig(updatedConfig) {
 
 function logMessage(level, message, client, commandType = 'unknown', commandInfo = {}) {
     const timestamp = new Date().toISOString();
-    let logEntry = `[${timestamp}] [${level}] ${message}\n`;
 
-    // Apply chalk colors based on the level
+    // Format the timestamp
+    const formattedTimestamp = chalk.cyan(`[${timestamp}]`);
+
+    // Format the log level based on the level
+    let formattedLevel;
     switch (level) {
         case levels.INFO:
-            logEntry = chalk.white(logEntry);
+            formattedLevel = chalk.white(level);
             break;
         case levels.WARN:
-            logEntry = chalk.yellow(logEntry);
+            formattedLevel = chalk.yellow(level);
             break;
         case levels.ERROR:
-            logEntry = chalk.red(logEntry);
+            formattedLevel = chalk.red(level);
             break;
         case levels.DEBUG:
-            logEntry = chalk.blue(logEntry);
+            formattedLevel = chalk.blue(level);
             break;
+        default:
+            formattedLevel = level; // No color for unknown level
     }
 
-    // Output to file and console 
-    console.log(logEntry);
-    fs.appendFileSync(logFile, logEntry);
+    // Format the log message
+    const formattedMessage = chalk.yellow(message);
 
-    // Switch handler depending on if command is slash or prefix
-    switch (commandType) {
-        case 'prefix':
-            handlePrefixCommand(level, message, client, commandInfo);
-            break;
-        case 'slash':
-            handleSlashCommand(level, message, client, commandInfo);
-            break;
-    }
+    // Combine parts for the console log entry
+    const consoleLogEntry = `${formattedTimestamp} <${formattedLevel}> ${formattedMessage}`;
+    console.log(consoleLogEntry);
+
+    // Log format for file
+    const fileLogEntry = `<${timestamp}> <${level}> ${message}\n`;
+    fs.appendFileSync(logFile, fileLogEntry);
 }
-
 function handlePrefixCommand(level, message, client, { commandName, args, context }) {
     // Collect and log details for prefix commands
     if (level === levels.INFO || level === levels.WARN) {
@@ -81,7 +82,7 @@ function handlePrefixCommand(level, message, client, { commandName, args, contex
     if (level === levels.ERROR) {
         // Prefix reporting
         const errorLog = `Error in prefix command: ${commandName}, User: ${context.author.id}, Channel: ${context.channel.id}, Error: ${message}\n`;
-        console.error(chalk.red(errorLog)); // Error log is red
+        console.error(chalk.red(errorLog));
         fs.appendFileSync(logFile, errorLog);
 
         const errorEmbed = new EmbedBuilder()
@@ -123,21 +124,21 @@ function handleSlashCommand(level, message, client, { interaction }) {
 }
 
 
-// Debug level logging function
+// Debug logging
 function debug(message, client, commandType = 'unknown', commandInfo = {}) {
     if (isDebugLoggingEnabled) {
         logMessage(levels.DEBUG, message, client, commandType, commandInfo);
     }
 }
 
-// Function to toggle debug logging
+// toggle debug logging
 function setDebugEnabled(enabled) {
     isDebugLoggingEnabled = enabled;
     config.debug = enabled;
     writeConfig(config);
 }
 
-// Function to check if debug logging is enabled
+// check if debug logging is enabled
 function isDebugEnabled() {
     return isDebugLoggingEnabled;
 }

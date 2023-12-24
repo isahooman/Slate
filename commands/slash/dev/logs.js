@@ -12,18 +12,17 @@ module.exports = {
             .setRequired(true)),
 
     async execute(interaction) {
-        logger.debug(`'logs' command invoked by ${interaction.user.tag} with ${interaction.options.getInteger('lines')} lines`, interaction.client, 'slash', { interaction });
         try {
             logger.debug('Reading bot logs', interaction.client, 'slash', { interaction });
             const linesToRetrieve = interaction.options.getInteger('lines');
             if (linesToRetrieve <= 0) {
-                return interaction.reply({ content: 'Please enter a valid number of lines to retrieve (greater than 0).', ephemeral: true });
+                return interaction.reply({ content: 'Please enter a valid number of lines to retrieve.', ephemeral: false });
             }
 
             const logFilePath = path.join(__dirname, '../../../bot.log'); 
             const logData = fs.readFileSync(logFilePath, 'utf8');
             const logLines = logData.split('\n').slice(-linesToRetrieve).join('\n');
-            await interaction.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``, ephemeral: true });
+            await interaction.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``, ephemeral: false });
         } catch (error) {
             logger.error(error);
             await interaction.reply({ content: 'An error occurred while reading the logs.', ephemeral: true });
