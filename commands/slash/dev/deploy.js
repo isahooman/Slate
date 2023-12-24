@@ -9,6 +9,9 @@ module.exports = {
         .setDescription('Deploys global and guild-specific commands'),
 
     async execute(interaction) {
+        // Log the start of the deployment process
+        logger.debug(`Starting to deploy commands`, interaction.client, 'slash', { interaction });
+
         const globalCommands = [];
         const guildCommands = [];
         const globalCommandFiles = fs.readdirSync('./commands/slash/global').filter(file => file.endsWith('.js'));
@@ -17,11 +20,13 @@ module.exports = {
         for (const file of globalCommandFiles) {
             const command = require(`../../../commands/slash/global/${file}`);
             globalCommands.push(command.data.toJSON());
+            logger.debug(`Preparing global command: ${file}`, interaction.client, 'slash', { interaction });
         }
 
         for (const file of guildCommandFiles) {
             const command = require(`../../../commands/slash/dev/${file}`);
             guildCommands.push(command.data.toJSON());
+            logger.debug(`Preparing dev command: ${file}`, interaction.client, 'slash', { interaction });
         }
 
         const rest = new REST({ version: '10' }).setToken(token);
@@ -43,7 +48,7 @@ module.exports = {
 
             await interaction.reply('Slash commands deployed successfully!');
         } catch (error) {
-            logger.error(error);
+            logger.error(`Deployment error: ${error}`);
             await interaction.reply('Failed to deploy slash commands.');
         }
     },

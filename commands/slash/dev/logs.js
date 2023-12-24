@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../logger.js');
+const logger = require('../../../logger');
 const path = require('path');
 const fs = require('fs');
 
@@ -12,7 +12,9 @@ module.exports = {
             .setRequired(true)),
 
     async execute(interaction) {
+        logger.debug(`'logs' command invoked by ${interaction.user.tag} with ${interaction.options.getInteger('lines')} lines`, interaction.client, 'slash', { interaction });
         try {
+            logger.debug('Reading bot logs', interaction.client, 'slash', { interaction });
             const linesToRetrieve = interaction.options.getInteger('lines');
             if (linesToRetrieve <= 0) {
                 return interaction.reply({ content: 'Please enter a valid number of lines to retrieve (greater than 0).', ephemeral: true });

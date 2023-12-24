@@ -7,25 +7,27 @@ module.exports = {
         .setName("restart")
         .setDescription("Restart the bot"),
     async execute(interaction) {
+        logger.debug(`'restart' command invoked by ${interaction.user.tag}`, interaction.client, 'slash', { interaction });
         await interaction.reply("Restarting bot...");
 
         // Spawns a new bot process
-        const process = spawn(process.argv[0], process.argv.slice(1), {
+        logger.debug('Restarting bot process', interaction.client, 'slash', { interaction });
+        const childProcess = spawn(process.argv[0], process.argv.slice(1), {
             detached: true,
             stdio: "inherit"
         });
 
-        process.on('error', (error) => {
+        childProcess.on('error', (error) => {
             logger.error(`Failed to restart bot: ${error}`);
         });
 
-        process.on('close', (code, signal) => {
+        childProcess.on('close', (code, signal) => {
             logger.info(`Bot process exited with code ${code} and signal ${signal}`);
             process.exit(0);
         });
 
-        // Detaches new process to run by itself and kill the current
-        process.unref();
+        // Detaches the new process to run by itself and kills the current process
+        childProcess.unref();
         interaction.client.destroy();
         process.exit();
     }

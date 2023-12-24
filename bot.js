@@ -26,7 +26,7 @@ function readCommands(directory) {
         if (fs.statSync(filepath).isDirectory()) {
             commandFiles = commandFiles.concat(readCommands(filepath));
         } else if (file.endsWith('.js')) {
-            commandFiles.push(filepath);
+            commandFiles.push({ path: filepath, directory });
         }
     }
     return commandFiles;
@@ -36,13 +36,16 @@ function readCommands(directory) {
 client.slashCommands = new Collection();
 const slashCommandFiles = readCommands(path.join(__dirname, 'commands/slash'));
 
-for (const filepath of slashCommandFiles) {
+for (const fileData of slashCommandFiles) {
     try {
-        const command = require(filepath);
-        client.slashCommands.set(command.data.name, command);
+        const command = require(fileData.path);
+        client.slashCommands.set(command.data.name, {
+            ...command,
+            directory: fileData.directory
+        });
         logger.info(`Slash command loaded: ${command.data.name}`);
     } catch (error) {
-        logger.error(`Error loading slash command at ${filepath}: ${error.message}`);
+        logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`);
     }
 }
 
@@ -50,25 +53,27 @@ for (const filepath of slashCommandFiles) {
 client.prefixCommands = new Collection();
 const prefixCommandFiles = readCommands(path.join(__dirname, 'commands/prefix'));
 
-for (const filepath of prefixCommandFiles) {
+for (const fileData of prefixCommandFiles) {
     try {
-        const command = require(filepath);
+        const command = require(fileData.path);
         client.prefixCommands.set(command.name, command);
         logger.info(`Prefix command loaded: ${command.name}`);
     } catch (error) {
-        logger.error(`Error loading prefix command at ${filepath}: ${error.message}`);
+        logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
     }
 }
 
 // Separate global and dev slash commands
 const globalCommands = [];
 const devCommands = [];
+const globalDir = path.join(__dirname, 'commands/slash/global');
+const devDir = path.join(__dirname, 'commands/slash/dev');
 
-for (const command of client.slashCommands.values()) {
-    if (command.global) {
-        globalCommands.push(command.data.toJSON());
-    } else {
-        devCommands.push(command.data.toJSON());
+for (const [_, commandData] of client.slashCommands.entries()) {
+    if (commandData.directory.startsWith(globalDir)) {
+        globalCommands.push(commandData.data.toJSON());
+    } else if (commandData.directory.startsWith(devDir)) {
+        devCommands.push(commandData.data.toJSON());
     }
 }
 
@@ -78,12 +83,16 @@ const rest = new REST({ version: '10' }).setToken(token);
 (async () => {
     try {
         // Register global commands
-        await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
-        logger.info(`Successfully reloaded ${globalCommands.length} global commands.`);
+        if (globalCommands.length) {
+            await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
+            logger.info(`Successfully reloaded ${globalCommands.length} global commands.`);
+        }
 
         // Register dev commands
-        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: devCommands });
-        logger.info(`Successfully reloaded ${devCommands.length} dev commands.`);
+        if (devCommands.length) {
+            await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: devCommands });
+            logger.info(`Successfully reloaded ${devCommands.length} dev commands.`);
+        }
     } catch (error) {
         logger.error(error);
     }
@@ -105,23 +114,20 @@ client.on('interactionCreate', async interaction => {
     const command = client.slashCommands.get(interaction.commandName);
     if (!command) return;
 
-    try {
-        // Log command execution
-        logger.info(`Executing slash command: ${interaction.commandName}`);
+    logger.info(`Slash command ${interaction.commandName} used by ${interaction.user.tag}`, client, 'slash', { interaction });
 
+    try {
         await command.execute(interaction, client);
+        logger.info('Slash command executed successfully', client, 'slash', { interaction });
     } catch (error) {
-        logger.error(error, client, interaction, 'slash');
-        await interaction.reply({
-            content: 'An error occurred with this command.',
-            ephemeral: true,
-        }).catch(console.error);
+        logger.error(`Error executing slash command: ${error.message}`, client, 'slash', { interaction });
     }
 });
 
 // Prefix command handler
 client.on('messageCreate', async message => {
     if (message.author.bot) return;
+
     const mentionRegex = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommandRegex = new RegExp(`^<@!?${client.user.id}> `);
 
@@ -141,19 +147,17 @@ client.on('messageCreate', async message => {
     if (!command) return;
 
     try {
-        logger.info(`Executing prefix command: ${commandName}`);
-
+        logger.info(`Executing prefix command: ${commandName}`, client, 'prefix', { commandName, args, context: message });
         await command.execute(message, args, client);
     } catch (error) {
-        logger.error(error, client, message, 'prefix', [commandName, ...args]);
+        logger.error(`Error executing prefix command: ${commandName} - ${error.message}`, client, 'text', { commandName, args, context: message });
         await message.reply({
             content: 'An error occurred with this command.',
             allowedMentions: { repliedUser: false }
-        }).catch(console.error);
+        }).catch(err => logger.error('Failed to send message reply', err, 'prefix', { commandName, args, context: message }));
     }
 });
 
-// Edited message handler
 client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (newMessage.author.bot || !newMessage.guild) return;
 
@@ -176,14 +180,14 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!command) return;
 
     try {
-        logger.info(`Executing edited prefix command: ${commandName}`);
+        logger.info(`Executing edited prefix command: ${commandName}`, client, 'prefix', { commandName, args, context: newMessage });
         await command.execute(newMessage, args, client);
     } catch (error) {
-        logger.error(error, client, newMessage, 'prefix', [commandName, ...args]);
+        logger.error(`Error executing edited prefix command: ${commandName} - ${error.message}`, client, 'text', { commandName, args, context: newMessage });
         await newMessage.reply({
             content: 'An error occurred with this command.',
             allowedMentions: { repliedUser: false }
-        }).catch(console.error);
+        }).catch(err => logger.error('Failed to send edited message reply', err, 'prefix', { commandName, args, context: newMessage }));
     }
 });
 
