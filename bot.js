@@ -1,8 +1,8 @@
 const { Collection, Client, GatewayIntentBits, Partials, REST, Routes } = require('discord.js');
 const { clientId, token, guildId, prefix } = require('./config.json');
 const logger = require('./logger');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
 // client instance
 const client = new Client({
@@ -90,7 +90,7 @@ for (const [_, commandData] of client.slashCommands.entries()) {
 
 // redeploy slash commands on startup
 const rest = new REST({ version: '10' }).setToken(token);
-(async () => {
+(async() => {
     try {
         logger.debug('Deploying slash commands...');
         // Register global commands
@@ -116,26 +116,15 @@ client.once('ready', () => {
 
 // Slash command handler
 client.on('interactionCreate', async interaction => {
-    logger.command(`Received interaction: ${interaction.id}`);
-
-    // Ensure the interaction is a command
-    if (!interaction.isCommand()) return;
-
+    logger.info(`Received interaction: ${interaction.id}`);
     logger.debug(`Processing slash command: ${interaction.commandName}`);
     const command = client.slashCommands.get(interaction.commandName);
 
-    // Check if the command exists
-    if (!command) {
-        logger.debug(`Slash command not found: ${interaction.commandName}`);
-        return;
-    }
-
-    // Additional debugging: Log the interaction details
-    logger.debug(`Interaction command: ${interaction.commandName}, User ID: ${interaction.user.id}`);
+    logger.debug(`Slash Command ${interaction.commandName} used by ${interaction.user}`);
 
     try {
         await command.execute(interaction, client);
-        logger.info(`Slash command ${interaction.commandName} used by ${interaction.user.tag} executed successfully`, client, 'slash', { interaction });
+        logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.tag}`, client, 'slash', { interaction });
     } catch (error) {
         logger.error(`Error executing slash command: ${error.message}`, client, 'slash', { interaction });
 
@@ -172,8 +161,7 @@ client.on('messageCreate', async message => {
     if (!command) return;
 
     try {
-        const commandType = isMention ? 'mention' : 'prefix';
-        logger.info(`Executing ${commandType} command: ${commandName}`);
+        logger.command(`Prefix Command ${commandName} used by ${message.author.tag}`);
 
         await command.execute(message, args, client);
     } catch (error) {
@@ -184,8 +172,9 @@ client.on('messageCreate', async message => {
         }).catch(console.error);
     }
 });
+
 // Edited message handler for prefix
-client.on('messageUpdate', async (oldMessage, newMessage) => {
+client.on('messageUpdate', async(oldMessage, newMessage) => {
     if (newMessage.author.bot || !newMessage.guild) return;
 
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
@@ -208,8 +197,7 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
     if (!command) return;
 
     try {
-        const commandType = isMention ? 'mention' : 'prefix';
-        logger.info(`Executing ${commandType} command (edited): ${commandName}`);
+        logger.command(`Prefix Command ${commandName} used by ${newMessage.author.tag}`);
 
         await command.execute(newMessage, args, client);
     } catch (error) {

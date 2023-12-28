@@ -1,12 +1,10 @@
 const { EmbedBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+const config = require('./config.json');
 const chalk = require('chalk');
-const { ownerId } = require('./config.json');
-const configFile = path.join(__dirname, 'config.json');
-const logFile = path.join(__dirname, 'bot.log');
+const path = require('path');
+const fs = require('fs');
 
-let config = readConfig();
+const logFile = path.join(__dirname, 'bot.log');
 
 const levels = {
     INFO: 'INFO',
@@ -17,24 +15,7 @@ const levels = {
 };
 
 // Check debug state
-let isDebugLoggingEnabled = config.debug || false;
-
-function readConfig() {
-    try {
-        return JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (err) {
-        console.error(`Error reading config file: ${err}`);
-        return {};
-    }
-}
-
-function writeConfig(updatedConfig) {
-    try {
-        fs.writeFileSync(configFile, JSON.stringify(updatedConfig, null, 4), 'utf8');
-    } catch (err) {
-        console.error(`Error writing to config file: ${err}`);
-    }
-}
+let isDebugLoggingEnabled = config.debug;
 
 // Debug logging
 function debug(message, client, commandType = 'unknown', commandInfo = {}) {
@@ -46,22 +27,25 @@ function isDebugEnabled() {
     return isDebugLoggingEnabled;
 }
 
-// Toggle debug logging
+// Toggle debug logging (saved in in config.json)
 function setDebugEnabled(enabled) {
     isDebugLoggingEnabled = enabled;
     config.debug = enabled;
-    writeConfig(config);
+    try {
+        fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4), 'utf8');
+    } catch (err) {
+        console.error(`Error writing to config file: ${err}`);
+    }
 }
 
-
+// Formats logger output
 function logMessage(level, message, client, commandType = 'unknown', commandInfo = {}) {
     const timestamp = new Date().toISOString();
     const logtime = chalk.cyan(`[${timestamp}]`);
 
     let logLevel;
     let formattedMessage;
-
-    // Colors~~
+    // Changes console output color based on level
     switch (level) {
         case levels.INFO:
             logLevel = chalk.grey(level);
@@ -88,21 +72,23 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
             formattedMessage = message;
     }
 
+    // Outputs colored message to console
     const consoleLogEntry = `${logtime} <${logLevel}> ${formattedMessage}`;
     console.log(consoleLogEntry);
 
+    // Outputs normal log to file
     const fileLogEntry = `<${timestamp}> <${level}> ${message}\n`;
     fs.appendFileSync(logFile, fileLogEntry);
 
     if (level === levels.ERROR) handleErrors(message, client, commandType, commandInfo);
 }
 
-// Error report handler
+// Error reporter handling
 function handleErrors(messageText, client, commandType, commandInfo) {
     let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
     let errorTitle;
 
-    // Slash command handler
+    // Prepare error report for slash commands
     if (commandType === 'slash' && commandInfo.interaction) {
         const interaction = commandInfo.interaction;
         errorTitle = `Error in slash command: ${interaction.commandName}`;
@@ -118,7 +104,7 @@ function handleErrors(messageText, client, commandType, commandInfo) {
         );
     }
 
-    // prefix command handler
+    // Prepare error report for prefix commands
     else if (commandType === 'prefix' && commandInfo.context) {
         const context = commandInfo.context;
         const commandName = commandInfo.args[0];
@@ -132,8 +118,9 @@ function handleErrors(messageText, client, commandType, commandInfo) {
         );
     }
 
+    // Send error report
     errorEmbed.setTitle(errorTitle);
-    client.users.fetch(ownerId)
+    client.users.fetch(config.ownerId)
         .then(owner => owner.send({ embeds: [errorEmbed] }))
         .catch(err => console.error(`Failed to send DM to owner: ${err}`));
 }

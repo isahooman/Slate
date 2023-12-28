@@ -1,9 +1,10 @@
-const { SlashCommandBuilder, REST, Routes } = require('discord.js');
 const { ownerId, clientId, token, guildId } = require('../../../config.json');
+const { SlashCommandBuilder, REST, Routes } = require('discord.js');
 const logger = require('../../../logger');
 const path = require('path');
 const fs = require('fs');
 
+// Im not commenting all this (outdated command collection)
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('owner')
@@ -56,14 +57,12 @@ module.exports = {
             }
             case 'deploy': {
                 await interaction.reply('Started refreshing application commands: <a:loading:1167519412497162281>');
-                // Deploy global commands
                 const globalCommands = [];
                 const globalCommandFiles = fs.readdirSync('./commands/slash/global').filter(file => file.endsWith('.js'));
                 for (const file of globalCommandFiles) {
                     const command = require(`../commands/slash/global/${file}`);
                     globalCommands.push(command.data.toJSON());
                 }
-                // Deploy dve commands
                 const guildCommands = [];
                 const guildCommandFiles = fs.readdirSync('../../../commands/slash/dev').filter(file => file.endsWith('.js'));
                 for (const file of guildCommandFiles) {
@@ -74,17 +73,14 @@ module.exports = {
                     version: '10',
                 }).setToken(token);
                 try {
-                    // Delete existing global commands
                     const existingGlobalCommands = await rest.get(Routes.applicationCommands(clientId));
                     for (const command of existingGlobalCommands) {
                         await rest.delete(Routes.applicationCommand(clientId, command.id));
                     }
-                    // redeploy global slash commands
                     await rest.put(Routes.applicationCommands(clientId), {
                         body: globalCommands,
                     });
                     logger.info('Successfully re-registered global application commands.');
-                    // Deploy dev slash commands
                     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
                         body: guildCommands,
                     });

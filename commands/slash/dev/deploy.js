@@ -15,7 +15,7 @@ module.exports = {
         const globalCommands = [];
         const guildCommands = [];
         const globalCommandFiles = fs.readdirSync('./commands/slash/global').filter(file => file.endsWith('.js'));
-        const guildCommandFiles = fs.readdirSync('./commands/slash/dev').filter(file => file.endsWith('.js'));
+        const DevCommandFiles = fs.readdirSync('./commands/slash/dev').filter(file => file.endsWith('.js'));
 
         for (const file of globalCommandFiles) {
             const command = require(`../../../commands/slash/global/${file}`);
@@ -24,7 +24,7 @@ module.exports = {
             logger.debug(`Preparing global command: ${file}`, interaction.client, 'slash', { interaction });
         }
 
-        for (const file of guildCommandFiles) {
+        for (const file of DevCommandFiles) {
             const command = require(`../../../commands/slash/dev/${file}`);
             guildCommands.push(command.data.toJSON());
             // Log dev commands deing deployed

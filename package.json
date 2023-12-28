@@ -11,5 +11,8 @@
   },
   "scripts": {
     "start": "start.bat"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
   }
 }

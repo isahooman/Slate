@@ -1,39 +1,31 @@
+// Importing required modules and configurations
 const { clientId, guildId, token } = require('./config.json');
 const { REST, Routes } = require('discord.js');
 const logger = require('./logger');
 const fs = require('fs');
 
-const globalCommands = [];
-const guildCommands = [];
-const globalCommandFiles = fs.readdirSync('./commands/slash/global').filter(file => file.endsWith('.js'));
-const guildCommandFiles = fs.readdirSync('./commands/slash/dev').filter(file => file.endsWith('.js'));
-
-for (const file of globalCommandFiles) {
-  const command = require(`./commands/slash/global/${file}`);
-  globalCommands.push(command.data.toJSON());
+function loadCommandFiles(directory) {
+// Read files from command directories
+return fs.readdirSync(directory)
+  .filter(file => file.endsWith('.js'))
+  .map(file => require(`${directory}/${file}`).data.toJSON());
 }
 
-for (const file of guildCommandFiles) {
-  const command = require(`./commands/slash/dev/${file}`);
-  guildCommands.push(command.data.toJSON());
-}
+// Load global and dev commands
+const globalCommands = loadCommandFiles('./commands/slash/global');
+const Devcommands = loadCommandFiles('./commands/slash/dev');
 
+// Create a new client
 const rest = new REST({ version: '10' }).setToken(token);
 
-(async () => {
+(async() => {
   try {
-    // Deploy global commands
-    await rest.put(
-      Routes.applicationCommands(clientId),
-      { body: globalCommands },
-    );
+    // Deploy global commands to all guilds
+    await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
     logger.info('Registered global slash commands!');
 
-    // Deploy dev commands
-    await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
-      { body: guildCommands },
-    );
+    // Deploy guild-specific commands to a specific guild
+    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: Devcommands });
     logger.info(`Registered dev slash commands for: ${guildId}`);
   } catch (error) {
     logger.error(error);

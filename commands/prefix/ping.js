@@ -1,6 +1,5 @@
+const moment = require('moment'); require('moment-duration-format');
 const logger = require('../../logger.js');
-require('moment-duration-format');
-const moment = require('moment');
 
 module.exports = {
     name: 'ping',
@@ -19,6 +18,6 @@ module.exports = {
 
         logger.debug(`Ping calculated: ${botPing}ms, Processing Speed: ${processingSpeed}, Uptime: ${uptime}`, message.client, 'prefix', { commandName: this.name, args: [], context: message });
 
-        message.channel.send(`<@${user.id}> Pong!\nBot's ping: ${botPing}ms\n\nBot uptime: ${uptime}\nProcessing Speed: ${processingSpeed}`);
+        message.channel.send(`<@${user.id}> Pong!\nBot's ping: ${botPing}ms\nBot's uptime: ${uptime}`);
     },
 };
