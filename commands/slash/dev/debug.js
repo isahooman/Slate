@@ -8,7 +8,7 @@ module.exports = {
 
     async execute(interaction) {
         const currentDebugState = logger.isDebugEnabled();
-        
+
         // toggle the debug state
         logger.setDebugEnabled(!currentDebugState);
 

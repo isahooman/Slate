@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, REST, Routes } = require('discord.js');
-const { ownerId, clientId, token } = require('../../../config.json');
+const { ownerId, clientId, token, guildId } = require('../../../config.json');
 const logger = require('../../../logger');
 const path = require('path');
 const fs = require('fs');
@@ -19,7 +19,7 @@ module.exports = {
                     { name: 'Reload', value: 'reload' },
                     { name: 'Clear', value: 'clear' },
                     { name: 'Fail', value: 'fail' },
-                    { name: 'Debug', value: 'debug'},
+                    { name: 'Debug', value: 'debug' },
                 ))
         .addStringOption(option => option.setName('scope')
           .setDescription('Scope of clear command')
@@ -71,7 +71,7 @@ module.exports = {
                     guildCommands.push(command.data.toJSON());
                 }
                 const rest = new REST({
-                    version: '10'
+                    version: '10',
                 }).setToken(token);
                 try {
                     // Delete existing global commands
@@ -81,12 +81,12 @@ module.exports = {
                     }
                     // redeploy global slash commands
                     await rest.put(Routes.applicationCommands(clientId), {
-                        body: globalCommands
+                        body: globalCommands,
                     });
                     logger.info('Successfully re-registered global application commands.');
                     // Deploy dev slash commands
                     await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
-                        body: guildCommands
+                        body: guildCommands,
                     });
                     logger.info(`Successfully re-registered guild-specific commands for guildId: ${guildId}`);
 
@@ -105,8 +105,8 @@ module.exports = {
             }
             case 'reload': {
                 const commandDirectories = {
-                    'dev': '../../../commands/slash/dev',
-                    'global': '../../../commands/slash/global'
+                    dev: '../../../commands/slash/dev',
+                    global: '../../../commands/slash/global',
                 };
 
                 for (const [key, value] of Object.entries(commandDirectories)) {
@@ -125,7 +125,7 @@ module.exports = {
                 }
                 await interaction.reply({
                     content: 'All commands have been reloaded!',
-                    ephemeral: false
+                    ephemeral: false,
                 });
                 break;
             }
@@ -134,7 +134,7 @@ module.exports = {
 
                 try {
                     const fetchedMessages = await interaction.channel.messages.fetch({
-                        limit: 100
+                        limit: 100,
                     });
                     let deletableMessages;
 
@@ -146,15 +146,15 @@ module.exports = {
                             '-', '$$', '&&', 'a!', 'b!', 'c!', 'd!', 'e!', 'f!', 'g!', 'h!', 'i!',
                             'j!', 'k!', 'l!', 'm!', 'n!', 'o!', 'p!', 'q!', 'r!', 's!', 't!', 'u!',
                             'v!', 'w!', 'x!', 'y!', 'z!', '/', '//', '\\', '=', '>', '->', '`', ',',
-                            '|', '[', ']', 'ay!', 'r-', '^<@!?${client.user.id}>'
+                            '|', '[', ']', 'ay!', 'r-',
                         ];
                         deletableMessages = fetchedMessages.filter(message =>
-                            message.author.bot || prefixes.some(prefix => message.content.startsWith(prefix))
+                            message.author.bot || prefixes.some(prefix => message.content.startsWith(prefix)),
                         );
                     } else {
                         return interaction.reply({
                             content: 'Invalid clear option provided.',
-                            ephemeral: true
+                            ephemeral: true,
                         });
                     }
 
@@ -173,14 +173,12 @@ module.exports = {
             }
             case 'fail': {
                 try {
-                    await interaction.reply('Failed successfully')
+                    await interaction.reply('Failed successfully');
                     throw new Error('Forced failure for testing purposes');
                 } catch (error) {
                     logger.error(error.message);
                     throw error;
-                        
                 }
-                break;
             }
             case 'debug': {
                 const currentDebugState = logger.isDebugEnabled();

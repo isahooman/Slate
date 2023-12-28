@@ -1,85 +1,80 @@
-const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../logger');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const path = require('path');
-const fs = require('fs');
+const logger = require('../../../logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reload')
-        .setDescription('Reloads a command.')
+        .setDescription('Reloads all commands')
+        .addStringOption(option =>
+            option.setName('type')
+                .setDescription('The type of command to reload')
+                .setRequired(true)
+                .addChoices(
+                    { name: 'slash', value: 'slash' },
+                    { name: 'prefix', value: 'prefix' },
+                ))
         .addStringOption(option =>
             option.setName('command')
-                .setDescription('The command to reload.')
+                .setDescription('The specific command to reload')
                 .setRequired(false)),
 
-    async execute(interaction) {
-        const commandName = interaction.options.getString('command', false);
+    async execute(interaction, client) {
+        const commandType = interaction.options.getString('type');
+        const commandName = interaction.options.getString('command');
 
-        if (!commandName) {
-            // Reload all commands
-            const commandTypes = ['prefix', 'slash'];
-            for (const type of commandTypes) {
-                const commandFiles = fs.readdirSync(path.join(__dirname, '../../', type)).filter(file => file.endsWith('.js'));
-                for (const file of commandFiles) {
-                    try {
-                        const filePath = path.join(__dirname, '../../', type, file);
-                        delete require.cache[require.resolve(filePath)];
-                        const newCommand = require(filePath);
-
-                        if (type === 'prefix') {
-                            interaction.client.prefixCommands.set(newCommand.name, newCommand);
-                        } else {
-                            interaction.client.slashCommands.set(newCommand.data.name, newCommand);
-                        }
-                    } catch (error) {
-                        logger.error(`Failed to reload ${type} command at ${file}: ${error.message}`);
-                    }
-                }
-            }
-            await interaction.reply('All commands have been reloaded!');
-        } else {
-            // Reload a specific command
-            let filePath = findCommandFilePath(commandName, ['prefix', 'slash'], interaction.client);
-            if (!filePath) {
-                return await interaction.reply(`Command \`${commandName}\` not found.`);
-            }
-    
-            try {
-                delete require.cache[require.resolve(filePath)];
-                const newCommand = require(filePath);
-    
-                if (newCommand.data) {
-                    interaction.client.slashCommands.set(newCommand.data.name, newCommand);
+        try {
+            if (commandType === 'slash') {
+                if (commandName) {
+                    // Reload specific slash command
+                    await reloadSpecificCommand(client.slashCommands, path.join(__dirname, '../../slash'), commandName, interaction, 'slash');
                 } else {
-                    interaction.client.prefixCommands.set(newCommand.name, newCommand);
+                    // Reload all slash commands
+                    await reloadAllCommands(client.slashCommands, client.readCommands, path.join(__dirname, '../../slash'), interaction, 'slash');
                 }
-    
-                await interaction.reply(`Command \`${commandName}\` was reloaded!`);
-            } catch (error) {
-                logger.error(`Error reloading command '${commandName}': ${error.message}`);
-                await interaction.reply(`There was an error while reloading the command \`${commandName}\`:\n\`${error.message}\``);
+            } else if (commandType === 'prefix') {
+                if (commandName) {
+                    // Reload specific prefix command
+                    await reloadSpecificCommand(client.prefixCommands, path.join(__dirname, '../../prefix'), commandName, interaction, 'prefix');
+                } else {
+                    // Reload all prefix commands
+                    await reloadAllCommands(client.prefixCommands, client.readCommands, path.join(__dirname, '../../prefix'), interaction, 'prefix');
+                }
             }
+
+            logger.info('Commands reloaded successfully.');
+        } catch (error) {
+            logger.error(`Error reloading commands: ${error}`);
+            await interaction.reply({ content: 'There was an error while reloading commands.', ephemeral: true });
         }
-    },    
+    },
 };
-function findCommandFilePath(commandName, client) {
-    const globalDir = path.join(__dirname, '../../../slash/global');
-    const devDir = path.join(__dirname, '../../../slash/dev');
 
-    let filePath = path.join(globalDir, `${commandName}.js`);
-    logger.debug(`Checking for global command file at: ${filePath}`);
-    if (fs.existsSync(filePath)) {
-        logger.debug(`Global command file found: ${filePath}`);
-        return filePath;
+async function reloadAllCommands(commandsCollection, readCommandsFunction, directory, interaction, type) {
+    commandsCollection.clear();
+    const commandFiles = readCommandsFunction(directory);
+
+    for (const fileData of commandFiles) {
+        delete require.cache[require.resolve(fileData.path)];
+        const command = require(fileData.path);
+        commandsCollection.set(type === 'slash' ? command.data.name : command.name, command);
     }
 
-    filePath = path.join(devDir, `${commandName}.js`);
-    logger.debug(`Checking for dev command file at: ${filePath}`);
-    if (fs.existsSync(filePath)) {
-        logger.debug(`Dev command file found: ${filePath}`);
-        return filePath;
+    await interaction.reply(`All ${type} commands reloaded successfully.`);
+}
+
+async function reloadSpecificCommand(commandsCollection, directory, commandName, interaction, type) {
+    const commandFiles = client.readCommands(directory);
+    const fileData = commandFiles.find(f => (type === 'slash' ? require(f.path).data.name : require(f.path).name) === commandName);
+
+    if (!fileData) {
+        await interaction.reply({ content: `Command '${commandName}' not found.`, ephemeral: true });
+        return;
     }
 
-    logger.debug(`Command file not found for command: ${commandName}`);
-    return null;
+    delete require.cache[require.resolve(fileData.path)];
+    const command = require(fileData.path);
+    commandsCollection.set(type === 'slash' ? command.data.name : command.name, command);
+
+    await interaction.reply(`Command '${commandName}' reloaded successfully.`);
 }

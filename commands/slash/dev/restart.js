@@ -1,23 +1,23 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { spawn } = require("child_process");
+const { SlashCommandBuilder } = require('discord.js');
+const { spawn } = require('child_process');
 const logger = require('../../../logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("restart")
-        .setDescription("Restart the bot"),
+        .setName('restart')
+        .setDescription('Restart the bot'),
     async execute(interaction) {
         logger.debug(`'restart' command invoked by ${interaction.user.tag}`, interaction.client, 'slash', { interaction });
-        await interaction.reply("Restarting bot...");
+        await interaction.reply('Restarting bot...');
 
-        // Spawns a new bot process
+        // Spawns a new bot
         logger.debug('Restarting bot process', interaction.client, 'slash', { interaction });
         const childProcess = spawn(process.argv[0], process.argv.slice(1), {
             detached: true,
-            stdio: "inherit"
+            stdio: 'inherit',
         });
 
-        childProcess.on('error', (error) => {
+        childProcess.on('error', error => {
             logger.error(`Failed to restart bot: ${error}`);
         });
 
@@ -30,5 +30,5 @@ module.exports = {
         childProcess.unref();
         interaction.client.destroy();
         process.exit();
-    }
+    },
 };
