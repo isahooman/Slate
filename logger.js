@@ -45,31 +45,35 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
 
     let logLevel;
     let formattedMessage;
+
     // Changes console output color based on level
     switch (level) {
         case levels.INFO:
             logLevel = chalk.grey(level);
-            formattedMessage = chalk.white(message);
             break;
         case levels.WARN:
             logLevel = chalk.yellow(level);
-            formattedMessage = chalk.yellow(message);
             break;
         case levels.ERROR:
             logLevel = chalk.bgRed(level);
-            formattedMessage = chalk.red(message);
             break;
         case levels.DEBUG:
             logLevel = chalk.blue(level);
-            formattedMessage = chalk.blue(message);
             break;
         case levels.COMMAND:
             logLevel = chalk.green(level);
-            formattedMessage = chalk.green(message);
             break;
         default:
             logLevel = level;
-            formattedMessage = message;
+    }
+
+    // Change console out
+    if (message.includes(':')) {
+        const [firstPart, ...rest] = message.split(':');
+        formattedMessage = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
+    } else {
+        // If no colon is found, format the entire message in white
+        formattedMessage = chalk.whiteBright(message);
     }
 
     // Outputs colored message to console
