@@ -1,2 +1,2 @@
 # Slate
- Discord.js bot template
+ Discord.js v14 bot template

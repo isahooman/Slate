@@ -11,7 +11,7 @@ echo Node.js packages updated.
 echo Node.js packages updated. >> bot.log
 
 :loop
-echo Starting Role Manager
+echo Starting...
 call node bot.js
 echo. 
 echo Discord bot has stopped. Restarting...
