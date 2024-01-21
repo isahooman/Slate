@@ -16,7 +16,7 @@ const globalCommands = loadCommandFiles('./commands/slash/global');
 const devCommands = loadCommandFiles('./commands/slash/dev');
 const rest = new REST({ version: '10' }).setToken(token);
 
-(async () => {
+(async() => {
   try {
     // Deploy global commands to all guilds
     await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });

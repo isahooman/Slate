@@ -1,5 +1,5 @@
 const { Collection, Client, GatewayIntentBits, Partials, REST, Routes } = require('discord.js');
-const { clientId, token, guildId, prefix } = require('./util/config.json');
+const { clientId, token, guildId, prefix, ownerId } = require('./util/config.json');
 const logger = require('./util/logger.js');
 const path = require('path');
 const fs = require('fs');
@@ -52,24 +52,20 @@ for (const fileData of slashCommandFiles) try {
   logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`);
 }
 
-
 // Load Prefix Commands
 client.prefixCommands = new Collection();
 const prefixCommandFiles = readCommands(path.join(__dirname, 'commands/prefix'));
 
 for (const fileData of prefixCommandFiles) try {
   const command = require(fileData.path);
-  const pathParts = fileData.directory.split(path.sep);
-  const category = pathParts[pathParts.length - 1];
-  const commandName = category ? `${category}/${command.name}` : command.name;
-  client.prefixCommands.set(commandName, command);
-
-  // Log the loaded commands
-  logger.info(`Loaded ${category} prefix command - ${command.name}`);
+  client.prefixCommands.set(command.name.toLowerCase(), {
+    ...command,
+    directory: fileData.directory,
+  });
+  logger.info(`Loaded prefix command - ${command.name}`);
 } catch (error) {
   logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
 }
-
 
 logger.debug('Commands loaded.');
 
@@ -79,9 +75,9 @@ const devCommands = [];
 const globalDir = path.join(__dirname, 'commands/slash/global');
 const devDir = path.join(__dirname, 'commands/slash/dev');
 
+// eslint-disable-next-line no-unused-vars
 for (const [_, commandData] of client.slashCommands.entries()) if (commandData.directory.startsWith(globalDir)) globalCommands.push(commandData.data.toJSON());
 else if (commandData.directory.startsWith(devDir)) devCommands.push(commandData.data.toJSON());
-
 
 // redeploy slash commands on startup
 const rest = new REST({ version: '10' }).setToken(token);
@@ -115,11 +111,11 @@ client.on('interactionCreate', async interaction => {
   logger.debug(`Processing slash command: ${interaction.commandName}`);
   const command = client.slashCommands.get(interaction.commandName);
 
-  logger.debug(`Slash Command ${interaction.commandName} used by: ${interaction.user.username} | ${interaction.user}`);
+  logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.username} | ${interaction.user}`);
 
   try {
     await command.execute(interaction, client);
-    logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.tag}`, client, 'slash', { interaction });
+    logger.command(`Slash Command ${interaction.commandName} used by: ${interaction.user.tag}`, client, 'slash', { interaction });
   } catch (error) {
     logger.error(`Error executing slash command: ${error.message}`, client, 'slash', { interaction });
     if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(logger.error);
@@ -129,6 +125,7 @@ client.on('interactionCreate', async interaction => {
 
 // Prefix command handler
 client.on('messageCreate', async message => {
+  logger.debug('Processing new message');
   if (message.author.bot) return;
 
   const mention = new RegExp(`^<@!?${client.user.id}>$`);
@@ -149,12 +146,21 @@ client.on('messageCreate', async message => {
   const content = isMention ? message.content.replace(mentionWithCommand, '') : message.content.slice(prefix.length);
   const args = content.trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
+  const command = client.prefixCommands.get(commandName);
 
-  let command;
+  if (!command) {
+    logger.debug(`Command not found: ${commandName}`);
+    return; // Exit if the command is not found
+  }
+
+  // Check if the command is an "owner" command and if the user is not the owner
+  if (command.category === 'owner' && message.author.id !== ownerId) {
+    logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${message.author.tag}`);
+    return;
+  }
 
   try {
-    logger.command(`Prefix Command ${commandName} used by ${message.author.tag}`);
-
+    logger.command(`Prefix Command ${commandName} used by ${message.author.tag} in ${message.guild.name}`);
     await command.execute(message, args, client);
   } catch (error) {
     logger.error(error.message, client, 'prefix', { context: message, args: [commandName, ...args] });
@@ -174,7 +180,7 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
   const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
 
   if (mention.test(newMessage.content)) {
-    logger.info(`Bot mentioned by ${newMessage.author.tag} in channel ${newMessage.channel.id} (edited message)`);
+    logger.info(`Bot mentioned by ${newMessage.author.tag} in channel ${newMessage.channel.id}`);
     return newMessage.reply(`My prefix is \`${prefix}\``);
   }
 
@@ -185,17 +191,23 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
   const content = isMention ? newMessage.content.replace(mentionWithCommand, '') : newMessage.content.slice(prefix.length);
   const args = content.trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
-
-  logger.debug(`Extracted command name: ${commandName}`);
   const command = client.prefixCommands.get(commandName);
+
   if (!command) {
     logger.debug(`No command found for name: ${commandName}`);
     return;
   }
+
+  // Check if the command is an "owner" command and if the user is not the owner
+  if (command.category === 'owner' && newMessage.author.id !== ownerId) {
+    logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${newMessage.author.tag}`);
+    return;
+  }
+
   logger.debug(`Found command for name: ${commandName}, executing...`);
 
   try {
-    logger.command(`Prefix Command ${commandName} used by ${newMessage.author.tag}`);
+    logger.command(`Prefix Command ${commandName} used by ${newMessage.author.tag} in ${newMessage.guild.name}`);
 
     await command.execute(newMessage, args, client);
   } catch (error) {

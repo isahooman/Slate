@@ -81,7 +81,7 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
 // Error handler
 function handleErrors(messageText, client, commandType, commandInfo) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
-  let errorTitle;
+  let errorTitle = 'Error occurred';
 
   // Prepare error report for slash commands
   if (commandType === 'slash' && commandInfo.interaction) {
@@ -97,6 +97,7 @@ function handleErrors(messageText, client, commandType, commandInfo) {
       { name: 'Arguments', value: args },
       { name: 'Error', value: messageText },
     );
+  // eslint-disable-next-line brace-style
   }
 
   // Prepare error report for prefix commands

@@ -1,17 +1,12 @@
-const { ownerId } = require('../../../util/logger.js');
 const logger = require('../../../util/logger.js');
 
 module.exports = {
   name: 'kill',
+  category: 'Owner',
+  usage: 'kill',
   description: 'Terminates the bot',
 
   async execute(message) {
-    // Check if the user is bot owner
-    if (message.author.id !== ownerId) {
-      // Do nothing if the user is not the owner
-      return;
-    }
-
     try {
       // Wait while sending confirmation message
       await message.channel.send('Shutting down...');

@@ -3,6 +3,8 @@ const util = require('util');
 
 module.exports = {
   name: 'raw',
+  category: 'Owner',
+  usage: 'reply to a message with raw',
   description: 'Gets the raw message data of the replied message',
 
   async execute(message) {
