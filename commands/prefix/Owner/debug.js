@@ -2,6 +2,8 @@ const logger = require('../../../util/logger.js');
 
 module.exports = {
   name: 'debug',
+  usage: 'debug',
+  category: 'Owner',
   description: 'Toggles debug level logging',
   execute(message) {
     // Get the current debug state

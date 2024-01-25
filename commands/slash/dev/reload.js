@@ -1,71 +1,112 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const logger = require('../../../util/logger');
 const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('reload')
     .setDescription('Reloads a command or all commands.')
-    .addStringOption(option =>
-      option.setName('command')
-        .setDescription('The command to reload.')
-        .setRequired(false))
-    .addStringOption(option =>
-      option.setName('type')
-        .setDescription('The type of commands to reload (slash, prefix).')
-        .setRequired(false)
-        .addChoices(
-          { name: 'slash', value: 'slash' },
-          { name: 'prefix', value: 'prefix' })),
-
+    .addStringOption(option => option.setName('command')
+      .setDescription('The command to reload'))
+    .addStringOption(option => option.setName('type')
+      .setDescription('The type of commands to reload (prefix/slash)')),
   async execute(interaction) {
     const commandName = interaction.options.getString('command');
+    const commandType = interaction.options.getString('type');
 
-    // If a command is provided to the "command" option reload the commands with that name in both prefix and slash type collection
-    if (commandName) {
-      logger.debug(`Command name provided: ${commandName}`);
-
-      // Find the nearest command name
+    if (commandType) {
+      logger.info(`Reloading all ${commandType} commands.`);
+      // Reload all commands of the specified type.
+      await reloadAllCommands(interaction.client, commandType);
+      await interaction.reply(`All ${commandType} commands were reloaded!`);
+      logger.debug(`All ${commandType} commands successfully reloaded.`);
+    } else if (commandName) {
+      logger.debug(`Attempting to reload command: ${commandName}`);
+      // Search for commands by name within both command types
       const nearestSlashCommand = findNearestCommand(commandName, interaction.client.slashCommands, 'slash');
       const nearestPrefixCommand = findNearestCommand(commandName, interaction.client.prefixCommands, 'prefix');
-
-      // Reload found commands
       let reloadedTypes = [];
 
+      // If a slash command is found reload it
       if (nearestSlashCommand) {
+        logger.debug(`Found slash command: ${nearestSlashCommand.data.name}`);
         await reloadCommand(nearestSlashCommand, interaction);
         reloadedTypes.push('slash');
       }
+      // If a prefix command is found reload it
       if (nearestPrefixCommand) {
+        logger.debug(`Found prefix command: ${nearestPrefixCommand.name}`);
         await reloadCommand(nearestPrefixCommand, interaction);
         reloadedTypes.push('prefix');
       }
 
-      // Provide a response based on the reloaded command types
-      if (reloadedTypes.length === 2) await interaction.reply(`Both slash and prefix command \`${commandName}\` have been reloaded.`);
-      else if (reloadedTypes.length === 1) await interaction.reply(`${reloadedTypes[0]} command \`${commandName}\` has been reloaded.`);
-      else await interaction.reply(`No command found with name '${commandName}'.`);
+      let responseMessage = `\#\#\# Reloaded commands for:\n`;
+      if (reloadedTypes.includes('slash')) responseMessage += `Slash: ${nearestSlashCommand ? nearestSlashCommand.data.name : 'none'}\n`;
+      if (reloadedTypes.includes('prefix')) responseMessage += `Prefix: ${nearestPrefixCommand ? nearestPrefixCommand.name : 'none'}`;
+      if (reloadedTypes.length === 0) responseMessage = `No command found with name '${commandName}'.`;
+
+      await interaction.reply(responseMessage);
+      logger.debug(`Reload completed for command: ${commandName}`);
     } else {
-      // Reload all slash and prefix commands
+      // Reload all commands of all types if no input is provided
+      logger.debug('No command provided. Reloading all commands.');
       await reloadAllCommands(interaction.client, 'slash');
       await reloadAllCommands(interaction.client, 'prefix');
       await interaction.reply('All commands were reloaded!');
+      logger.debug('All commands successfully reloaded.');
     }
   },
 };
 
-// Reload specific commands
-function reloadCommand(command, interaction) {
-  const commandName = command.data ? command.data.name : command.name;
-  logger.debug(`Reloading command: ${commandName}, Directory: ${command.directory}`);
-  const commandPath = path.join(command.directory, `${commandName}.js`);
+// Search for command names based on "command" option input
+function findNearestCommand(input, commands, type) {
+  let nearestCommand = null;
+  let highestSimilarity = -1;
 
-  // Delete the cached command information
-  delete require.cache[require.resolve(commandPath)];
+  commands.forEach((cmd, cmdName) => {
+    if (cmdName.startsWith(input)) {
+      const similarity = cmdName.length - input.length;
+      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
+        highestSimilarity = similarity;
+        nearestCommand = { ...cmd, type };
+      }
+    }
+  });
+  return nearestCommand;
+}
+
+// Reload a specific command
+async function reloadCommand(command, interaction) {
+  const commandName = command.data ? command.data.name : command.name;
+  logger.debug(`Reloading command: ${commandName}`);
+
+  const commandType = command.type === 'slash' ? 'slash' : 'prefix';
+  const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
+  let foundPath = null;
+
+  // Search for the command file in command subfolders
+  const subdirs = await fs.promises.readdir(baseDir);
+  for (const subdir of subdirs) {
+    const subdirPath = path.join(baseDir, subdir);
+    if ((await fs.promises.stat(subdirPath)).isDirectory()) {
+      const files = await fs.promises.readdir(subdirPath);
+      if (files.includes(`${commandName}.js`)) {
+        foundPath = path.join(subdirPath, `${commandName}.js`);
+        break;
+      }
+    }
+  }
+  if (!foundPath) {
+    logger.warn(`Command file not found for command: ${commandName}.`);
+    return;
+  }
+
+  // Delete cached command data
+  delete require.cache[require.resolve(foundPath)];
 
   try {
-    // Require the newly loaded command
-    const newCommand = require(commandPath);
+    const newCommand = require(foundPath);
     if (command.data) {
       interaction.client.slashCommands.set(newCommand.data.name, newCommand);
       logger.debug(`Slash command '${newCommand.data.name}' reloaded`);
@@ -78,42 +119,36 @@ function reloadCommand(command, interaction) {
   }
 }
 
-// Search for commands based on "command" option input
-function findNearestCommand(input, commands, type) {
-  let nearestCommand = null;
-  let highestSimilarity = -1;
-
-  commands.forEach((cmd, cmdName) => {
-    let subIndex = 0;
-    for (let i = 0; i < cmdName.length && subIndex < input.length; i++) if (cmdName[i] === input[subIndex]) subIndex++;
-    if (subIndex === input.length) {
-      const similarity = cmdName.length - input.length;
-      if (similarity >= 0 && similarity > highestSimilarity) {
-        highestSimilarity = similarity;
-        nearestCommand = { ...cmd, type };
-      }
-    }
-  });
-  return nearestCommand;
-}
-
-// Reload all commands of a type when "type" option is provided
+// Reload all commands of a specific type
 function reloadAllCommands(client, commandType) {
   logger.debug(`Reloading all ${commandType} commands`);
   const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
-  const commandFiles = client.readCommands(path.join(__dirname, '..', '..', '..', 'commands', commandType));
+  const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
+  const commandFiles = readCommandFilesRecursive(baseDir);
 
-  for (const fileData of commandFiles) {
-    // Delete the cached version of the command
-    delete require.cache[require.resolve(fileData.path)];
+  commandFiles.forEach(file => {
+    delete require.cache[require.resolve(file)];
     try {
-      // Require the newly loaded version
-      const newCommand = require(fileData.path);
+      const newCommand = require(file);
       const commandKey = commandType === 'slash' ? newCommand.data.name : newCommand.name.toLowerCase();
       commands.set(commandKey, newCommand);
       logger.debug(`Reloaded ${commandType} command: ${commandKey}`);
     } catch (error) {
-      logger.error(`Error reloading ${commandType} command at ${fileData.path}: ${error.message}`);
+      logger.error(`Error reloading ${commandType} command at ${file}: ${error.message}`);
     }
-  }
+  });
+}
+
+// Read command folders and sub folders
+function readCommandFilesRecursive(dir) {
+  let results = [];
+  const list = fs.readdirSync(dir);
+
+  list.forEach(file => {
+    const filePath = path.resolve(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat && stat.isDirectory()) results = results.concat(readCommandFilesRecursive(filePath));
+    else if (stat.isFile()) results.push(filePath);
+  });
+  return results;
 }

@@ -5,10 +5,12 @@ const { REST, Routes } = require('discord.js');
 
 module.exports = {
   name: 'deploy',
+  usage: 'deploy',
+  category: 'Owner',
   description: 'Deploys global and guild-specific commands',
   async execute(message) {
     // Log the start of the deployment
-    logger.debug(`Starting to deploy commands`, message.client, 'slash', { interaction: null });
+    logger.debug(`Starting to deploy commands`);
 
     const globalCommands = [];
     const guildCommands = [];
@@ -19,17 +21,16 @@ module.exports = {
       const command = require(`../../../commands/slash/global/${file}`);
       globalCommands.push(command.data.toJSON());
       // Log global commands being prepared
-      logger.debug(`Preparing global command: ${file}`, message.client, 'slash', { interaction: null });
+      logger.debug(`Preparing global command: ${file}`);
     }
 
     for (const file of devCommandFiles) {
       const command = require(`../../../commands/slash/dev/${file}`);
       guildCommands.push(command.data.toJSON());
       // Log dev commands being prepared
-      logger.debug(`Preparing dev command: ${file}`, message.client, 'slash', { interaction: null });
+      logger.debug(`Preparing dev command: ${file}`);
     }
 
-    // Simulate the deployment process (replace with actual deployment logic)
     const rest = new REST({ version: '10' }).setToken(token);
 
     try {

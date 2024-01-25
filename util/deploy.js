@@ -12,13 +12,13 @@ function loadCommandFiles(directory) {
 }
 
 // Load global and dev commands
-const globalCommands = loadCommandFiles('./commands/slash/global');
-const devCommands = loadCommandFiles('./commands/slash/dev');
+const globalCommands = loadCommandFiles('../commands/slash/global');
+const devCommands = loadCommandFiles('../commands/slash/dev');
 const rest = new REST({ version: '10' }).setToken(token);
 
 (async() => {
   try {
-    // Deploy global commands to all guilds
+    // Deploy global commands to all servers
     await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
     logger.info('Registered global slash commands!');
 

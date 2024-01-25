@@ -2,8 +2,8 @@ const logger = require('../../../util/logger.js');
 
 module.exports = {
   name: 'kill',
-  category: 'Owner',
   usage: 'kill',
+  category: 'Owner',
   description: 'Terminates the bot',
 
   async execute(message) {

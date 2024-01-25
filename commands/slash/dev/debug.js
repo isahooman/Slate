@@ -13,7 +13,7 @@ module.exports = {
     // Toggle debug logging
     logger.setDebugEnabled(!currentDebugState);
 
-    // Inform the user about the new state
+    // Inform the user about the updated state
     await interaction.reply(`Debug logging is now ${currentDebugState ? 'disabled' : 'enabled'}.`);
   },
 };

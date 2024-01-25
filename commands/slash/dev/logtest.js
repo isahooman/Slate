@@ -10,17 +10,18 @@ module.exports = {
         .setDescription('Text to log')
         .setRequired(true)),
 
-  // Get text input from option
   async execute(interaction) {
-    const outputText = interaction.options.getString('output');
+    try {
+      const outputText = interaction.options.getString('output');
 
-    // Send log of every level with the input
-    logger.info(outputText);
-    logger.warn(outputText);
-    logger.debug(outputText);
-    logger.command(outputText);
-    logger.error(outputText);
-
-    await interaction.reply('Logged messages at different levels.');
+      // Send log of every level with the input
+      logger.info(outputText);
+      logger.warn(outputText);
+      logger.debug(outputText);
+      logger.error(outputText);
+      logger.command(outputText);
+    } catch (error) {
+      await interaction.reply('Logged messages at different levels.');
+    }
   },
 };

@@ -10,7 +10,7 @@ module.exports = {
 
   async execute(interaction) {
     // Log the start of the deployment
-    logger.debug(`Starting to deploy commands`, interaction.client, 'slash', { interaction });
+    logger.debug(`Starting to deploy commands`);
 
     const globalCommands = [];
     const guildCommands = [];
@@ -21,14 +21,14 @@ module.exports = {
       const command = require(`../../../commands/slash/global/${file}`);
       globalCommands.push(command.data.toJSON());
       // Log global commands being deployed
-      logger.debug(`Preparing global command: ${file}`, interaction.client, 'slash', { interaction });
+      logger.debug(`Preparing global command: ${file}`);
     }
 
     for (const file of DevCommandFiles) {
       const command = require(`../../../commands/slash/dev/${file}`);
       guildCommands.push(command.data.toJSON());
       // Log dev commands being deployed
-      logger.debug(`Preparing dev command: ${file}`, interaction.client, 'slash', { interaction });
+      logger.debug(`Preparing dev command: ${file}`);
     }
 
     const rest = new REST({ version: '10' }).setToken(token);

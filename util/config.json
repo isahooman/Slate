@@ -1,8 +1,8 @@
 {
   "token": " Your bot token here ",
   "clientId": " Your bot's clientId here ",
-  "ownerId": " Your id here",
-  "guildId": " home/dev server id here",
+  "ownerId": ["First owner id", "Second owner id"],
+  "guildId": " home/dev server id here ",
   "prefix": " Prefix here ",
-  "debug": false
+  "debug": true
 }

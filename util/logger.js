@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { EmbedBuilder } = require('discord.js');
 const config = require('./config.json');
 const moment = require('moment');
@@ -16,7 +15,7 @@ const levels = {
   COMMAND: 'COMMAND',
 };
 
-// Check initial debug state when logger is used
+// Check initial debug state
 let isDebugLoggingEnabled = config.debug;
 
 // Check logger state when called
@@ -31,7 +30,7 @@ function setDebugEnabled(enabled) {
   try {
     fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 2), 'utf8');
   } catch (err) {
-    console.error(`Error writing to config file: ${err}`);
+    process.stderr.write(`Error writing to config file: ${err}\n`);
   }
 }
 
@@ -45,7 +44,7 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
   const logtime = chalk.cyan(`[${timestamp}]`);
 
-  // Change log level color using chalk
+  // Set level colors using chalk
   const logLevelsColors = {
     INFO: chalk.grey,
     WARN: chalk.yellow,
@@ -57,7 +56,7 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
   const logLevelColor = logLevelsColors[level] || chalk.white;
 
   // Format the log message
-  const formattedMessage = message.split(',').map(part => {
+  const formattedMessage = (typeof message === 'string' ? message.split(',') : []).map(part => {
     if (part.includes(':')) {
       const [firstPart, ...rest] = part.split(':');
       return `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
@@ -68,7 +67,7 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
 
   // Output log to console
   const consoleLogEntry = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
-  console.log(consoleLogEntry);
+  process.stdout.write(`${consoleLogEntry}\n`);
 
   // Output log to log file
   const fileLogEntry = `<${timestamp}> <${level}> ${message}\n`;
@@ -81,15 +80,15 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
 // Error handler
 function handleErrors(messageText, client, commandType, commandInfo) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
-  let errorTitle = 'Error occurred';
+  let errorTitle;
 
   // Prepare error report for slash commands
   if (commandType === 'slash' && commandInfo.interaction) {
     const interaction = commandInfo.interaction;
     errorTitle = `Error in slash command: ${interaction.commandName}`;
+    errorEmbed.setTitle(errorTitle);
 
     const args = interaction.options.data.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
-
     errorEmbed.addFields(
       { name: 'User', value: interaction.user ? `${interaction.user.username} <@${interaction.user.id}>` : 'N/A' },
       { name: 'Channel', value: interaction.channelId ? `<#${interaction.channelId}> (ID: ${interaction.channelId})` : 'N/A' },
@@ -97,7 +96,6 @@ function handleErrors(messageText, client, commandType, commandInfo) {
       { name: 'Arguments', value: args },
       { name: 'Error', value: messageText },
     );
-  // eslint-disable-next-line brace-style
   }
 
   // Prepare error report for prefix commands
@@ -116,12 +114,14 @@ function handleErrors(messageText, client, commandType, commandInfo) {
 
   errorEmbed.setTitle(errorTitle);
 
-  // Send the prepared error report to the bot owner
-  if (client) client.users.fetch(config.ownerId)
-    .then(owner => owner.send({ embeds: [errorEmbed] }))
-    .catch(err => {
-      console.error(`Failed to send DM to owner: ${err}`);
-    });
+  // Send the prepared error report to the bot owners
+  if (client && Array.isArray(config.ownerId)) config.ownerId.forEach(ownerId => {
+    client.users.fetch(ownerId)
+      .then(owner => owner.send({ embeds: [errorEmbed] }))
+      .catch(err => {
+        process.stderr.write(`Failed to send DM to owner (ID: ${ownerId}): ${err}\n`);
+      });
+  });
 }
 
 module.exports = {

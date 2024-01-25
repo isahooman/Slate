@@ -11,9 +11,9 @@ module.exports = {
     const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]');
 
     // Get ping from bot client
-    logger.debug(`Starting ping calculation for ${interaction.member.user.tag}`, interaction.client, 'slash', { interaction });
+    logger.debug(`Starting ping calculation for ${interaction.member.user.tag}`);
     const botPing = interaction.client.ws.ping;
-    logger.debug(`Ping calculated: ${botPing}ms, Uptime: ${uptime}`, interaction.client, 'slash', { interaction });
+    logger.debug(`Ping calculated: ${botPing}ms, Uptime: ${uptime}`);
 
     // Reply to user
     await interaction.reply(`<@${interaction.member.user.id}> Pong!\nBot's ping: ${botPing}ms\nBot uptime: ${uptime}\n`);

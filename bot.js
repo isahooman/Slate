@@ -4,7 +4,6 @@ const logger = require('./util/logger.js');
 const path = require('path');
 const fs = require('fs');
 
-// Setup client
 const client = new Client({
   intents:
     [
@@ -20,7 +19,7 @@ const client = new Client({
     ],
 });
 
-logger.debug('Bot started.');
+logger.debug('Bot starting..');
 
 // Read commands
 function readCommands(directory) {
@@ -62,7 +61,7 @@ for (const fileData of prefixCommandFiles) try {
     ...command,
     directory: fileData.directory,
   });
-  logger.info(`Loaded prefix command - ${command.name}`);
+  logger.info(`Prefix command loaded: ${command.name}`);
 } catch (error) {
   logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
 }
@@ -75,7 +74,6 @@ const devCommands = [];
 const globalDir = path.join(__dirname, 'commands/slash/global');
 const devDir = path.join(__dirname, 'commands/slash/dev');
 
-// eslint-disable-next-line no-unused-vars
 for (const [_, commandData] of client.slashCommands.entries()) if (commandData.directory.startsWith(globalDir)) globalCommands.push(commandData.data.toJSON());
 else if (commandData.directory.startsWith(devDir)) devCommands.push(commandData.data.toJSON());
 
@@ -83,7 +81,7 @@ else if (commandData.directory.startsWith(devDir)) devCommands.push(commandData.
 const rest = new REST({ version: '10' }).setToken(token);
 (async() => {
   try {
-    logger.debug('Deploying slash commands...');
+    logger.info('Deploying slash commands...');
     // Register global commands
     if (globalCommands.length) {
       await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
@@ -108,14 +106,12 @@ client.once('ready', () => {
 // Slash command handler
 client.on('interactionCreate', async interaction => {
   logger.info(`Received interaction: ${interaction.id}`);
+  logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.username} | ${interaction.user}`);
   logger.debug(`Processing slash command: ${interaction.commandName}`);
   const command = client.slashCommands.get(interaction.commandName);
 
-  logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.username} | ${interaction.user}`);
-
   try {
     await command.execute(interaction, client);
-    logger.command(`Slash Command ${interaction.commandName} used by: ${interaction.user.tag}`, client, 'slash', { interaction });
   } catch (error) {
     logger.error(`Error executing slash command: ${error.message}`, client, 'slash', { interaction });
     if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(logger.error);
@@ -125,17 +121,16 @@ client.on('interactionCreate', async interaction => {
 
 // Prefix command handler
 client.on('messageCreate', async message => {
-  logger.debug('Processing new message');
+  logger.debug('Processing new message..');
   if (message.author.bot) return;
 
   const mention = new RegExp(`^<@!?${client.user.id}>$`);
   const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
-
+  // Respond to mentions with prefix
   if (mention.test(message.content)) {
-    logger.info(`Bot mentioned by ${message.author.tag} in channel ${message.channel.name}`);
+    logger.debug(`Bot mentioned by ${message.author.tag} in channel ${message.channel.name}`);
     return message.reply(`My prefix is \`${prefix}\``);
   }
-
   const isMention = mentionWithCommand.test(message.content);
 
   if (!message.content.startsWith(prefix) && !isMention) {
@@ -150,11 +145,11 @@ client.on('messageCreate', async message => {
 
   if (!command) {
     logger.debug(`Command not found: ${commandName}`);
-    return; // Exit if the command is not found
+    return;
   }
 
-  // Check if the command is an "owner" command and if the user is not the owner
-  if (command.category === 'owner' && message.author.id !== ownerId) {
+  // Check if the command is an "owner" command and if the user is a bot owner
+  if (command.category === 'owner' && !ownerId.includes(message.author.id)) {
     logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${message.author.tag}`);
     return;
   }
@@ -173,7 +168,7 @@ client.on('messageCreate', async message => {
 
 // Edited message handler for prefix
 client.on('messageUpdate', async(oldMessage, newMessage) => {
-  logger.debug('Processing edited message');
+  logger.debug('Processing edited message..');
   if (newMessage.author.bot || !newMessage.guild) return;
 
   const mention = new RegExp(`^<@!?${client.user.id}>$`);
@@ -186,25 +181,27 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
 
   const isMention = mentionWithCommand.test(newMessage.content);
 
-  if (!newMessage.content.startsWith(prefix) && !isMention) return;
+  if (!newMessage.content.startsWith(prefix) && !isMention) {
+    logger.debug(`Message does not start with prefix or mention: ${newMessage.content}`);
+    return;
+  }
 
+  logger.debug(`Message does not start with prefix or mention: ${newMessage.content}`);
   const content = isMention ? newMessage.content.replace(mentionWithCommand, '') : newMessage.content.slice(prefix.length);
   const args = content.trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
   const command = client.prefixCommands.get(commandName);
 
   if (!command) {
-    logger.debug(`No command found for name: ${commandName}`);
+    logger.debug(`No command found for: ${commandName}`);
     return;
   }
 
-  // Check if the command is an "owner" command and if the user is not the owner
-  if (command.category === 'owner' && newMessage.author.id !== ownerId) {
+  // Check if the command is an "owner" command and if the user is a bot owner
+  if (command.category === 'owner' && !ownerId.includes(newMessage.author.id)) {
     logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${newMessage.author.tag}`);
     return;
   }
-
-  logger.debug(`Found command for name: ${commandName}, executing...`);
 
   try {
     logger.command(`Prefix Command ${commandName} used by ${newMessage.author.tag} in ${newMessage.guild.name}`);
@@ -212,10 +209,7 @@ client.on('messageUpdate', async(oldMessage, newMessage) => {
     await command.execute(newMessage, args, client);
   } catch (error) {
     logger.error(error.message, client, 'prefix', { context: newMessage, args: [commandName, ...args] });
-    await newMessage.reply({
-      content: 'An error occurred with this command.',
-      allowedMentions: { repliedUser: false },
-    }).catch(logger.error);
+    await newMessage.reply('An error occurred with this command.').catch(logger.error);
   }
 });
 
