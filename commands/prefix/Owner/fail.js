@@ -1,4 +1,4 @@
-const logger = require('../../../util/logger.js');
+const logger = require('../../../components/logger.js');
 
 module.exports = {
   name: 'fail',
@@ -7,10 +7,10 @@ module.exports = {
   description: 'Intentionally fail for testing.',
   execute(message) {
     try {
-      // Intentional failure for testing
+      // Intentional failure
       throw new Error('This is a test error.');
     } catch (error) {
-      // Log the error
+      // Log the failure
       logger.error(error.message);
       message.reply('Failed.');
     }

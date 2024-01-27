@@ -1,5 +1,5 @@
 // Import required modules
-const logger = require('../../../util/logger');
+const logger = require('../../../components/logger');
 const path = require('path');
 const fs = require('fs');
 

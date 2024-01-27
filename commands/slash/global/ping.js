@@ -1,6 +1,6 @@
 const moment = require('moment'); require('moment-duration-format');
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../util/logger.js');
+const logger = require('../../../components/logger.js');
 
 module.exports = {
   data: new SlashCommandBuilder()

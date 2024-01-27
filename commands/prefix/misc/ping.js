@@ -1,5 +1,5 @@
 const moment = require('moment'); require('moment-duration-format');
-const logger = require('../../../util/logger');
+const logger = require('../../../components/logger');
 
 module.exports = {
   name: 'ping',

@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const config = require('./config.json');
+const config = require('../config.json');
 const moment = require('moment');
 const chalk = require('chalk');
 const path = require('path');
@@ -13,6 +13,7 @@ const levels = {
   ERROR: 'ERROR',
   DEBUG: 'DEBUG',
   COMMAND: 'COMMAND',
+  START: 'START',
 };
 
 // Check initial debug state
@@ -51,6 +52,7 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
     ERROR: chalk.red,
     DEBUG: chalk.blue,
     COMMAND: chalk.green,
+    START: chalk.green,
   };
 
   const logLevelColor = logLevelsColors[level] || chalk.white;
@@ -124,12 +126,14 @@ function handleErrors(messageText, client, commandType, commandInfo) {
   });
 }
 
-module.exports = {
-  info: (message, client, commandType, commandInfo) => logMessage(levels.INFO, message, client, commandType, commandInfo),
-  warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
-  error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
-  command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
-  debug: (message, client, commandType, commandInfo) => debug(message, client, commandType, commandInfo),
-  setDebugEnabled,
-  isDebugEnabled,
-};
+module.exports =
+  {
+    info: (message, client, commandType, commandInfo) => logMessage(levels.INFO, message, client, commandType, commandInfo),
+    warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
+    error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
+    command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
+    debug: (message, client, commandType, commandInfo) => debug(message, client, commandType, commandInfo),
+    start: (message, client, commandType, commandInfo) => logMessage(levels.START, message, client, commandType, commandInfo),
+    setDebugEnabled,
+    isDebugEnabled,
+  };
