@@ -5,13 +5,13 @@ module.exports = {
   name: 'deploy',
   usage: 'deploy',
   category: 'Owner',
-  description: 'Deploys global and guild-specific commands',
+  description: 'Deploy all slash commands.',
   async execute(message) {
     try {
       await deployCommands();
       message.reply('Slash commands deployed successfully!');
     } catch (error) {
-      logger.error(`Deployment error: ${error}`);
+      logger.error(`[Deploy Command] Error while deploying slassh commands: ${error}`);
       message.reply('Failed to deploy slash commands.');
     }
   },

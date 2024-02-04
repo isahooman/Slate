@@ -1,0 +1,11 @@
+{
+  "INFO": true,
+  "WARN": true,
+  "ERROR": true,
+  "DEBUG": true,
+  "COMMAND": true,
+  "START": true,
+  "MESSAGE": true,
+  "INTERACTION": true,
+  "LOADING": true
+}

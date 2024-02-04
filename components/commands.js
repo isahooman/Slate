@@ -23,7 +23,7 @@ function loadSlashCommands(client, directory) {
     // Add the slash command to the collection
     const command = require(fileData.path);
     client.slashCommands.set(command.data.name, command);
-    logger.info(`Slash command loaded: ${command.data.name}`);
+    logger.loading(`Slash Command Loaded: ${command.data.name}`);
   } catch (error) {
     logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`, client);
   }
@@ -32,16 +32,22 @@ function loadSlashCommands(client, directory) {
 // Load prefix commands
 function loadPrefixCommands(client, directory) {
   const commandFiles = readCommands(directory);
+  const commandAliases = new Map();
 
-  // Pass thru prefix command files and try to load each one
+  // Pass through prefix command files and try to load each one
   for (const fileData of commandFiles) try {
     // Add the prefix command to the collection
     const command = require(fileData.path);
+
+    // Check if the command has aliases
+    if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) commandAliases.set(alias.toLowerCase(), command);
+
     client.prefixCommands.set(command.name.toLowerCase(), command);
-    logger.info(`Prefix command loaded: ${command.name}`);
+    logger.loading(`Prefix Command Loaded: ${command.name}`);
   } catch (error) {
     logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`, client);
   }
+  client.commandAliases = commandAliases;
 }
 
 // Recursively read command directories
@@ -56,4 +62,8 @@ function readCommands(directory) {
   return commandFiles;
 }
 
-module.exports = loadCommands;
+module.exports =
+  {
+    loadCommands,
+  };
+

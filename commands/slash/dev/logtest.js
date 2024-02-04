@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,11 +15,11 @@ module.exports = {
       const outputText = interaction.options.getString('output');
 
       // Send log of every level with the input
-      logger.info(outputText);
-      logger.warn(outputText);
-      logger.debug(outputText);
-      logger.error(outputText);
-      logger.command(outputText);
+      logger.info(`[Logtest Command] ${outputText}`);
+      logger.warn(`[Logtest Command] ${outputText}`);
+      logger.debug(`[Logtest Command] ${outputText}`);
+      logger.error(`[Logtest Command] ${outputText}`);
+      logger.command(`[Logtest Command] ${outputText}`);
     } catch (error) {
       await interaction.reply('Logged messages at different levels.');
     }

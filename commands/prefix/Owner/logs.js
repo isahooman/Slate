@@ -14,7 +14,7 @@ module.exports = {
 
       if (isNaN(linesToRetrieve) || linesToRetrieve <= 0) {
         // Log invalid input for linesToRetrieve
-        logger.debug('Invalid number of lines requested');
+        logger.debug('[Logs Command] Invalid number of lines requested');
         return message.reply('Please enter a valid number of lines to retrieve.');
       }
 
@@ -26,9 +26,9 @@ module.exports = {
 
       // Send the logs
       message.reply(`Last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``);
-      logger.debug('Successfully replied with logs');
+      logger.debug('[Logs Command] Successfully replied with logs');
     } catch (error) {
-      logger.error(`An error occurred while reading logs: ${error.message}`);
+      logger.error(`[Logs Command] An error occurred while reading logs: ${error.message}`);
       message.reply('An error occurred while reading logs.');
     }
   },

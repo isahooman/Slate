@@ -1,22 +1,17 @@
+const { clientId, token, guildId } = require('../config/config.json');
 const { REST, Routes } = require('discord.js');
 const logger = require('./logger.js');
-const fs = require('fs');
 const path = require('path');
-const { clientId, token, guildId } = require('../config.json');
+const fs = require('fs');
 
 // Load commands and their data
 function loadCommandFiles(directory) {
   const fullPath = path.join(__dirname, '..', directory);
-  logger.debug(`Loading command files from: ${fullPath}`);
-
   const commandFiles = fs.readdirSync(fullPath)
     .filter(file => file.endsWith('.js'));
 
-  logger.debug(`Found command files: ${commandFiles.join(', ')}`);
-
   return commandFiles.map(file => {
     const command = require(path.join(fullPath, file));
-    logger.debug(`Loaded command: ${command.data.name}`);
     return command.data.toJSON();
   });
 }
@@ -47,4 +42,8 @@ async function deployCommands(client) {
   }
 }
 
-module.exports = deployCommands;
+module.exports =
+  {
+    deployCommands,
+  };
+

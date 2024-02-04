@@ -1,0 +1,6 @@
+{
+  "interactionCreate": true,
+  "messageCreate": true,
+  "messageUpdate": true,
+  "ready": true
+}

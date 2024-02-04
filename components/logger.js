@@ -1,5 +1,6 @@
+const { ownerId } = require('../config/config.json');
+const logging = require('../config/logging.json');
 const { EmbedBuilder } = require('discord.js');
-const config = require('../config.json');
 const moment = require('moment');
 const chalk = require('chalk');
 const path = require('path');
@@ -14,68 +15,73 @@ const levels = {
   DEBUG: 'DEBUG',
   COMMAND: 'COMMAND',
   START: 'START',
+  MESSAGE: 'MESSAGE',
+  INTERACTION: 'INTERACTION',
+  LOADING: 'LOADING',
 };
 
-// Check initial debug state
-let isDebugLoggingEnabled = config.debug;
-
-// Check logger state when called
-function isDebugEnabled() {
-  return isDebugLoggingEnabled;
+function isLevelEnabled(level) {
+  if (!Object.prototype.hasOwnProperty.call(logging, level)) {
+    // If the level doesn't exist in logging.json, enable it by default
+    logging[level] = true;
+    try {
+      fs.writeFileSync(path.join(__dirname, '../config/logging.json'), JSON.stringify(logging, null, 2), 'utf8');
+    } catch (err) {
+      process.stderr.write(`Error writing to logging config file: ${err}\n`);
+    }
+  }
+  return logging[level];
 }
 
-// Toggle debug logging
-function setDebugEnabled(enabled) {
-  isDebugLoggingEnabled = enabled;
-  config.debug = enabled;
-  try {
-    fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 2), 'utf8');
-  } catch (err) {
-    process.stderr.write(`Error writing to config file: ${err}\n`);
+// toggle logging levels
+function setLevelEnabled(level, enabled) {
+  if (Object.prototype.hasOwnProperty.call(levels, level)) {
+    logging[level] = enabled;
+    try {
+      fs.writeFileSync(path.join(__dirname, '../config/logging.json'), JSON.stringify(logging, null, 2), 'utf8');
+    } catch (err) {
+      process.stderr.write(`Error writing to logging config file: ${err}\n`);
+    }
   }
 }
 
-// Debug logging if debug is enabled
-function debug(message, client, commandType = 'unknown', commandInfo = {}) {
-  if (isDebugLoggingEnabled) logMessage(levels.DEBUG, message, client, commandType, commandInfo);
-}
-
-// Format and log messages
+// Logging function that formats and logs messages
 function logMessage(level, message, client, commandType = 'unknown', commandInfo = {}) {
+  if (!isLevelEnabled(level)) return;
+
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
   const logtime = chalk.cyan(`[${timestamp}]`);
 
-  // Set level colors using chalk
-  const logLevelsColors = {
+  const logLevelColor = {
     INFO: chalk.grey,
     WARN: chalk.yellow,
     ERROR: chalk.red,
     DEBUG: chalk.blue,
     COMMAND: chalk.green,
     START: chalk.green,
-  };
+    MESSAGE: chalk.hex('#FF69B4'),
+    INTERACTION: chalk.hex('#FF69B4'),
+    LOADING: chalk.hex('#17d5ad'),
+  }[level];
 
-  const logLevelColor = logLevelsColors[level] || chalk.white;
-
-  // Format the log message
-  const formattedMessage = (typeof message === 'string' ? message.split(',') : []).map(part => {
+  // Split message by commas but not within brackets
+  const formattedMessage = message.split(/,(?![^\[]*\])/).map(part => {
+    // color text within brackets
+    part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
+    // color text after colons
     if (part.includes(':')) {
       const [firstPart, ...rest] = part.split(':');
-      return `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
-    } else {
-      return chalk.whiteBright(part);
+      part = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
     }
-  }).join(', ');
+    return part;
+  }).join(',');
 
-  // Output log to console
-  const consoleLogEntry = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
-  process.stdout.write(`${consoleLogEntry}\n`);
+  const consoleOutput = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
+  process.stdout.write(`${consoleOutput}\n`);
 
-  // Output log to log file
-  const fileLogEntry = `<${timestamp}> <${level}> ${message}\n`;
-  fs.appendFileSync(logFile, fileLogEntry);
+  const fileOutput = `<${timestamp}> <${level}> ${message}\n`;
+  fs.appendFileSync(logFile, fileOutput);
 
-  // If log level is "Error" start error handler
   if (level === levels.ERROR) handleErrors(message, client, commandType, commandInfo);
 }
 
@@ -117,13 +123,16 @@ function handleErrors(messageText, client, commandType, commandInfo) {
   errorEmbed.setTitle(errorTitle);
 
   // Send the prepared error report to the bot owners
-  if (client && Array.isArray(config.ownerId)) config.ownerId.forEach(ownerId => {
-    client.users.fetch(ownerId)
-      .then(owner => owner.send({ embeds: [errorEmbed] }))
-      .catch(err => {
-        process.stderr.write(`Failed to send DM to owner (ID: ${ownerId}): ${err}\n`);
-      });
-  });
+  if (client) {
+    const ownerIds = Array.isArray(ownerId) ? ownerId : [ownerId];
+    ownerIds.forEach(owners => {
+      client.users.fetch(owners)
+        .then(owner => owner.send({ embeds: [errorEmbed] }))
+        .catch(err => {
+          process.stderr.write(`Failed to send DM to owner (ID: ${owners}): ${err}\n`);
+        });
+    });
+  }
 }
 
 module.exports =
@@ -132,8 +141,12 @@ module.exports =
     warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
     error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
     command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
-    debug: (message, client, commandType, commandInfo) => debug(message, client, commandType, commandInfo),
+    debug: (message, client, commandType, commandInfo) => logMessage(levels.DEBUG, message, client, commandType, commandInfo),
     start: (message, client, commandType, commandInfo) => logMessage(levels.START, message, client, commandType, commandInfo),
-    setDebugEnabled,
-    isDebugEnabled,
+    message: (message, client, commandType, commandInfo) => logMessage(levels.MESSAGE, message, client, commandType, commandInfo),
+    interaction: (message, client, commandType, commandInfo) => logMessage(levels.INTERACTION, message, client, commandType, commandInfo),
+    loading: (message, client, commandType, commandInfo) => logMessage(levels.LOADING, message, client, commandType, commandInfo),
+    setLevelEnabled,
+    isLevelEnabled,
+    levels,
   };

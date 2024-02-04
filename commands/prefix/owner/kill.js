@@ -17,7 +17,7 @@ module.exports = {
       // Kill the process
       process.exit();
     } catch (error) {
-      logger.error('Error occurred while shutting down:', error);
+      logger.error('[Kill Command] Error occurred while shutting down:', error);
     }
   },
 };

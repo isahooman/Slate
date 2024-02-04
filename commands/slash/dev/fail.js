@@ -12,7 +12,7 @@ module.exports = {
       throw new Error('This is a test error.');
     } catch (error) {
       // Log the error
-      logger.error(error.message);
+      logger.error(`[Fail Command] ${error.message}`);
       await interaction.reply('Failed.');
     }
   },

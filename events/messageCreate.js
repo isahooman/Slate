@@ -1,10 +1,31 @@
+const blacklist = require('../config/blacklist.json');
+const { prefix } = require('../config/config.json');
 const logger = require('../components/logger.js');
-const { prefix } = require('../config.json');
 
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
-    logger.debug('Processing new message..');
+    logger.message('Processing new message..');
+
+    // Check if the user is blacklisted
+    if (blacklist.users.includes(message.author.id)) {
+      logger.warn(`User ${message.author.tag} (${message.author.id}) is in the blacklist. Ignoring message.`);
+      return;
+    }
+
+    // Check if the server is leave blacklisted
+    if (blacklist.servers.leave.includes(message.guild.id)) {
+      logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "leave" blacklist. Leaving server.`);
+      await message.guild.leave();
+      return;
+    }
+
+    // Check if the server is ignored
+    if (blacklist.servers.ignore.includes(message.guild.id)) {
+      logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
+      return;
+    }
+
     if (message.author.bot) {
       logger.debug('Ignoring bot message.');
       return;
@@ -16,7 +37,7 @@ module.exports = {
 
     // Respond to mentions without a command with the bot's prefix
     if (mention.test(message.content)) {
-      logger.debug(`Bot mentioned by ${message.author.tag} in channel ${message.channel.name}`);
+      logger.message(`Bot mentioned by ${message.author.tag} in channel ${message.channel.name}`);
       return message.reply(`My prefix is \`${prefix}\``);
     }
 
@@ -28,10 +49,14 @@ module.exports = {
     }
 
     // Extract the command and arguments from the message
-    const content = isMention ? message.content.replace(mentionWithCommand, '') : message.content.slice(prefix.length);
+    const content = isMention ?
+      message.content.replace(mentionWithCommand, '') :
+      message.content.slice(prefix.length);
     const args = content.trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
-    const command = client.prefixCommands.get(commandName);
+
+    // Check if the command name is an alias
+    const command = client.prefixCommands.get(commandName) || client.commandAliases.get(commandName);
 
     // Ignore unknown commands
     if (!command) {
@@ -40,23 +65,29 @@ module.exports = {
     }
 
     // Restrict owner-only commands
-    const { ownerId } = require('../config.json');
+    const { ownerId } = require('../config/config.json');
     if (command.category === 'owner' && !ownerId.includes(message.author.id)) {
       logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${message.author.tag}`);
       return;
     }
 
+    // Check if the command is NSFW and the channel is not NSFW
+    if (command.nsfw && !message.channel.nsfw) {
+      logger.debug(`NSFW command used in non-NSFW channel: ${commandName}`);
+      return;
+    }
+
     try {
-      logger.command(`Prefix Command ${commandName} used by ${message.author.tag} in ${message.guild.name}`);
+      logger.command(`Prefix Command ${command.name} used by ${message.author.tag} in ${message.guild.name}`);
       await command.execute(message, args, client);
     } catch (error) {
       logger.error(`${error.stack}`, client, 'prefix', {
         context: message,
-        args: [commandName, ...args],
-        command: commandName,
+        args: [command.name, ...args],
+        command: command.name,
       });
 
-      // Reply to the user with generic error message
+      // Reply to the user with a generic error message
       await message.reply({
         content: 'An error occurred with this command.',
         allowedMentions: { repliedUser: false },

@@ -1,25 +1,29 @@
-// Import required modules
-const logger = require('../../../components/logger');
+const { reloadEvents } = require('../../../components/loader');
+const logger = require('../../../components/logger.js');
 const path = require('path');
 const fs = require('fs');
 
 module.exports = {
   name: 'reload',
   category: 'owner',
-  usage: 'reload <slash/prefix> or <command name>',
-  description: 'Reloads a command or all commands.',
+  usage: 'reload <slash/prefix/events> or <command name>',
+  description: 'Reloads a command, all commands, or events.',
   async execute(message, args) {
     const arg = args[0];
 
-    // Check if the arg is either 'prefix' or 'slash'
+    // Check if the arg is either 'prefix', 'slash', or 'events'
     if (arg === 'prefix' || arg === 'slash') {
-      logger.info(`Reloading all ${arg} commands.`);
+      logger.info(`[Reload Command] Reloading all ${arg} commands.`);
       await reloadAllCommands(message.client, arg);
-      // Send a confirmation message
       message.channel.send(`All ${arg} commands were reloaded!`);
-      logger.debug(`All ${arg} commands successfully reloaded.`);
+      logger.debug(`[Reload Command] All ${arg} commands successfully reloaded.`);
+    } else if (arg === 'events') {
+      logger.info('[Reload Command] Reloading events.');
+      reloadEvents(message.client);
+      message.channel.send('All events were reloaded!');
+      logger.debug('[Reload Command] All events successfully reloaded.');
     } else if (arg) {
-      logger.debug(`Attempting to reload command: ${arg}`);
+      logger.debug(`[Reload Command] Attempting to reload command: ${arg}`);
       const nearestSlashCommand = findNearestCommand(arg, message.client.slashCommands, 'slash');
       const nearestPrefixCommand = findNearestCommand(arg, message.client.prefixCommands, 'prefix');
 
@@ -27,13 +31,13 @@ module.exports = {
 
       if (nearestSlashCommand) {
         // Log found slash command and reload it
-        logger.debug(`Found slash command: ${nearestSlashCommand.data.name}`);
+        logger.debug(`[Reload Command] Found slash command: ${nearestSlashCommand.data.name}`);
         await reloadCommand(nearestSlashCommand, message);
         reloadedTypes.push('slash');
       }
       if (nearestPrefixCommand) {
         // Log found prefix command and reload it
-        logger.debug(`Found prefix command: ${nearestPrefixCommand.name}`);
+        logger.debug(`[Reload Command] Found prefix command: ${nearestPrefixCommand.name}`);
         await reloadCommand(nearestPrefixCommand, message);
         reloadedTypes.push('prefix');
       }
@@ -44,15 +48,13 @@ module.exports = {
       if (reloadedTypes.length === 0) responseMessage = `No command found with name '${arg}'.`;
       message.channel.send(responseMessage);
 
-      logger.debug(`Reload completed for command: ${arg}`);
+      logger.debug(`[Reload Command] Reload completed for command: ${arg}`);
     } else {
-      // Log reloading information for all commands
-      logger.debug('No command provided. Reloading all commands.');
+      logger.debug('[Reload Command] No command provided. Reloading all commands.');
       await reloadAllCommands(message.client, 'slash');
       await reloadAllCommands(message.client, 'prefix');
-      // Send a confirmation message
       message.channel.send('All commands were reloaded!');
-      logger.debug('All commands successfully reloaded.');
+      logger.debug('[Reload Command] All commands successfully reloaded.');
     }
   },
 };
@@ -71,14 +73,13 @@ function findNearestCommand(input, commands, type) {
       }
     }
   });
-
   return nearestCommand;
 }
 
 // Function to reload a specific command
 async function reloadCommand(command, interaction) {
   const commandName = command.data ? command.data.name : command.name;
-  logger.debug(`Reloading command: ${commandName}`);
+  logger.debug(`[Reload Command] Reloading command: ${commandName}`);
 
   const commandType = command.type === 'slash' ? 'slash' : 'prefix';
   const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
@@ -98,7 +99,7 @@ async function reloadCommand(command, interaction) {
   }
 
   if (!foundPath) {
-    logger.warn(`Command file not found for command: ${commandName}.`);
+    logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
     return;
   }
 
@@ -109,19 +110,19 @@ async function reloadCommand(command, interaction) {
     const newCommand = require(foundPath);
     if (command.data) {
       interaction.client.slashCommands.set(newCommand.data.name, newCommand);
-      logger.debug(`Slash command '${newCommand.data.name}' reloaded`);
+      logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);
     } else {
       interaction.client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
-      logger.debug(`Prefix command '${newCommand.name}' reloaded`);
+      logger.debug(`[Reload Command] Prefix command '${newCommand.name}' reloaded`);
     }
   } catch (error) {
-    logger.error(`Error reloading command '${commandName}': ${error.message}`);
+    logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
   }
 }
 
 // Function to reload all commands of a specific type
 function reloadAllCommands(client, commandType) {
-  logger.debug(`Reloading all ${commandType} commands`);
+  logger.debug(`[Reload Command] Reloading all ${commandType} commands`);
   const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
   const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
   const commandFiles = readCommandFilesRecursive(baseDir);
@@ -132,9 +133,9 @@ function reloadAllCommands(client, commandType) {
       const newCommand = require(file);
       const commandKey = commandType === 'slash' ? newCommand.data.name : newCommand.name.toLowerCase();
       commands.set(commandKey, newCommand);
-      logger.debug(`Reloaded ${commandType} command: ${commandKey}`);
+      logger.debug(`[Reload Command] Reloaded ${commandType} command: ${commandKey}`);
     } catch (error) {
-      logger.error(`Error reloading ${commandType} command at ${file}: ${error.message}`);
+      logger.error(`[Reload Command] Error reloading ${commandType} command at ${file}: ${error.message}`);
     }
   });
 }

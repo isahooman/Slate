@@ -11,7 +11,7 @@ module.exports = {
       throw new Error('This is a test error.');
     } catch (error) {
       // Log the failure
-      logger.error(error.message);
+      logger.error(`[Fail Command] ${error.message}`);
       message.reply('Failed.');
     }
   },
