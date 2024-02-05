@@ -4,7 +4,7 @@ const util = require('util');
 module.exports = {
   name: 'raw',
   usage: 'reply to a message with the command',
-  category: 'owner',
+  category: 'Owner',
   description: 'Gets the raw message data of the replied message',
 
   async execute(message) {

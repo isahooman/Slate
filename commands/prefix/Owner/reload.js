@@ -5,7 +5,7 @@ const fs = require('fs');
 
 module.exports = {
   name: 'reload',
-  category: 'owner',
+  category: 'Owner',
   usage: 'reload <slash/prefix/events> or <command name>',
   description: 'Reloads a command, all commands, or events.',
   async execute(message, args) {

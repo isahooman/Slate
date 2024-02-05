@@ -5,7 +5,7 @@ module.exports = {
   name: 'botclear',
   usage: 'bc <self/all>',
   aliases: ['bc'],
-  category: 'owner',
+  category: 'Owner',
   description: 'Clears bot messages',
 
   // Function to execute the command
