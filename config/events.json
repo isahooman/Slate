@@ -2,5 +2,99 @@
   "interactionCreate": true,
   "messageCreate": true,
   "messageUpdate": true,
-  "ready": true
+  "ready": true,
+  "warn": false,
+  "error": false,
+  
+  "debug": false,
+
+
+  "applicationCommandCreate": false,
+  "applicationCommandDelete": false,
+  "applicationCommandUpdate": false,
+
+  "channelCreate": false,
+  "channelDelete": false,
+  "channelPinsUpdate": false,
+  "channelUpdate": false,
+
+  "emojiCreate": false,
+  "emojiDelete": false,
+  "emojiUpdate": false,
+
+  "guildBanAdd": false,
+  "guildBanRemove": false,
+  "guildCreate": false,
+  "guildDelete": false,
+  "guildIntegrationsUpdate": false,
+  "guildUnavailable": false,
+  "guildUpdate": false,
+  "guildAuditLogEntryCreate": false,
+  "guildAvailable": false,
+
+  "guildScheduledEventCreate": false,
+  "guildScheduledEventDelete": false,
+  "guildScheduledEventUpdate": false,
+  "guildScheduledEventUserAdd": false,
+  "guildScheduledEventUserRemove": false,
+
+  "guildMemberAdd": false,
+  "guildMemberAvailable": false,
+  "guildMemberRemove": false,
+  "guildMembersChunk": false,
+  "guildMemberUpdate": false,
+
+  "inviteCreate": false,
+  "inviteDelete": false,
+
+  "messageDelete": false,
+  "messageDeleteBulk": false,
+  "messageReactionAdd": false,
+  "messageReactionRemove": false,
+  "messageReactionRemoveAll": false,
+  "messageReactionRemoveEmoji": false,
+
+  "presenceUpdate": false,
+
+  "roleCreate": false,
+  "roleDelete": false,
+  "roleUpdate": false,
+
+  "stageInstanceCreate": false,
+  "stageInstanceDelete": false,
+  "stageInstanceUpdate": false,
+
+  "stickerCreate": false,
+  "stickerDelete": false,
+  "stickerUpdate": false,
+
+  "threadCreate": false,
+  "threadDelete": false,
+  "threadListSync": false,
+  "threadMembersUpdate": false,
+  "threadMemberUpdate": false,
+  "threadUpdate": false,
+
+  "autoModerationActionExecution": false,
+  "autoModerationRuleCreate": false,
+  "autoModerationRuleDelete": false,
+  "autoModerationRuleUpdate": false,
+  
+  "cacheSweep": false,
+
+  "webhookUpdate": false,
+
+  "rateLimit": false,
+
+  "typingStart": false,
+
+  "userUpdate": false,
+
+  "voiceStateUpdate": false,
+
+  "invalidated": false,
+
+  "invalidRequestWarning": false,
+
+  "applicationCommandPermissionsUpdate": false
 }

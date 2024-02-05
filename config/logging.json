@@ -2,10 +2,14 @@
   "INFO": true,
   "WARN": true,
   "ERROR": true,
+
   "DEBUG": true,
-  "COMMAND": true,
+
   "START": true,
+  "LOADING": true,
+
+  "COMMAND": true,
   "MESSAGE": true,
-  "INTERACTION": true,
-  "LOADING": true
+  "INTERACTION": true
+
 }
