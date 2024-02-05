@@ -3,6 +3,11 @@ const logger = require('../components/logger.js');
 module.exports = {
   name: 'channelCreate',
   execute(channel) {
-    logger.info(`Channel created: (${channel.name} | ${channel.id}) in server: (${channel.guild.name} | ${channel.guildId})`);
+    logger.info(`Channel created;
+      Name: ${channel.name},
+      ID: ${channel.id},
+      Type: ${channel.type},
+      Guild ID: ${channel.guild ? channel.guild.id : 'N/A'},
+    `);
   },
 };
