@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint",
+        "christian-kohler.npm-intellisense",
+		"christian-kohler.path-intellisense",
+        "eamodio.gitlens",
+        "codezombiech.gitignore",
+        "github.vscode-pull-request-github",
+        
+    ]
+}

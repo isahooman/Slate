@@ -1,4 +1,5 @@
 @ECHO OFF
+
 echo ==================================== >> bot.log
 echo %date% %time% >> bot.log
 echo ==================================== >> bot.log
@@ -9,6 +10,8 @@ echo Updating Node.js packages... >> bot.log
 call npm install > NUL 2>&1
 echo Node.js packages updated.
 echo Node.js packages updated. >> bot.log
+
+title Slate Discord Bot
 
 :loop
 echo Starting...
