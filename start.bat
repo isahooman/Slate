@@ -1,4 +1,7 @@
 @ECHO OFF
+
+TITLE Slate Discord Bot
+
 echo ==================================== >> bot.log
 echo %date% %time% >> bot.log
 echo ==================================== >> bot.log
