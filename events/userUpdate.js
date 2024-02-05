@@ -12,7 +12,7 @@ module.exports = {
         Updated At: ${new Date().toISOString()}
       `);
     } else {
-      logger.info(`User updated (no avatar change);
+      logger.info(`User updated;
         Old Tag: ${oldUser.tag} | ${oldUser.id},
         New Tag: ${newUser.tag} | ${newUser.id},
         Updated At: ${new Date().toISOString()}
