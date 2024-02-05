@@ -15,7 +15,13 @@ function loadEvents(client) {
   for (const file of eventFiles) {
     const eventName = file.slice(0, -3);
 
-    // Check if the event is enabled in the config
+    // Check if the event exist in the config file
+    if (eventConfig[eventName] === undefined) {
+      eventConfig[eventName] = true;
+      saveEventConfig(eventConfig);
+    }
+
+    // Check if the event is enabled and load it
     if (eventConfig[eventName] === true) {
       logger.loading(`Client Event Loaded: ${eventName}`);
       const filePath = path.join(__dirname, '../events', file);
