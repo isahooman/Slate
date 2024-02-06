@@ -4,7 +4,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll } = require('./components/loader.js');
 const logger = require('./components/logger.js');
 
-const client = new Client({
+exports.client = new Client({
   intents:
   [
     GatewayIntentBits.Guilds,
@@ -32,19 +32,21 @@ const client = new Client({
     GatewayIntentBits.AutoModerationExecution,
     GatewayIntentBits.AutoModerationConfiguration,
   ],
+  shards: 'auto',
 });
 
-async function startBot() {
+async function startBot(bot) {
   logger.debug('Bot starting..');
 
   // Load all events and commands
-  await loadAll(client);
+  await loadAll(bot);
 
   // Redeploy slash commands on startup
-  await deployCommands(client, clientId, guildId, token);
+  await deployCommands(bot, clientId, guildId, token);
 
   // Login once preparations are done
-  client.login(token);
+  bot.login(token);
 }
 
-startBot();
+startBot(this.client);
+

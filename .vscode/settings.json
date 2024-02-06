@@ -1,14 +1,15 @@
 {
   "eslint.validate": ["javascript"],
-  "eslint.experimental.useFlatConfig": true,
+  "eslint.experimental.useFlatConfig": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "never",
     "source.fixAll.eslint": "explicit",
     "source.fixAll": "explicit"
   },
   "markdownlint.config": {
     "no-inline-html": false,
     "ol-prefix": false
-  }
+  },
+  "eslint.debug": true,
+  "eslint.format.enable": true
 }

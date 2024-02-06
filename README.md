@@ -164,7 +164,7 @@ npm run start
 
 ## Contributing
 
-Contributions are always welcome! Please read our [contribution guidelines](SomeLinkHere) before contributing.
+Contributions are always welcome! Please read our [contribution guidelines](.github/CONTRIBUTING.md) before contributing.
 
 ## Credits
 
