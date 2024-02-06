@@ -5,6 +5,7 @@ const moment = require('moment');
 const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
+const bot = require('../bot.js');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
 
@@ -46,7 +47,7 @@ function setLevelEnabled(level, enabled) {
 }
 
 // Logging function that formats and logs messages
-function logMessage(level, message, client, commandType = 'unknown', commandInfo = {}) {
+function logMessage(level, message, client = bot.client, commandType = 'unknown', commandInfo = {}) {
   if (!isLevelEnabled(level)) return;
 
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -86,9 +87,9 @@ function logMessage(level, message, client, commandType = 'unknown', commandInfo
 }
 
 // Error handler
-function handleErrors(messageText, client, commandType, commandInfo) {
+function handleErrors(messageText, client = bot.client, commandType = 'unknown', commandInfo = {}) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
-  let errorTitle;
+  let errorTitle = 'Error';
 
   // Prepare error report for slash commands
   if (commandType === 'slash' && commandInfo.interaction) {
@@ -117,6 +118,10 @@ function handleErrors(messageText, client, commandType, commandInfo) {
       { name: 'Channel', value: `<#${context.channel.id}> | ID: ${context.channel.id}` },
       { name: 'Arguments', value: commandInfo.args.join(' ') || 'None' },
       { name: 'Error', value: messageText },
+    );
+  } else {
+    errorEmbed.addFields(
+      { name: 'Message', value: messageText },
     );
   }
 
