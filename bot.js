@@ -6,35 +6,39 @@ const logger = require('./components/logger.js');
 
 exports.client = new Client({
   intents:
-  [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildInvites,
-    GatewayIntentBits.GuildWebhooks,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildIntegrations,
-    GatewayIntentBits.GuildMessageTyping,
-    GatewayIntentBits.GuildScheduledEvents,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildEmojisAndStickers,
+    [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildInvites,
+      GatewayIntentBits.GuildWebhooks,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildPresences,
+      GatewayIntentBits.GuildModeration,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildIntegrations,
+      GatewayIntentBits.GuildMessageTyping,
+      GatewayIntentBits.GuildScheduledEvents,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildEmojisAndStickers,
 
-    /*
-    GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.DirectMessageTyping,
-    GatewayIntentBits.DirectMessageReactions,
-    */
+      /*
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.DirectMessageTyping,
+      GatewayIntentBits.DirectMessageReactions,
+      */
 
-    GatewayIntentBits.MessageContent,
+      GatewayIntentBits.MessageContent,
 
-    GatewayIntentBits.AutoModerationExecution,
-    GatewayIntentBits.AutoModerationConfiguration,
-  ],
+      GatewayIntentBits.AutoModerationExecution,
+      GatewayIntentBits.AutoModerationConfiguration,
+    ],
   shards: 'auto',
 });
 
+/**
+ * Starts the bot and loads necessary data
+ * @param {Client} bot Discord Client
+ */
 async function startBot(bot) {
   logger.debug('Bot starting..');
 

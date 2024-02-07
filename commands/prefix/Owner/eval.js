@@ -5,15 +5,15 @@ const { inspect } = require('node:util');
 /**
  * Returns an array of messages, each 1950 characters long.
  * @param {string} str - A given String
- * @returns {Array}
+ * @returns {Array} Array of Strings
  * @author EthanLawr
  */
 const chunks = str => str.match(/.{1,1950}/gms);
 
 /**
  * Returns a formatted version of the given time
- * @param {BigInt} time - BigInt of nanoseconds
- * @returns {string}
+ * @param {bigint} time - BigInt of nanoseconds
+ * @returns {string} Formatted String
  * @author EthanLawr
  */
 const cleanTime = time => {
@@ -27,7 +27,7 @@ const cleanTime = time => {
 /**
  * Returns a number floored to the nearest 100th
  * @param {number} num - A given Number
- * @returns {number}
+ * @returns {number} Floored Number
  * @author EthanLawr
  */
 const cleanNumber = num => (~~(num * 100) / 100).toFixed(2);

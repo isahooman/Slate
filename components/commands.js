@@ -3,7 +3,10 @@ const logger = require('./logger.js');
 const path = require('path');
 const fs = require('fs');
 
-// Load all commands
+/**
+ * Load all commands
+ * @param {import("discord.js").Client} client Discord Client
+ */
 function loadCommands(client) {
   // Initialize collections to store commands
   client.slashCommands = new Collection();
@@ -14,7 +17,11 @@ function loadCommands(client) {
   loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
 }
 
-// Load slash commands
+/**
+ * Load Slash Commands
+ * @param {import("discord.js").Client} client Discord Client
+ * @param {directory} directory Slash Command Directory
+ */
 function loadSlashCommands(client, directory) {
   const commandFiles = readCommands(directory);
 
@@ -29,7 +36,11 @@ function loadSlashCommands(client, directory) {
   }
 }
 
-// Load prefix commands
+/**
+ * Load Prefix Commands
+ * @param {import("discord.js").Client} client Discord Client
+ * @param {directory} directory Prefix Command Directory
+ */
 function loadPrefixCommands(client, directory) {
   const commandFiles = readCommands(directory);
   const commandAliases = new Map();
@@ -50,7 +61,11 @@ function loadPrefixCommands(client, directory) {
   client.commandAliases = commandAliases;
 }
 
-// Recursively read command directories
+/**
+ * Recursively Read Command Directories
+ * @param {directory} directory A given directory
+ * @returns {Array} An array of files
+ */
 function readCommands(directory) {
   const files = fs.readdirSync(directory);
   let commandFiles = [];

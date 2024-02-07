@@ -4,7 +4,10 @@ const fs = require('fs');
 
 const configPath = path.join(__dirname, '../config/events.json');
 
-// load events
+/**
+ * Load Events
+ * @param {import("discord.js").Client} client Discord Client
+ */
 function loadEvents(client) {
   // Read all files in the events directory
   const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
@@ -35,7 +38,10 @@ function loadEvents(client) {
   logger.debug('Events loaded.');
 }
 
-// Reload events
+/**
+ * Reload Events
+ * @param {import("discord.js").Client} client - Discord Client
+ */
 function reloadEvents(client) {
   const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
@@ -62,7 +68,10 @@ function reloadEvents(client) {
   logger.debug('Events reloaded.');
 }
 
-// load config data
+/**
+ * Load Config Data
+ * @returns {JSON|void} Event Config Data
+ */
 function loadEventConfig() {
   try {
     const eventConfigData = fs.readFileSync(configPath, 'utf8');
@@ -73,7 +82,11 @@ function loadEventConfig() {
   }
 }
 
-// toggle an event's status in the config file (not yet in use)
+/**
+ * Toggles an event's status in the config file
+ * @param {string} eventName Event Name
+ * @param {boolean} isEnabled Enabled or not
+ */
 function toggleEvent(eventName, isEnabled) {
   const eventConfig = loadEventConfig();
   if (eventConfig[eventName] !== undefined) {
@@ -85,7 +98,10 @@ function toggleEvent(eventName, isEnabled) {
   }
 }
 
-// save changes done to the config file
+/**
+ * Save changes done to the config file
+ * @param {JSON} eventConfig Event config JSON
+ */
 function saveEventConfig(eventConfig) {
   try {
     const eventConfigData = JSON.stringify(eventConfig, null, 2);

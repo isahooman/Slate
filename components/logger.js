@@ -1,6 +1,6 @@
 const { ownerId } = require('../config/config.json');
 const logging = require('../config/logging.json');
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, Client } = require('discord.js');
 const moment = require('moment');
 const chalk = require('chalk');
 const path = require('path');
@@ -21,6 +21,11 @@ const levels = {
   LOADING: 'LOADING',
 };
 
+/**
+ * Checks to see if logging levels are enabled
+ * @param {number} level Logging Level
+ * @returns {boolean} Active or not
+ */
 function isLevelEnabled(level) {
   if (!Object.prototype.hasOwnProperty.call(logging, level)) {
     // If the level doesn't exist in logging.json, enable it by default
@@ -34,7 +39,11 @@ function isLevelEnabled(level) {
   return logging[level];
 }
 
-// toggle logging levels
+/**
+ * Toggles logging levels
+ * @param {string} level Level Name
+ * @param {boolean} enabled True or False
+ */
 function setLevelEnabled(level, enabled) {
   if (Object.prototype.hasOwnProperty.call(levels, level)) {
     logging[level] = enabled;
@@ -46,7 +55,16 @@ function setLevelEnabled(level, enabled) {
   }
 }
 
-// Logging function that formats and logs messages
+
+/**
+ * Formats and logs messages
+ * @param {string} level Level name
+ * @param {string} message Log Message
+ * @param {Client} client Discord Client
+ * @param {commandType} commandType Command Type
+ * @param {commandInfo} commandInfo Command Info
+ * @returns {void|string} Void if disabled, String if enabled
+ */
 function logMessage(level, message, client = bot.client, commandType = 'unknown', commandInfo = {}) {
   if (!isLevelEnabled(level)) return;
 
@@ -66,7 +84,7 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   }[level];
 
   // Split message by commas but not within brackets
-  const formattedMessage = message.split(/,(?![^\[]*\])/).map(part => {
+  const formattedMessage = message.split(/,(?![^[]*\])/).map(part => {
     // color text within brackets
     part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
     // color text after colons
@@ -86,7 +104,13 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   if (level === levels.ERROR) handleErrors(message, client, commandType, commandInfo);
 }
 
-// Error handler
+/**
+ * Error Handler
+ * @param {string} messageText Message Text
+ * @param {Client} client Discord Client
+ * @param {commandType} commandType Command Type
+ * @param {commandInfo} commandInfo Command Info
+ */
 function handleErrors(messageText, client = bot.client, commandType = 'unknown', commandInfo = {}) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
   let errorTitle = 'Error';
@@ -105,10 +129,8 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
       { name: 'Arguments', value: args },
       { name: 'Error', value: messageText },
     );
-  }
-
-  // Prepare error report for prefix commands
-  else if (commandType === 'prefix' && commandInfo.context) {
+    // Prepare error report for prefix commands
+  } else if (commandType === 'prefix' && commandInfo.context) {
     const context = commandInfo.context;
     const commandName = commandInfo.args[0];
     errorTitle = `Error in prefix command: ${commandName}`;
@@ -141,17 +163,17 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
 }
 
 module.exports =
-  {
-    info: (message, client, commandType, commandInfo) => logMessage(levels.INFO, message, client, commandType, commandInfo),
-    warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
-    error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
-    command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
-    debug: (message, client, commandType, commandInfo) => logMessage(levels.DEBUG, message, client, commandType, commandInfo),
-    start: (message, client, commandType, commandInfo) => logMessage(levels.START, message, client, commandType, commandInfo),
-    message: (message, client, commandType, commandInfo) => logMessage(levels.MESSAGE, message, client, commandType, commandInfo),
-    interaction: (message, client, commandType, commandInfo) => logMessage(levels.INTERACTION, message, client, commandType, commandInfo),
-    loading: (message, client, commandType, commandInfo) => logMessage(levels.LOADING, message, client, commandType, commandInfo),
-    setLevelEnabled,
-    isLevelEnabled,
-    levels,
-  };
+{
+  info: (message, client, commandType, commandInfo) => logMessage(levels.INFO, message, client, commandType, commandInfo),
+  warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
+  error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
+  command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
+  debug: (message, client, commandType, commandInfo) => logMessage(levels.DEBUG, message, client, commandType, commandInfo),
+  start: (message, client, commandType, commandInfo) => logMessage(levels.START, message, client, commandType, commandInfo),
+  message: (message, client, commandType, commandInfo) => logMessage(levels.MESSAGE, message, client, commandType, commandInfo),
+  interaction: (message, client, commandType, commandInfo) => logMessage(levels.INTERACTION, message, client, commandType, commandInfo),
+  loading: (message, client, commandType, commandInfo) => logMessage(levels.LOADING, message, client, commandType, commandInfo),
+  setLevelEnabled,
+  isLevelEnabled,
+  levels,
+};

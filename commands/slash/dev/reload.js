@@ -41,7 +41,7 @@ module.exports = {
         reloadedTypes.push('prefix');
       }
 
-      let responseMessage = `\#\#\# Reloaded commands for:\n`;
+      let responseMessage = `### Reloaded commands for:\n`;
       if (reloadedTypes.includes('slash')) responseMessage += `Slash: ${nearestSlashCommand ? nearestSlashCommand.data.name : 'none'}\n`;
       if (reloadedTypes.includes('prefix')) responseMessage += `Prefix: ${nearestPrefixCommand ? nearestPrefixCommand.name : 'none'}`;
       if (reloadedTypes.length === 0) responseMessage = `No command found with name '${commandName}'.`;
@@ -59,7 +59,13 @@ module.exports = {
   },
 };
 
-// Search for command names based on "command" option input
+/**
+ * Search for command names based on "command" option input
+ * @param {string} input Input String, Command to search
+ * @param {import("discord.js").Collection} commands Collection of commands
+ * @param {commandType} type CommandType
+ * @returns {object} Command
+ */
 function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
   let highestSimilarity = -1;
@@ -76,7 +82,12 @@ function findNearestCommand(input, commands, type) {
   return nearestCommand;
 }
 
-// Reload a specific command
+/**
+ * Reload a specific command
+ * @param {object} command Command object
+ * @param {import("discord.js").Interaction} interaction Discord Interaction
+ * @returns {void}
+ */
 async function reloadCommand(command, interaction) {
   const commandName = command.data ? command.data.name : command.name;
   logger.debug(`[Reload Command] Reloading command: ${commandName}`);
@@ -119,7 +130,11 @@ async function reloadCommand(command, interaction) {
   }
 }
 
-// Reload all commands of a specific type
+/**
+ * Reload all commands of a specific type
+ * @param {import("discord.js").Client} client Discord Client
+ * @param {commandType} commandType Command Type
+ */
 function reloadAllCommands(client, commandType) {
   logger.debug(`[Reload Command] Reloading all ${commandType} commands`);
   const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
@@ -139,7 +154,11 @@ function reloadAllCommands(client, commandType) {
   });
 }
 
-// Read command folders and sub folders
+/**
+ * Read command folders and sub folders
+ * @param {string} dir Directory
+ * @returns {Array} Array pf fo;es
+ */
 function readCommandFilesRecursive(dir) {
   let results = [];
   const list = fs.readdirSync(dir);

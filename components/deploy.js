@@ -4,7 +4,11 @@ const logger = require('./logger.js');
 const path = require('path');
 const fs = require('fs');
 
-// Load commands and their data
+/**
+ * Load commands and their data
+ * @param {directory} directory File Directory
+ * @returns {JSON} Loads command data in JSON
+ */
 function loadCommandFiles(directory) {
   const fullPath = path.join(__dirname, '..', directory);
   const commandFiles = fs.readdirSync(fullPath)
@@ -16,6 +20,10 @@ function loadCommandFiles(directory) {
   });
 }
 
+/**
+ * Deploys slash commands
+ * @param {import("discord.js").Client} client Discord Client
+ */
 async function deployCommands(client) {
   const rest = new REST({ version: '10' }).setToken(token);
 
