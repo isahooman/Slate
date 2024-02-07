@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 const logger = require('../../../components/logger.js');
 const Discord = require('discord.js');
 const { inspect } = require('node:util');
+const { client } = require('../../../bot.js');
 
 /**
  * Returns an array of messages, each 1950 characters long.
@@ -8,7 +10,7 @@ const { inspect } = require('node:util');
  * @returns {Array} Array of Strings
  * @author EthanLawr
  */
-const chunks = str => str.match(/.{1,1950}/gms);
+const chunks = str => str.match(/.{1,1930}/gms);
 
 /**
  * Returns a formatted version of the given time

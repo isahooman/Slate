@@ -1,6 +1,7 @@
 const blacklist = require('../config/blacklist.json');
 const { prefix } = require('../config/config.json');
 const logger = require('../components/logger.js');
+const { cooldown } = require('../bot.js');
 
 module.exports = {
   name: 'messageUpdate',
@@ -66,15 +67,40 @@ module.exports = {
 
     // Restrict owner-only commands
     const { ownerId } = require('../config/config.json');
-    if (command.category === 'owner' && !ownerId.includes(newMessage.author.id)) {
+    if (command.category.toLowerCase() === 'owner' && !ownerId.includes(newMessage.author.id)) {
       logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${newMessage.author.tag}`);
       return;
     }
+
 
     // Check if the command is NSFW and the channel is not NSFW
     if (command.nsfw && !newMessage.channel.nsfw) {
       logger.debug(`NSFW command used in non-NSFW channel: ${commandName}`);
       return;
+    }
+
+    // User Cooldown
+    if (cooldown.user.enabled(command)) {
+      logger.debug(`User Cooldown activated: ${commandName} by ${newMessage.author.tag}`);
+      if (!cooldown.user.data.get(newMessage.author.id)) cooldown.user.add(newMessage.author.id, command);
+      else if (cooldown.user.data.get(newMessage.author.id) && cooldown.user.data.get(newMessage.author.id).cooldowns.find(x =>
+        x.name === command.name).time > Date.now()) return newMessage.reply('You still have a cooldown on this command');
+    }
+
+    // Guild Cooldown
+    if (cooldown.guild.enabled(command)) {
+      logger.debug(`Guild Cooldown activated: ${commandName} in ${newMessage.guild.name} by ${newMessage.author.tag}`);
+      if (!cooldown.guild.data.get(newMessage.guild.id)) cooldown.guild.add(newMessage.guild.id, command);
+      else if (cooldown.guild.data.get(newMessage.guild.id) && cooldown.guild.data.get(newMessage.guild.id).cooldowns.find(x =>
+        x.name === command.name).time > Date.now()) return newMessage.reply('The guild still has a cooldown on this command');
+    }
+
+    // Global Cooldown
+    if (cooldown.global.enabled(command)) {
+      logger.debug(`Global Cooldown activated: ${commandName} by ${newMessage.author.tag}`);
+      if (!cooldown.global.get(command)) cooldown.global.add(command);
+      else if (cooldown.global.get(command) && cooldown.global.get(command).cooldowns.find(x =>
+        x.name === command.name).time > Date.now()) return newMessage.reply('This command is still on cooldown globally');
     }
 
     try {

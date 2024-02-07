@@ -11,10 +11,17 @@ module.exports = {
 
     // Set the bot status status
     const updateStatus = () => {
+      // Exclude empty types
+      const nonEmptyTypes = Object.keys(statuses).filter(type => statuses[type].length > 0);
+
+      // Check if any non-empty types are available
+      if (nonEmptyTypes.length === 0) {
+        logger.debug('All activity types empty. Skipping status update.');
+        return;
+      }
+
       // Select a random activity type
-      const activityTypes = Object.keys(statuses);
-      const randomType = activityTypes[Math.floor(Math.random() * activityTypes.length)];
-      // Select a random activity from the chosen type
+      const randomType = nonEmptyTypes[Math.floor(Math.random() * nonEmptyTypes.length)];
       const activity = statuses[randomType][Math.floor(Math.random() * statuses[randomType].length)];
 
       // Set the types

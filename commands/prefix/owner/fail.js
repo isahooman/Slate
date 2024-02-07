@@ -5,6 +5,12 @@ module.exports = {
   usage: 'fail',
   category: 'Owner',
   description: 'Intentionally fail for testing.',
+  cooldowns: {
+    user: 3000,
+    guild: 4000,
+    global: 5000,
+  },
+
   execute(message) {
     try {
       // Intentional failure

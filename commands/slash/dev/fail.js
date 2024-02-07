@@ -5,6 +5,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('fail')
     .setDescription('Intentionally fail for testing.'),
+  cooldowns: {
+    user: 3000,
+    guild: 4000,
+    global: 5000,
+  },
 
   async execute(interaction) {
     try {

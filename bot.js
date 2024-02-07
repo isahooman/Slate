@@ -3,6 +3,7 @@ const { deployCommands } = require('./components/deploy.js');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll } = require('./components/loader.js');
 const logger = require('./components/logger.js');
+let cooldownBuilder = require('./components/cooldown.js');
 
 exports.client = new Client({
   intents:
@@ -46,11 +47,14 @@ async function startBot(bot) {
   await loadAll(bot);
 
   // Redeploy slash commands on startup
-  await deployCommands(bot, clientId, guildId, token);
+  // await deployCommands(bot, clientId, guildId, token);
 
   // Login once preparations are done
   bot.login(token);
 }
+
+// Cooldowns globalized
+exports.cooldown = cooldownBuilder;
 
 startBot(this.client);
 
