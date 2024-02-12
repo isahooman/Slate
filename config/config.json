@@ -4,4 +4,5 @@
   "ownerId": ["owner user ids here"],
   "guildId": "home/dev server id here",
   "prefix": "your prefered prefix here"
+  "deployOnStart": true
 }
