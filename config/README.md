@@ -91,9 +91,8 @@ Table of Contents
   "ready": true,
   "warn": false,
   "error": false,
-  
-  "debug": false,
 
+  "debug": false,
 
   "applicationCommandCreate": false,
   "applicationCommandDelete": false,
@@ -146,6 +145,12 @@ Table of Contents
   "roleDelete": false,
   "roleUpdate": false,
 
+  "shardDisconnect": true,
+  "shardError": true,
+  "shardReady": true,
+  "shardReconnecting": true,
+  "shardResume": true,
+
   "stageInstanceCreate": false,
   "stageInstanceDelete": false,
   "stageInstanceUpdate": false,
@@ -165,7 +170,7 @@ Table of Contents
   "autoModerationRuleCreate": false,
   "autoModerationRuleDelete": false,
   "autoModerationRuleUpdate": false,
-  
+
   "cacheSweep": false,
 
   "webhookUpdate": false,
@@ -181,7 +186,7 @@ Table of Contents
   "invalidated": false,
 
   "invalidRequestWarning": false,
-
+  
   "applicationCommandPermissionsUpdate": false
 }
 ```
@@ -330,6 +335,21 @@ Table of Contents
 - `roleUpdate`
   - Boolean: `true` or `false`
   - If true, the bot will listen for the `roleUpdate` event.
+- `shardDisconnect`
+  - Boolean: `true` or `false`
+  - If true, the bot will listen for the `shardDisconnect` event.
+- `shardError`
+  - Boolean: `true` or `false`
+  - If true, the bot will listen for the `shardError` event.
+- `shardReady`
+  - Boolean: `true` or `false`
+  - If true, the bot will listen for the `shardReady` event.
+- `shardReconnecting`
+  - Boolean: `true` or `false`
+  - If true, the bot will listen for the `shardReconnecting` event.
+- `shardResume`
+  - Boolean: `true` or `false`
+  - If true, the bot will listen for the `shardResume` event.
 - `stageInstanceCreate`
   - Boolean: `true` or `false`
   - If true, the bot will listen for the `stageInstanceCreate` event.

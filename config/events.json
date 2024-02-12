@@ -5,9 +5,8 @@
   "ready": true,
   "warn": false,
   "error": false,
-  
-  "debug": false,
 
+  "debug": false,
 
   "applicationCommandCreate": false,
   "applicationCommandDelete": false,
@@ -60,6 +59,12 @@
   "roleDelete": false,
   "roleUpdate": false,
 
+  "shardDisconnect": true,
+  "shardError": true,
+  "shardReady": true,
+  "shardReconnecting": true,
+  "shardResume": true,
+
   "stageInstanceCreate": false,
   "stageInstanceDelete": false,
   "stageInstanceUpdate": false,
@@ -79,7 +84,7 @@
   "autoModerationRuleCreate": false,
   "autoModerationRuleDelete": false,
   "autoModerationRuleUpdate": false,
-  
+
   "cacheSweep": false,
 
   "webhookUpdate": false,
@@ -95,6 +100,6 @@
   "invalidated": false,
 
   "invalidRequestWarning": false,
-
+  
   "applicationCommandPermissionsUpdate": false
 }
