@@ -1,7 +1,7 @@
 {
     "Guilds": true,
     "GuildMembers": true,
-    "GuildModeration": true,
+    "GuildModeration": false,
     "GuildEmojisAndStickers": false,
     "GuildIntegrations": false,
     "GuildWebhooks": false,
