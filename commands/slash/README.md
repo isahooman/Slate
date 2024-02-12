@@ -17,8 +17,13 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('example')
-    .setDescription('This is an example description.'),
+    .setName('example') // Sets the command name. You cannot use capital letters and must only include text.
+    .setDescription('This is an example description.'), // Sets the command description
+  cooldowns: { // Optional cooldown parameter for each command
+    user: 3000, // Milliseconds until the user of the command can use this command again
+    guild: 0, // Milliseconds until the guild that used the command can use this command again
+    global: 0, // Milliseconds until anyone can use the command again in the entirety of the bot
+  },
 
   async execute(interaction) {
         // This shows a debug message of the command with your given input
@@ -38,6 +43,11 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('')
     .setDescription(''),
+  cooldowns: {
+    user: Number,
+    guild: Number,
+    global: Number,
+  },
 
   execute(interaction) {
 

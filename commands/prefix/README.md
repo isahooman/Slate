@@ -21,6 +21,11 @@ module.exports = {
   aliases: ['ex'], // Aliases provide alternate names for the command.
   nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channels
   description: 'This is an example description', // Brief description of what the command does
+  cooldowns: { // Optional cooldown parameter for each command
+    user: 3000, // Milliseconds until the user of the command can use this command again
+    guild: 0, // Milliseconds until the guild that used the command can use this command again
+    global: 0, // Milliseconds until anyone can use the command again in the entirety of the bot
+  },
   execute(message) {
     // This shows a debug message of the command with your given input
     logger.debug('This is an example debugging message.');
