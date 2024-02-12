@@ -15,9 +15,8 @@
       "linux": "sh start.sh",
       "win32": "start.bat"
     },
-    "prestart": "npm install --omit=prod",
-    "install": "npm install",
-    "preinstall": "npm install --omit=dev",
+    "build": "npm install",
+    "prestart": "npm install cross-os",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
