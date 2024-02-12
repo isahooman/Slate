@@ -11,6 +11,8 @@ Table of Contents
 
 ## blacklist.json
 
+[Back to top](#example-configurations)
+
 ```json
 {
   "users":
@@ -45,6 +47,8 @@ Table of Contents
 
 ## config.json
 
+[Back to top](#example-configurations)
+
 ```json
 {
   "token": "mXZwafniuvnd.fuwyfbsjsdk123NWNS",
@@ -72,6 +76,8 @@ Table of Contents
   - This refers to the prefix the bot will respond to when using commands.
 
 ## events.json
+
+[Back to top](#example-configurations)
 
 ```json
 {
@@ -397,6 +403,8 @@ Table of Contents
   - If true, the bot will listen for the `applicationCommandPermissionsUpdate` event.
 
 ## logging.json
+
+[Back to top](#example-configurations)
 
 ```json
 {
