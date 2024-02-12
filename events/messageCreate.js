@@ -82,7 +82,6 @@ module.exports = {
     // User Cooldown
     if (cooldown.user.enabled(command)) {
       logger.debug(`User Cooldown activated: ${commandName} by ${message.author.tag}`);
-      console.log(cooldown.user.data.get(message.author.id));
       if (!cooldown.user.data.get(message.author.id)) cooldown.user.add(message.author.id, command);
       else if (cooldown.user.data.get(message.author.id) && cooldown.user.data.get(message.author.id).cooldowns.find(x =>
         x.name === command.name) && cooldown.user.data.get(message.author.id).cooldowns.find(x =>

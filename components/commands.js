@@ -73,6 +73,8 @@ function readCommands(directory) {
     const filepath = path.join(directory, file);
     if (fs.statSync(filepath).isDirectory()) commandFiles = commandFiles.concat(readCommands(filepath));
     else if (file.endsWith('.js')) commandFiles.push({ path: filepath, directory });
+    else if (file.endsWith('.md')) continue;
+    else logger.error(`Invalid file found in commands directory: ${file}`);
   }
   return commandFiles;
 }

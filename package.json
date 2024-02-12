@@ -15,9 +15,11 @@
       "linux": "sh start.sh",
       "win32": "start.bat"
     },
-    "prestart": "npm install --only=dev",
-    "build": "npm install",
-    "lint": "eslint . --ignore-pattern node_modules/"
+    "prestart": "npm install --omit=prod",
+    "install": "npm install",
+    "preinstall": "npm install --omit=dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "canvas": "^2.11.2",

@@ -23,6 +23,7 @@
   "plugins": [
     "jsdoc"
   ],
+  "ignorePatterns": ["**/node_modules/**"],
   "rules": {
     "no-console": "warn",
     "no-compare-neg-zero": "error",
