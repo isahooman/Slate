@@ -1,0 +1,24 @@
+{
+    "Guilds": true,
+    "GuildMembers": true,
+    "GuildModeration": true,
+    "GuildEmojisAndStickers": false,
+    "GuildIntegrations": false,
+    "GuildWebhooks": false,
+    "GuildInvites": false,
+    "GuildVoiceStates": false,
+    "GuildPresences": false,
+    "GuildMessages": true,
+    "GuildMessageReactions": false,
+    "GuildMessageTyping": false,
+
+    "DirectMessages": false,
+    "DirectMessageReactions": false,
+    "DirectMessageTyping": false,
+
+    "MessageContent": true,
+    
+    "GuildScheduledEvents": false,
+    "AutoModerationConfiguration": false,
+    "AutoModerationExecution": false
+}

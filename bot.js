@@ -1,38 +1,19 @@
-const { clientId, token, guildId } = require('./config/config.json');
+const { clientId, token, guildId, deployOnStart } = require('./config/config.json');
+const ConfigIntents = require('./config/intents.json');
 const { deployCommands } = require('./components/deploy.js');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll } = require('./components/loader.js');
 const logger = require('./components/logger.js');
 let cooldownBuilder = require('./components/cooldown.js');
 
+const handleIntents = intents => {
+  let totalIntentsBits = [];
+  for (const intent in intents) if (intents[intent]) totalIntentsBits.push(GatewayIntentBits[intent]);
+  return totalIntentsBits;
+};
+
 exports.client = new Client({
-  intents:
-    [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMembers,
-      GatewayIntentBits.GuildInvites,
-      GatewayIntentBits.GuildWebhooks,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.GuildPresences,
-      GatewayIntentBits.GuildModeration,
-      GatewayIntentBits.GuildVoiceStates,
-      GatewayIntentBits.GuildIntegrations,
-      GatewayIntentBits.GuildMessageTyping,
-      GatewayIntentBits.GuildScheduledEvents,
-      GatewayIntentBits.GuildMessageReactions,
-      GatewayIntentBits.GuildEmojisAndStickers,
-
-      /*
-      GatewayIntentBits.DirectMessages,
-      GatewayIntentBits.DirectMessageTyping,
-      GatewayIntentBits.DirectMessageReactions,
-      */
-
-      GatewayIntentBits.MessageContent,
-
-      GatewayIntentBits.AutoModerationExecution,
-      GatewayIntentBits.AutoModerationConfiguration,
-    ],
+  intents: handleIntents(ConfigIntents),
   shards: 'auto',
 });
 
@@ -47,7 +28,7 @@ async function startBot(bot) {
   await loadAll(bot);
 
   // Redeploy slash commands on startup
-  // await deployCommands(bot, clientId, guildId, token);
+  if (deployOnStart) await deployCommands(bot, clientId, guildId, token);
 
   // Login once preparations are done
   bot.login(token);

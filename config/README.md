@@ -55,7 +55,8 @@ Table of Contents
   "clientId": "496360025099337727",
   "ownerId": ["496360025099337727", "932498572837456323"],
   "guildId": "762498572837456323",
-  "prefix": "."
+  "prefix": ".",
+  "deployOnStart": true
 }
 ```
 
@@ -74,6 +75,9 @@ Table of Contents
 - `prefix`
   - String: `"."`
   - This refers to the prefix the bot will respond to when using commands.
+- `deployOnStart`
+  - Boolean: `true` or `false`
+  - This refers to whether or not the bot should deploy commands upon starting
 
 ## events.json
 
@@ -401,6 +405,95 @@ Table of Contents
 - `applicationCommandPermissionsUpdate`
   - Boolean: `true` or `false`
   - If true, the bot will listen for the `applicationCommandPermissionsUpdate` event.
+
+## intents.json
+
+[Back to top](#example-configurations)
+
+```json
+{
+    "Guilds": true,
+    "GuildMembers": true,
+    "GuildModeration": true,
+    "GuildEmojisAndStickers": false,
+    "GuildIntegrations": false,
+    "GuildWebhooks": false,
+    "GuildInvites": false,
+    "GuildVoiceStates": false,
+    "GuildPresences": false,
+    "GuildMessages": true,
+    "GuildMessageReactions": false,
+    "GuildMessageTyping": false,
+
+    "DirectMessages": false,
+    "DirectMessageReactions": false,
+    "DirectMessageTyping": false,
+
+    "MessageContent": true,
+    
+    "GuildScheduledEvents": false,
+    "AutoModerationConfiguration": false,
+    "AutoModerationExecution": false
+}
+```
+
+- `Guilds`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guilds.
+- `GuildMembers`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild members.
+- `GuildModeration`
+  - Boolean: `true` or `false`
+  - If true, the bot will perform guild moderation.
+- `GuildEmojisAndStickers`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild emojis and stickers.
+- `GuildIntegrations`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild integrations.
+- `GuildWebhooks`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild webhooks.
+- `GuildInvites`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild invites.
+- `GuildVoiceStates`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild voice states.
+- `GuildPresences`
+  - Boolean: `true` or `false`
+  - If true, the bot will use guild presences.
+- `GuildMessages`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild messages.
+- `GuildMessageReactions`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild message reactions.
+- `GuildMessageTyping`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild message typing.
+- `DirectMessages`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with direct messages.
+- `DirectMessageReactions`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with direct message reactions.
+- `DirectMessageTyping`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with direct message typing.
+- `MessageContent`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with message content.
+- `GuildScheduledEvents`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild scheduled events.
+- `AutoModerationConfiguration`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild auto-moderation configuration.
+- `AutoModerationExecution`
+  - Boolean: `true` or `false`
+  - If true, the bot will interact with guild auto-moderation execution.
 
 ## logging.json
 
