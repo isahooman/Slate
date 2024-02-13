@@ -52,6 +52,6 @@ module.exports = {
 
     // Update status on startup and then once every 3 minutes
     updateStatus();
-    setInterval(updateStatus(), 180000);
+    setInterval(updateStatus, 180000);
   },
 };
