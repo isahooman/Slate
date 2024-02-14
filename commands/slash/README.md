@@ -25,12 +25,26 @@ module.exports = {
     global: 0, // Milliseconds until anyone can use the command again in the entirety of the bot
   },
 
-  async execute(interaction) {
-        // This shows a debug message of the command with your given input
-        logger.debug('This is an example debugging message.');
-        // Reply to user
-        await interaction.reply(`This is a reply example message`);
+  async execute(interaction, client) {
+    // This shows a debug message of the command with your given input
+    logger.debug('This is an example debugging message.');
+    // Reply to user
+    await interaction.reply(`This is a reply example message`);
   },
+  // The following executions are on a per command basis and fully optional.
+  executeButton(interaction, client) {
+    await interaction.reply('This is an example reply message');
+  },
+  executeStringSelectMenu(interaction, client) {
+    await interaction.reply('This is an example reply message');
+  },
+  executeModalSubmit(interaction, client) {
+    await interaction.reply('This is an example reply message');
+  }
+  
+  
+
+
 };
 ```
 
@@ -49,8 +63,17 @@ module.exports = {
     global: Number,
   },
 
-  execute(interaction) {
+  execute(interaction, client) {
 
   },
+  executeButton(interaction, client) {
+
+  },
+  executeStringSelectMenu(interaction, client) {
+
+  },
+  executeModalSubmit(interaction, client) {
+    
+  }
 };
 ```

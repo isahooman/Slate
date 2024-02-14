@@ -36,9 +36,9 @@ module.exports = {
     // Option 2, This will create a reply to the user and ping them
     message.reply('This is example text');
     // Option 3, This ends the command file short.
-    return message.channel.send({content:'This is message content'});
+    return message.channel.send({ content: 'This is message content' });
     // Option 4, This will make it so only the command user can see this message
-    return message.channel.send({content:'This is message content', flags:{ephemeral:true}});
+    return message.channel.send({ content: 'This is message content', ephemeral: true });
 
   },
 };
