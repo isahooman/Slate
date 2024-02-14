@@ -61,49 +61,50 @@
 - Command Aliases
 - Optional NSFW Properties
 
-## Getting Started
+# Getting Started
 
-Please ensure you have the following installed:
-
-- `Node >= 16.20.2`
-- `Npm >= 8.19.4`
-
-### Installation Guide
+## Installation Guide
 
 Slate can be installed by using the following instructions.
 
-#### Ubuntu Linux x64 Command Line
+### Linux Command Line Installation
 
-1. Input the following command
+1. **Update package lists:**
 
-```bash
-# Updates local machine packages
-$ sudo apt update
+   - Debian/Ubuntu: `sudo apt upgrade`
+   - Fedora/CentOS: `sudo dnf upgrade`
+   - Arch Linux: `sudo pacman -Syu`
+   - openSUSE: `sudo zypper dup`
 
-# Installs necessary prerequisites
-$ sudo apt-get install git nodejs npm
-```
+2. **Installing prerequisites:**
 
-2. Clone the github repository
+   - Debian/Ubuntu: `sudo apt install git nodejs npm`
+   - Fedora/CentOS: `sudo dnf install git nodejs npm`
+   - Arch Linux: `sudo pacman -S git nodejs npm`
+   - openSUSE: `sudo zypper install git nodejs npm`
 
-```bash
-# Clones the github repository
-$ git clone https://github.com/isahooman/Slate.git .
-```
+3. **Clone the GitHub repository**
+   ```bash
+   git clone https://github.com/isahooman/Slate.git .
+   cd Slate
+   ```
+4. **Configuring Slate**
 
-3. Run Slate
+   Next you'll need to setup your configuration files in the config folder.
 
-```bash
-# Installs all node packages in package.json and runs the bot
-$ npm run start
-```
+   you can follow the [configuration examples here](./config/README.md) if needed.
+
+5. **You're now ready to run slate**
+   ```bash
+   npm run start
+   ```
 
 #### Windows 10 GUI + Command Line
 
 1. Install node from the one of the following methods
 
-    - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi)
-    - [Node Website](https://nodejs.org/en)
+   - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi)
+   - [Node Website](https://nodejs.org/en)
 
 ```bash
 winget install OpenJS.NodeJS
@@ -134,8 +135,8 @@ npm run start
 
 1. Install node from the one of the following links
 
-    - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0.pkg)
-    - [Node Website](https://nodejs.org/en)
+   - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0.pkg)
+   - [Node Website](https://nodejs.org/en)
 
 ```bash
 brew install node
