@@ -92,7 +92,7 @@ Slate can be installed by using the following instructions.
 
    Next you'll need to setup your configuration files in the config folder.
 
-   you can follow the [configuration examples here](./config/README.md) if needed.
+   You can follow the [configuration examples here](./config/README.md) if needed.
 
 5. **You're now ready to run slate**
    ```bash
