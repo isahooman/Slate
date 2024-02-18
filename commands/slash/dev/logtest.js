@@ -15,11 +15,17 @@ module.exports = {
       const outputText = interaction.options.getString('output');
 
       // Send log of every level with the input
-      logger.info(`[Logtest Command] ${outputText}`);
-      logger.warn(`[Logtest Command] ${outputText}`);
-      logger.debug(`[Logtest Command] ${outputText}`);
-      logger.error(`[Logtest Command] ${outputText}`);
-      logger.command(`[Logtest Command] ${outputText}`);
+      logger.info(`[LogTest Command] ${outputText}`);
+      logger.warn(`[LogTest Command] ${outputText}`);
+      logger.error(`[LogTest Command] ${outputText}`);
+      logger.debug(`[LogTest Command] ${outputText}`);
+      logger.command(`[LogTest Command] ${outputText}`);
+      logger.start(`[LogTest Command] ${outputText}`);
+      logger.message(`[LogTest Command] ${outputText}`);
+      logger.interaction(`[LogTest Command] ${outputText}`);
+      logger.loading(`[LogTest Command] ${outputText}`);
+
+      interaction.reply('Logged messages at different levels.');
     } catch (error) {
       await interaction.reply('Logged messages at different levels.');
     }
