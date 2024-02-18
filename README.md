@@ -84,10 +84,12 @@ Slate can be installed by using the following instructions.
    - openSUSE: `sudo zypper install git nodejs npm`
 
 3. **Clone the GitHub repository**
+
    ```bash
    git clone https://github.com/isahooman/Slate.git .
    cd Slate
    ```
+
 4. **Configuring Slate**
 
    Next you'll need to setup your configuration files in the config folder.
@@ -95,6 +97,7 @@ Slate can be installed by using the following instructions.
    You can follow the [configuration examples here](./config/README.md) if needed.
 
 5. **You're now ready to run slate**
+
    ```bash
    npm run start
    ```
