@@ -39,3 +39,13 @@ exports.cooldown = cooldownBuilder;
 
 startBot(this.client);
 
+// Process Events
+process.on('exit', message => {
+  logger.error(`Shutdown because: ${message}`);
+}).on('uncaughtException', (err, origin) => {
+  logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
+}).on('unhandledRejection', (reason, promise) => {
+  promise.then(message => logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`)).catch(err => logger.error(err));
+}).on('warning', warning => {
+  logger.debug(`${warning.name}\n${warning.message}\n${warning.stack}`);
+});
