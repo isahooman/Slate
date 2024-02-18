@@ -1,5 +1,9 @@
 const config = require('../../../config/config.json');
 const logger = require('../../../components/logger.js');
+const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0,
+  '-', '$$', '&&', 'a!', 'b!', 'c!', 'd!', 'e!', 'f!', 'g!', 'h!', 'i!', 'j!', 'k!', 'l!', 'm!', 'n!', 'o!', 'p!',
+  'q!', 'r!', 's!', 't!', 'u!', 'v!', 'w!', 'x!', 'y!', 'z!', '/', '//', '\\', '=', '>', '->', '`', ', ', '|', '[',
+  ']', 'ay!', 'r-', 'r+'];
 
 module.exports = {
   name: 'botclear',
@@ -27,16 +31,13 @@ module.exports = {
       let deletableMessages;
 
       // Filter messages to be deleted
-      if (scope === 'self') {
-        deletableMessages = fetchedMessages.filter(msg =>
-          msg.author.id === message.client.user.id || msg.content.startsWith(config.prefix),
-        );
-      } else {
-        const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0, '-', '$$', '&&', 'a!', 'b!', 'c!', 'd!', 'e!', 'f!', 'g!', 'h!', 'i!', 'j!', 'k!', 'l!', 'm!', 'n!', 'o!', 'p!', 'q!', 'r!', 's!', 't!', 'u!', 'v!', 'w!', 'x!', 'y!', 'z!', '/', '//', '\\', '=', '>', '->', '`', ', ', '|', '[', ']', 'ay!', 'r-', 'r+'];
-        deletableMessages = fetchedMessages.filter(m =>
-          m.author.bot || prefixes.some(prefix => m.content.startsWith(prefix)),
-        );
-      }
+      if (scope === 'self') deletableMessages = fetchedMessages.filter(msg =>
+        msg.author.id === message.client.user.id || msg.content.startsWith(config.prefix),
+      );
+      else deletableMessages = fetchedMessages.filter(m =>
+        m.author.bot || prefixes.some(prefix => m.content.startsWith(prefix)),
+      );
+
 
       logger.debug(`[BotClear Command] Deletable messages: ${deletableMessages.size}`);
 

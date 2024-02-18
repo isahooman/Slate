@@ -33,7 +33,7 @@ module.exports = {
       // Retrieve the command from the client's slashCommands collection
       const command = client.slashCommands.get(interaction.commandName);
       if (!command) return;
-  
+
       // User Cooldown
       if (cooldown.user.enabled(command)) {
         logger.debug(`User Cooldown activated: ${command.data.name} by ${interaction.user.username}`);
@@ -41,7 +41,7 @@ module.exports = {
         else if (cooldown.user.data.get(interaction.user.id) && cooldown.user.data.get(interaction.user.id).cooldowns.find(x =>
           x.name === command.data.name).time > Date.now()) return interaction.reply('You still have a cooldown on this command');
       }
-  
+
       // Guild Cooldown
       if (cooldown.guild.enabled(command)) {
         logger.debug(`Guild Cooldown activated: ${command.data.name} in ${interaction.guild.name} by ${interaction.user.username}`);
@@ -49,7 +49,7 @@ module.exports = {
         else if (cooldown.guild.data.get(interaction.guild.id) && cooldown.guild.data.get(interaction.guild.id).cooldowns.find(x =>
           x.name === command.data.name).time > Date.now()) return interaction.reply('The guild still has a cooldown on this command');
       }
-  
+
       // Global Cooldown
       if (cooldown.global.enabled(command)) {
         logger.debug(`Global Cooldown activated: ${command.data.name} by ${interaction.user.username}`);
@@ -57,7 +57,7 @@ module.exports = {
         else if (cooldown.global.get(command) && cooldown.global.get(command).cooldowns.find(x =>
           x.name === command.data.name).time > Date.now()) return interaction.reply('This command is still on cooldown globally');
       }
-  
+
       try {
         await command.execute(interaction, client);
         logger.interaction(`Processing slash command: ${interaction.commandName}`);
@@ -107,6 +107,5 @@ module.exports = {
         logger.interaction(`Modal submit interaction ${interaction.customId} was used by ${interaction.user.username}`);
       }
     }
-
   },
 };
