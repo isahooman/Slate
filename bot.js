@@ -47,5 +47,5 @@ process.on('exit', message => {
 }).on('unhandledRejection', (reason, promise) => {
   promise.then(message => logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`)).catch(err => logger.error(err));
 }).on('warning', warning => {
-  logger.debug(`Warning: ${warning.name}\n${warning.message}\n${warning.stack}`);
+  logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
 });
