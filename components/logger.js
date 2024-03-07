@@ -1,6 +1,6 @@
 const { ownerId } = require('../config/config.json');
 const logging = require('../config/logging.json');
-const { EmbedBuilder, Client } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const chalk = require('chalk');
 const path = require('path');
