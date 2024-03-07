@@ -17,6 +17,6 @@ module.exports = {
     logger.debug(`[Ping Command] Ping calculated: ${botPing}ms, Uptime: ${uptime}`);
 
     // Send response
-    message.channel.send(`<@${message.author.id}> Pong!\n\nBot's ping: \`${botPing}ms\`\nBot's uptime: \`${uptime}\``);
+    message.channel.send(`<@${message.author.id}> Pong!\n\nMy ping: \`${botPing}ms\`\nMy uptime: \`${uptime}\``);
   },
 };

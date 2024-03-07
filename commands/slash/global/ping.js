@@ -16,6 +16,6 @@ module.exports = {
     logger.debug(`[Ping Command] Ping calculated: ${botPing}ms, Uptime: ${uptime}`);
 
     // Reply to user
-    await interaction.reply(`<@${interaction.member.user.id}> Pong!\nBot's ping: ${botPing}ms\nBot uptime: ${uptime}\n`);
+    await interaction.reply(`<@${interaction.member.user.id}> Pong!\n\nnMy ping: ${botPing}ms\nMy uptime: ${uptime}\n`);
   },
 };
