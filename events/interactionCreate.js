@@ -7,7 +7,7 @@ const { cooldown } = require('../bot.js');
 module.exports = {
   name: 'interactionCreate',
   execute: async(interaction, client) => {
-    logger.interaction(`Received interaction: ${interaction.id} from ${interaction.username}`);
+    logger.interaction(`Received interaction: ${interaction.id} from ${interaction.member.user.tag}`);
 
     if (blacklist.users.includes(interaction.user.id)) {
       logger.warn(`User ${interaction.user.username} (${interaction.user.id}) is in the blacklist. Ignoring interaction.`);
