@@ -1,7 +1,9 @@
 const blacklist = require('../config/blacklist.json');
 const { prefix } = require('../config/config.json');
 const logger = require('../components/logger.js');
+const toggle = require('../config/commands.json');
 const { cooldown } = require('../bot.js');
+
 
 module.exports = {
   name: 'messageUpdate',
@@ -72,6 +74,8 @@ module.exports = {
       return;
     }
 
+    // Check if command is disabled unless the user is an owner
+    if (!ownerId.includes(newMessage.author.id) && (toggle.prefix[commandName] === false)) return newMessage.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
 
     // Check if the command is NSFW and the channel is not NSFW
     if (command.nsfw && !newMessage.channel.nsfw) {

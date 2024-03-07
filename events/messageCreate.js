@@ -1,27 +1,25 @@
-const blacklist = require('../config/blacklist.json');
-const { prefix } = require('../config/config.json');
-const logger = require('../components/logger.js');
+const { prefix, ownerId } = require('../config/config.json');
 const { cooldown } = require('../bot.js');
+const blacklist = require('../config/blacklist.json');
+const logger = require('../components/logger.js');
+const toggle = require('../config/commands.json');
 
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
     logger.message('Processing new message..');
 
-    // Check if the user is blacklisted
     if (blacklist.users.includes(message.author.id)) {
       logger.warn(`User ${message.author.tag} (${message.author.id}) is in the blacklist. Ignoring message.`);
       return;
     }
 
-    // Check if the server is leave blacklisted
     if (blacklist.servers.leave.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "leave" blacklist. Leaving server.`);
       await message.guild.leave();
       return;
     }
 
-    // Check if the server is ignored
     if (blacklist.servers.ignore.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
       return;
@@ -32,48 +30,38 @@ module.exports = {
       return;
     }
 
-    // Check if the message mentions the bot
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
-
-    // Respond to mentions without a command with the bot's prefix
     if (mention.test(message.content)) {
-      logger.message(`Bot mentioned by ${message.author.tag} in channel ${message.channel.name}`);
+      logger.message(`Bot mentioned by ${message.author.tag}`);
       return message.reply(`My prefix is \`${prefix}\``);
     }
 
-    // Check if the message starts with the prefix or mentions the bot
-    const isMention = mentionWithCommand.test(message.content);
-    if (!message.content.startsWith(prefix) && !isMention) {
-      logger.debug(`Message does not start with prefix or mention: ${message.content}`);
+    if (!message.content.startsWith(prefix) && !mentionWithCommand.test(message.content)) {
+      logger.debug('Message does not start with prefix or mention.');
       return;
     }
 
-    // Extract the command and arguments from the message
-    const content = isMention ?
-      message.content.replace(mentionWithCommand, '') :
-      message.content.slice(prefix.length);
+    const content = message.content.startsWith(prefix) ? message.content.slice(prefix.length) : message.content.replace(mentionWithCommand, '');
     const args = content.trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    // Check if the command name is an alias
     const command = client.prefixCommands.get(commandName) || client.commandAliases.get(commandName);
-
-    // Ignore unknown commands
     if (!command) {
       logger.debug(`Command not found: ${commandName}`);
       return;
     }
 
-    // Restrict owner-only commands
-    const { ownerId } = require('../config/config.json');
+    // Disabled check with owner exemption
+    if (!ownerId.includes(message.author.id) && (toggle.prefix[commandName] === false)) return message.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
+
+    // Owner-only commands
     if (command.category.toLowerCase() === 'owner' && !ownerId.includes(message.author.id)) {
       logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${message.author.tag}`);
       return;
     }
 
-
-    // Check if the command is NSFW and the channel is not NSFW
+    // NSFW check
     if (command.nsfw && !message.channel.nsfw) {
       logger.debug(`NSFW command used in non-NSFW channel: ${commandName}`);
       return;

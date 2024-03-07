@@ -1,69 +1,100 @@
+const fs = require('fs');
+const path = require('path');
 const { Collection } = require('discord.js');
 const logger = require('./logger.js');
-const path = require('path');
-const fs = require('fs');
+const ConfigFile = path.join(__dirname, '../config/commands.json');
+const commandsConfig = require(ConfigFile);
 
 /**
- * Load all commands
+ * Load all commands and ensure they exist in the config file
  * @param {import("discord.js").Client} client Discord Client
  */
 function loadCommands(client) {
-  // Initialize collections to store commands
   client.slashCommands = new Collection();
   client.prefixCommands = new Collection();
+  client.commandAliases = new Collection();
 
-  // Load commands from their respective directories
   loadSlashCommands(client, path.join(__dirname, '../commands/slash'));
   loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
+
+  // Save any changes to commands.json
+  fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
 }
 
 /**
- * Load Slash Commands
- * @param {import("discord.js").Client} client Discord Client
- * @param {directory} directory Slash Command Directory
+ *
+ * @param client
+ * @param directory
  */
 function loadSlashCommands(client, directory) {
   const commandFiles = readCommands(directory);
-
-  // pass thru slash command files and try to load each one
   for (const fileData of commandFiles) try {
-    // Add the slash command to the collection
     const command = require(fileData.path);
     client.slashCommands.set(command.data.name, command);
+    // Ensure command is in commandsConfig
+    if (commandsConfig.slash[command.data.name] === undefined) commandsConfig.slash[command.data.name] = true; // Enable by default
+
     logger.loading(`Slash Command Loaded: ${command.data.name}`);
   } catch (error) {
-    logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`, client);
+    logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`);
   }
 }
 
 /**
- * Load Prefix Commands
- * @param {import("discord.js").Client} client Discord Client
- * @param {directory} directory Prefix Command Directory
+ *
+ * @param client
+ * @param directory
  */
 function loadPrefixCommands(client, directory) {
   const commandFiles = readCommands(directory);
-  const commandAliases = new Map();
-
-  // Pass through prefix command files and try to load each one
   for (const fileData of commandFiles) try {
-    // Add the prefix command to the collection
     const command = require(fileData.path);
-
-    // Check if the command has aliases
-    if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) commandAliases.set(alias.toLowerCase(), command);
-
     client.prefixCommands.set(command.name.toLowerCase(), command);
+    // Ensure command is in commandsConfig
+    if (commandsConfig.prefix[command.name.toLowerCase()] === undefined) commandsConfig.prefix[command.name.toLowerCase()] = true; // Enable by default
+
+    // Handle command aliases
+    if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
+
+
     logger.loading(`Prefix Command Loaded: ${command.name}`);
   } catch (error) {
-    logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`, client);
+    logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
   }
-  client.commandAliases = commandAliases;
+}
+
+/**
+ * Toggle the enabled state of a slash command
+ * @param {string} commandName Name of the command to toggle
+ */
+function toggleSlashCommand(commandName) {
+  if (Object.prototype.hasOwnProperty.call(commandsConfig.slash, commandName)) {
+    commandsConfig.slash[commandName] = !commandsConfig.slash[commandName];
+    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+    logger.info(`Toggled slash command ${commandName}: ${commandsConfig.slash[commandName]}`);
+  } else {
+    logger.error(`Slash command ${commandName} not found.`);
+  }
+}
+
+/**
+ * Toggle the enabled state of a prefix command
+ * @param {string} commandName Name of the command to toggle
+ */
+function togglePrefixCommand(commandName) {
+  commandName = commandName.toLowerCase();
+  if (Object.prototype.hasOwnProperty.call(commandsConfig.prefix, commandName)) {
+    commandsConfig.prefix[commandName] = !commandsConfig.prefix[commandName];
+    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+    logger.info(`Toggled prefix command ${commandName}: ${commandsConfig.prefix[commandName]}`);
+  } else {
+    logger.error(`Prefix command ${commandName} not found.`);
+  }
 }
 
 /**
  * Recursively Read Command Directories
- * @param {directory} directory A given directory
+ * @param {string} directory A given directory
  * @returns {Array} An array of files
  */
 function readCommands(directory) {
@@ -73,14 +104,13 @@ function readCommands(directory) {
     const filepath = path.join(directory, file);
     if (fs.statSync(filepath).isDirectory()) commandFiles = commandFiles.concat(readCommands(filepath));
     else if (file.endsWith('.js')) commandFiles.push({ path: filepath, directory });
-    else if (file.endsWith('.md')) continue;
-    else logger.error(`Invalid file found in commands directory: ${file}`);
+    else if (!file.endsWith('.md')) logger.error(`Invalid file found in commands directory: ${file}`);
   }
   return commandFiles;
 }
 
-module.exports =
-  {
-    loadCommands,
-  };
-
+module.exports = {
+  loadCommands,
+  toggleSlashCommand,
+  togglePrefixCommand,
+};
