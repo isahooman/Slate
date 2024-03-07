@@ -1,6 +1,6 @@
-const logger = require('./logger.js');
 const path = require('path');
 const fs = require('fs');
+const logger = require('./logger.js');
 
 const configPath = path.join(__dirname, '../config/events.json');
 
@@ -35,7 +35,7 @@ function loadEvents(client) {
       else client.on(event.name, (...args) => event.execute(...args, client));
     }
   }
-  logger.debug('Events loaded.');
+  logger.info('Events loaded.');
 }
 
 /**
@@ -83,24 +83,25 @@ function loadEventConfig() {
 }
 
 /**
- * Toggles an event's status in the config file
- * @param {string} eventName Event Name
- * @param {boolean} isEnabled Enabled or not
+ *
+ * @param eventName
+ * @param enabled
  */
-function toggleEvent(eventName, isEnabled) {
+function setEventEnabled(eventName, enabled) {
   const eventConfig = loadEventConfig();
-  if (eventConfig[eventName] !== undefined) {
-    eventConfig[eventName] = isEnabled;
-    saveEventConfig(eventConfig);
-    logger.debug(`Event '${eventName}' toggled ${isEnabled ? 'on' : 'off'}.`);
+  if (enabled !== undefined) {
+    eventConfig[eventName] = enabled;
+    logger.debug(`Event '${eventName}' set to ${enabled ? 'enabled' : 'disabled'}.`);
   } else {
-    logger.error(`Event '${eventName}' not found in event config.`);
+    eventConfig[eventName] = !eventConfig[eventName];
+    logger.debug(`Event '${eventName}' toggled ${eventConfig[eventName] ? 'on' : 'off'}.`);
   }
+  saveEventConfig(eventConfig);
 }
 
 /**
- * Save changes done to the config file
- * @param {JSON} eventConfig Event config JSON
+ *
+ * @param eventConfig
  */
 function saveEventConfig(eventConfig) {
   try {
@@ -111,9 +112,18 @@ function saveEventConfig(eventConfig) {
   }
 }
 
-module.exports =
-  {
-    loadEvents,
-    reloadEvents,
-    toggleEvent,
-  };
+/**
+ *
+ * @param eventName
+ */
+function isEventEnabled(eventName) {
+  const eventConfig = loadEventConfig();
+  return eventConfig[eventName] === true;
+}
+
+module.exports = {
+  loadEvents,
+  reloadEvents,
+  setEventEnabled,
+  isEventEnabled,
+};
