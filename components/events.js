@@ -121,7 +121,8 @@ function isEventEnabled(eventName) {
   return eventConfig[eventName] === true;
 }
 
-module.exports = {
+module.exports =
+{
   loadEvents,
   reloadEvents,
   setEventEnabled,

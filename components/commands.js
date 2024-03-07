@@ -109,7 +109,8 @@ function readCommands(directory) {
   return commandFiles;
 }
 
-module.exports = {
+module.exports =
+{
   loadCommands,
   toggleSlashCommand,
   togglePrefixCommand,
