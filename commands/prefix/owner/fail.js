@@ -6,9 +6,9 @@ module.exports = {
   category: 'Owner',
   description: 'Intentionally fail for testing.',
   cooldowns: {
-    user: 3000,
-    guild: 4000,
-    global: 5000,
+    user: 5000,
+    guild: 10000,
+    global: 15000,
   },
 
   execute(message) {

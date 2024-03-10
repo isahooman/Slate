@@ -74,7 +74,7 @@ module.exports = {
       // Log the end of the evaluation
       logger.debug(`[Eval Command] Ending evaluation. Evaluation took ${evaluationTime}ms.`);
     } catch (error) {
-      logger.error(`[Eval Command] Error while evaluating code: ${error}`);
+      process.stderr.write(`[Eval Command] Error while evaluating code: ${error}\n`);
       await message.channel.send({ content: `\`ERROR\`\n\`\`\`js\n${error}\`\`\`` });
     }
   },

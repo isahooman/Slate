@@ -9,27 +9,32 @@ module.exports = {
   execute: async(message, client) => {
     logger.message('Processing new message..');
 
+    // Check if the user is blacklisted
     if (blacklist.users.includes(message.author.id)) {
       logger.warn(`User ${message.author.tag} (${message.author.id}) is in the blacklist. Ignoring message.`);
       return;
     }
 
+    // Check if server is blacklisted
     if (blacklist.servers.leave.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "leave" blacklist. Leaving server.`);
       await message.guild.leave();
       return;
     }
 
+    // Check if the server is ignored
     if (blacklist.servers.ignore.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
       return;
     }
 
+    // Ignore messages from bots
     if (message.author.bot) {
       logger.debug('Ignoring bot message.');
       return;
     }
 
+    // check message for mention
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
     if (mention.test(message.content)) {
@@ -37,6 +42,7 @@ module.exports = {
       return message.reply(`My prefix is \`${prefix}\``);
     }
 
+    // Check message for prefix or mention
     if (!message.content.startsWith(prefix) && !mentionWithCommand.test(message.content)) {
       logger.debug('Message does not start with prefix or mention.');
       return;
@@ -46,6 +52,7 @@ module.exports = {
     const args = content.trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    // Check message for command or command alises
     const command = client.prefixCommands.get(commandName) || client.commandAliases.get(commandName);
     if (!command) {
       logger.debug(`Command not found: ${commandName}`);

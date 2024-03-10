@@ -10,6 +10,10 @@ const commandsConfig = require(ConfigFile);
  * @param {import("discord.js").Client} client Discord Client
  */
 function loadCommands(client) {
+  // Ensure both arrays exist in config file
+  if (!commandsConfig.slash) commandsConfig.slash = {};
+  if (!commandsConfig.prefix) commandsConfig.prefix = {};
+
   client.slashCommands = new Collection();
   client.prefixCommands = new Collection();
   client.commandAliases = new Collection();
@@ -17,7 +21,7 @@ function loadCommands(client) {
   loadSlashCommands(client, path.join(__dirname, '../commands/slash'));
   loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
 
-  // Save any changes to commands.json
+  // Save any changes to config file
   fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
 }
 
@@ -31,8 +35,8 @@ function loadSlashCommands(client, directory) {
   for (const fileData of commandFiles) try {
     const command = require(fileData.path);
     client.slashCommands.set(command.data.name, command);
-    // Ensure command is in commandsConfig
-    if (commandsConfig.slash[command.data.name] === undefined) commandsConfig.slash[command.data.name] = true; // Enable by default
+    // Ensure command is in config file
+    if (commandsConfig.slash[command.data.name] === undefined) commandsConfig.slash[command.data.name] = true;
 
     logger.loading(`Slash Command Loaded: ${command.data.name}`);
   } catch (error) {
@@ -50,8 +54,8 @@ function loadPrefixCommands(client, directory) {
   for (const fileData of commandFiles) try {
     const command = require(fileData.path);
     client.prefixCommands.set(command.name.toLowerCase(), command);
-    // Ensure command is in commandsConfig
-    if (commandsConfig.prefix[command.name.toLowerCase()] === undefined) commandsConfig.prefix[command.name.toLowerCase()] = true; // Enable by default
+    // Ensure command is in config file
+    if (commandsConfig.prefix[command.name.toLowerCase()] === undefined) commandsConfig.prefix[command.name.toLowerCase()] = true;
 
     // Handle command aliases
     if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
