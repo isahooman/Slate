@@ -42,27 +42,31 @@ function loadEvents(client) {
  * Reload Events
  * @param {import("discord.js").Client} client - Discord Client
  */
+
+// TODO: reload comments
 function reloadEvents(client) {
   const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+  const eventConfig = loadEventConfig();
 
-  // Loop through each event file
   for (const file of eventFiles) {
-    const filePath = path.join(__dirname, '../events', file);
+    const eventName = file.slice(0, -3);
 
-    try {
-      // Delete the cached module to allow for re-requiring
-      delete require.cache[require.resolve(filePath)];
-      const event = require(filePath);
+    if (eventConfig[eventName]) {
+      const filePath = path.join(__dirname, '../events', file);
 
-      // Remove all listeners for the event and reattach them
-      client.removeAllListeners(event.name);
+      try {
+        delete require.cache[require.resolve(filePath)];
+        const event = require(filePath);
 
-      if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
-      else client.on(event.name, (...args) => event.execute(...args, client));
+        client.removeAllListeners(event.name);
 
-      logger.debug(`Reloaded event: ${event.name}`);
-    } catch (error) {
-      logger.error(`Error reloading event ${file}: ${error.message}`);
+        if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
+        else client.on(event.name, (...args) => event.execute(...args, client));
+
+        logger.debug(`Reloaded event: ${event.name}`);
+      } catch (error) {
+        logger.error(`Error reloading event ${file}: ${error.message}`);
+      }
     }
   }
   logger.debug('Events reloaded.');
