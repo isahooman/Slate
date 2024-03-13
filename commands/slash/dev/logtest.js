@@ -9,11 +9,9 @@ module.exports = {
       option.setName('output')
         .setDescription('Text to log')
         .setRequired(true)),
-
   async execute(interaction) {
     try {
       const outputText = interaction.options.getString('output');
-
       // Send log of every level with the input
       logger.info(`[LogTest Command] ${outputText}`);
       logger.warn(`[LogTest Command] ${outputText}`);

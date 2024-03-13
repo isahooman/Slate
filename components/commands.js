@@ -60,7 +60,6 @@ function loadPrefixCommands(client, directory) {
     // Handle command aliases
     if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
 
-
     logger.loading(`Prefix Command Loaded: ${command.name}`);
   } catch (error) {
     logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);

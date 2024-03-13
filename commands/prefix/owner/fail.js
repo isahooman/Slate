@@ -10,7 +10,6 @@ module.exports = {
     guild: 10000,
     global: 15000,
   },
-
   execute(message) {
     try {
       // Intentional failure

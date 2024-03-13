@@ -11,8 +11,6 @@ module.exports = {
   aliases: ['bc'],
   category: 'Owner',
   description: 'Clears bot messages',
-
-  // Function to execute the command
   execute: async(message, args) => {
     if (!message.guild) {
       logger.debug('[BotClear Command] Command used outside of a server');
@@ -37,7 +35,6 @@ module.exports = {
       else deletableMessages = fetchedMessages.filter(m =>
         m.author.bot || prefixes.some(prefix => m.content.startsWith(prefix)),
       );
-
 
       logger.debug(`[BotClear Command] Deletable messages: ${deletableMessages.size}`);
 

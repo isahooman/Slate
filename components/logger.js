@@ -55,7 +55,6 @@ function setLevelEnabled(level, enabled) {
   }
 }
 
-
 /**
  * Formats and logs messages
  * @param {string} level Level name
