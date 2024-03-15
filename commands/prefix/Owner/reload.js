@@ -140,7 +140,7 @@ function reloadAllCommands(client, commandType) {
   logger.debug(`[Reload Command] Reloading all ${commandType} commands`);
   const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
   const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
-  const commandFiles = readCommandFilesRecursive(baseDir);
+  const commandFiles = readCommandFiles(baseDir);
 
   commandFiles.forEach(file => {
     delete require.cache[require.resolve(file)];
@@ -160,15 +160,15 @@ function reloadAllCommands(client, commandType) {
  * @param {string} dir Directory
  * @returns {Array} Array pf fo;es
  */
-function readCommandFilesRecursive(dir) {
+function readCommandFiles(dir) {
   let results = [];
   const list = fs.readdirSync(dir);
 
   list.forEach(file => {
     const filePath = path.resolve(dir, file);
     const stat = fs.statSync(filePath);
-    if (stat && stat.isDirectory()) results = results.concat(readCommandFilesRecursive(filePath));
-    else if (stat.isFile()) results.push(filePath);
+    if (stat && stat.isDirectory()) results = results.concat(readCommandFiles(filePath));
+    else if (stat.isFile() && file.endsWith('.js')) results.push(filePath);
   });
   return results;
 }
