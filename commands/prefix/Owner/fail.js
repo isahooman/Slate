@@ -4,7 +4,7 @@ module.exports = {
   name: 'fail',
   usage: 'fail',
   category: 'Owner',
-  description: 'Intentionally fail for testing.',
+  description: 'Intentionally throw an error for testing.',
   cooldowns: {
     user: 5000,
     guild: 10000,
