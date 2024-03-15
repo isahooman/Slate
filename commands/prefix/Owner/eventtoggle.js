@@ -12,14 +12,14 @@ module.exports = {
 
     // Check if event name is provided
     if (!eventName) {
-      logger.warn('Please provide the name of the event to toggle.');
+      logger.debug('[EventToggle Command] Event not provided.');
       message.reply('Please specify an event name to toggle.');
       return;
     }
 
     // Check if the event exists
     if (!isEventEnabled(eventName)) {
-      logger.warn(`Event '${eventName}' does not exist.`);
+      logger.warn(`[EventToggle Command] Event '${eventName}' does not exist.`);
       message.reply(`Event '${eventName}' does not exist.`);
       return;
     }
