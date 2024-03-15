@@ -100,6 +100,7 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   const fileOutput = `<${timestamp}> <${level}> ${message}\n`;
   fs.appendFileSync(logFile, fileOutput);
 
+  if (level === levels.START) notifyReady(client);
   if (level === levels.ERROR) handleErrors(message, client, commandType, commandInfo);
 }
 
@@ -128,7 +129,7 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
       { name: 'Arguments', value: args },
       { name: 'Error', value: messageText },
     );
-    // Prepare error report for prefix commands
+  // Prepare error report for prefix commands
   } else if (commandType === 'prefix' && commandInfo.context) {
     const context = commandInfo.context;
     const commandName = commandInfo.args[0];
@@ -145,20 +146,37 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
       { name: 'Message', value: messageText },
     );
   }
-
   errorEmbed.setTitle(errorTitle);
 
   // Send the prepared error report to the bot owners
-  if (client) {
-    const ownerIds = Array.isArray(ownerId) ? ownerId : [ownerId];
-    ownerIds.forEach(owners => {
-      client.users.fetch(owners)
-        .then(owner => owner.send({ embeds: [errorEmbed] }))
-        .catch(err => {
-          process.stderr.write(`Failed to send DM to owner (ID: ${owners}): ${err}\n`);
-        });
-    });
-  }
+  if (client) sendEmbed(errorEmbed, client);
+}
+
+// TODO: jsdocs
+function notifyReady(client) {
+  const startEmbed = new EmbedBuilder()
+    .setColor('#17d5ad')
+    .setTitle('Bot Started')
+    .setDescription('The bot is now ready.');
+
+  sendEmbed(startEmbed, client);
+}
+
+// TODO: jsdocs
+function sendEmbed(embed, client) {
+  const ownerIds = Array.isArray(ownerId) ? ownerId : [ownerId];
+  ownerIds.forEach(ownerId => {
+    client.users.fetch(ownerId)
+      .then(user => {
+        user.send({ embeds: [embed] })
+          .catch(err => {
+            process.stderr.write(`Failed to send embed to owner (ID: ${ownerId}): ${err}\n`);
+          });
+      })
+      .catch(err => {
+        process.stderr.write(`Failed to fetch owner (ID: ${ownerId}): ${err}\n`);
+      });
+  });
 }
 
 module.exports =
