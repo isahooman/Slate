@@ -17,7 +17,12 @@ restart_time=0
 while true; do
   echo "Starting..."
   node bot.js
-  echo "Discord bot has stopped. Restarting..." >> ./bot.log
+  echo
+  echo "Discord bot has stopped. Restarting..."
+  echo >> bot.log
+  echo "====================================" >> ./bot.log
+  echo "$(date) $(date +%T)" >> ./bot.log
+  echo "====================================" >> ./bot.log  
   echo "" >> bot.log
 
   current_time=$(( $(date +%H) * 3600 + $(date +%M) * 60 + $(date +%S) ))
