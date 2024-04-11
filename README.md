@@ -21,13 +21,13 @@
   </a>
   <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/isahooman/slate">
 </p>
-
+<br>
 <h2 align="center">Table of Contents</h2>
 
 - [Key Features](#key-features)
 - [Getting Started](#getting-started)
   - [Installation Guide](#installation-guide)
-    - [Linux Ubuntu](#ubuntu-linux-x64-command-line)
+    - [Linux](#linux-command-line-installation)
     - [Windows 10](#windows-10-gui--command-line)
 
 ## Key Features
@@ -39,75 +39,83 @@
     - Select which Discord events should load
     - Determine active logging levels
     - Customizable bot presence
-- Commands
-  - Owner Category
-    - BotClear - Mass deletes bot command usage in a given channel
-    - Data - Provides info about prefix commands
-    - Debug - Enables debugging information
-    - Deploy - Deploys global and guild slash commands
-    - Fail - Tests a given error
-    - Kill - Shuts the bot down gracefully
-    - Logs - Retrieves the latest bot logs
-    - LogTest - Tests each logger level
-    - LogToggle - Toggles logging for the specified level
-    - Raw - Relays the raw data of the replied message
-    - Reload - Reloads a either a given command or all commands
-    - Test - Test command with subcommand and options
-  - Miscellaneous
-    - Ping - Shows the bot uptime as well as the bots connection to Discord
 - Comprehensive Logging and Debugging
 - Support for all Discord.js Events
 - Prefix and Slash commands
 - Command Aliases
 - Optional NSFW Properties
+  <br><br>
+
+### Commands
+
+- Owner Category
+  - BotClear - Mass deletes bot commands used in the current channel.
+  - Deploy - Deploys global and guild slash commands
+  - Fail - Tests a given error
+  - Kill - Shuts the bot down gracefully
+  - Logs - Retrieves the latest bot logs
+  - LogTest - Tests each logger level
+  - LogToggle - Toggles logging for the specified level
+  - Raw - Relays the raw data of the replied message
+  - Reload - Reloads a either a given command or all commands
+  - Test - Test command with subcommand and options
+- Miscellaneous - Ping - Shows the bot uptime as well as the bots connection to Discord
+  <br><br><br>
 
 # Getting Started
 
 ## Installation Guide
 
 Slate can be installed by using the following instructions.
+<br><br>
 
 ### Linux Command Line Installation
 
 1. **Update package lists:**
 
-   - Debian/Ubuntu: `sudo apt upgrade`
-   - Fedora/CentOS: `sudo dnf upgrade`
-   - Arch Linux: `sudo pacman -Syu`
-   - openSUSE: `sudo zypper dup`
+- Debian/Ubuntu: `sudo apt upgrade`
+- Fedora/CentOS: `sudo dnf upgrade`
+- Arch Linux: `sudo pacman -Syu`
+- openSUSE: `sudo zypper dup`
 
 2. **Installing prerequisites:**
 
-   - Debian/Ubuntu: `sudo apt install git nodejs npm`
-   - Fedora/CentOS: `sudo dnf install git nodejs npm`
-   - Arch Linux: `sudo pacman -S git nodejs npm`
-   - openSUSE: `sudo zypper install git nodejs npm`
+- Debian/Ubuntu: `sudo apt install git nodejs npm`
+- Fedora/CentOS: `sudo dnf install git nodejs npm`
+- Arch Linux: `sudo pacman -S git nodejs npm`
+- openSUSE: `sudo zypper install git nodejs npm`
 
 3. **Clone the GitHub repository**
 
-   ```bash
-   git clone https://github.com/isahooman/Slate.git .
-   cd Slate
-   ```
+```bash
+git clone https://github.com/isahooman/Slate.git .
+cd Slate
+```
 
 4. **Configuring Slate**
 
-   Next you'll need to setup your configuration files in the config folder.
+Next you'll need to setup config.json as well as the optional extra config files.
 
-   You can follow the [configuration examples here](./config/README.md) if needed.
+```bash
+sudo vi ./config/config.json
+```
+
+You can follow the [configuration example](./config/README.md#configjson) here if needed.
 
 5. **You're now ready to run slate**
 
-   ```bash
-   npm run start
-   ```
+```bash
+npm run start
+```
 
-#### Windows 10 GUI + Command Line
+<br><br>
+
+### Windows 10 GUI + Command Line
 
 1. Install node from the one of the following methods
 
-   - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi)
-   - [Node Website](https://nodejs.org/en)
+- [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi)
+- [Node Website](https://nodejs.org/en)
 
 ```bash
 winget install OpenJS.NodeJS
@@ -134,12 +142,14 @@ tar -xvf Slate.zip
 npm run start
 ```
 
+<br><br>
+
 #### Darwin/Mac 10 GUI + Command Line
 
 1. Install node from the one of the following links
 
-   - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0.pkg)
-   - [Node Website](https://nodejs.org/en)
+- [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0.pkg)
+- [Node Website](https://nodejs.org/en)
 
 ```bash
 brew install node
@@ -163,8 +173,10 @@ tar -xvf Slate-main.zip
 
 ```bash
 # Installs the npm prerequisites
-npm run start
+npm start
 ```
+
+<br><br><br>
 
 ## Contributing
 
