@@ -1,4 +1,4 @@
-const { ownerId } = require('../config/config.json');
+const { ownerId, notifyOnReady, reportErrors } = require('../config/config.json');
 const logging = require('../config/logging.json');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment');
@@ -100,8 +100,8 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   const fileOutput = `<${timestamp}> <${level}> ${message}\n`;
   fs.appendFileSync(logFile, fileOutput);
 
-  if (level === levels.START) notifyReady(client);
-  if (level === levels.ERROR) handleErrors(message, client, commandType, commandInfo);
+  if (level === levels.START && notifyOnReady) notifyReady(client);
+  if (level === levels.ERROR && reportErrors) handleErrors(message, client, commandType, commandInfo);
 }
 
 /**
