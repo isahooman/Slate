@@ -164,17 +164,16 @@ function notifyReady(client) {
 
 // TODO: jsdocs
 function sendEmbed(embed, client) {
-  const ownerIds = Array.isArray(ownerId) ? ownerId : [ownerId];
-  ownerIds.forEach(ownerId => {
-    client.users.fetch(ownerId)
+  ownerId.forEach(Owners => {
+    client.users.fetch(Owners)
       .then(user => {
         user.send({ embeds: [embed] })
           .catch(err => {
-            process.stderr.write(`Failed to send embed to owner (ID: ${ownerId}): ${err}\n`);
+            process.stderr.write(`Failed to send embed to owner (ID: ${Owners}): ${err}\n`);
           });
       })
       .catch(err => {
-        process.stderr.write(`Failed to fetch owner (ID: ${ownerId}): ${err}\n`);
+        process.stderr.write(`Failed to fetch owner (ID: ${Owners}): ${err}\n`);
       });
   });
 }
