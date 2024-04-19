@@ -1,4 +1,4 @@
-const { reloadEvents } = require('../../../components/loader');
+const { reloadEvents, reloadAllCommands } = require('../../../components/loader');
 const logger = require('../../../components/logger.js');
 const path = require('path');
 const fs = require('fs');
@@ -129,46 +129,4 @@ async function reloadCommand(command, interaction) {
   } catch (error) {
     logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
   }
-}
-
-/**
- * Reload all commands of a specific type
- * @param {import("discord.js").Client} client Discord Client
- * @param {commandType} commandType Command Type
- */
-function reloadAllCommands(client, commandType) {
-  logger.debug(`[Reload Command] Reloading all ${commandType} commands`);
-  const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
-  const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
-  const commandFiles = readCommandFiles(baseDir);
-
-  commandFiles.forEach(file => {
-    delete require.cache[require.resolve(file)];
-    try {
-      const newCommand = require(file);
-      const commandKey = commandType === 'slash' ? newCommand.data.name : newCommand.name.toLowerCase();
-      commands.set(commandKey, newCommand);
-      logger.debug(`[Reload Command] Reloaded ${commandType} command: ${commandKey}`);
-    } catch (error) {
-      logger.error(`[Reload Command] Error reloading ${commandType} command at ${file}: ${error.message}`);
-    }
-  });
-}
-
-/**
- * Read command folders and sub folders
- * @param {string} dir Directory
- * @returns {Array} Array pf fo;es
- */
-function readCommandFiles(dir) {
-  let results = [];
-  const list = fs.readdirSync(dir);
-
-  list.forEach(file => {
-    const filePath = path.resolve(dir, file);
-    const stat = fs.statSync(filePath);
-    if (stat && stat.isDirectory()) results = results.concat(readCommandFiles(filePath));
-    else if (stat.isFile() && file.endsWith('.js')) results.push(filePath);
-  });
-  return results;
 }

@@ -1,5 +1,5 @@
 const { loadEvents, reloadEvents, setEventEnabled, isEventEnabled } = require('./events.js');
-const { loadCommands, togglePrefixCommand, toggleSlashCommand } = require('./commands.js');
+const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands } = require('./commands.js');
 
 /**
  * Load all events and commands
@@ -18,4 +18,5 @@ module.exports =
   toggleSlashCommand,
   setEventEnabled,
   isEventEnabled,
+  reloadAllCommands,
 };

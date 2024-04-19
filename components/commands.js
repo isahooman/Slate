@@ -112,9 +112,41 @@ function readCommands(directory) {
   return commandFiles;
 }
 
+// TODO: jsdocs
+function reloadAllCommands(client, commandType) {
+  // Get directory for given type
+  const baseDir = path.join(__dirname, '..', 'commands', commandType);
+  const commandFiles = readCommands(baseDir);
+
+  // Iterate over each command file
+  commandFiles.forEach(fileData => {
+    const commandFilePath = fileData.path;
+    // Clear the cache for each command
+    delete require.cache[require.resolve(commandFilePath)];
+    try {
+      const command = require(commandFilePath);
+      const commandKey = commandType === 'slash' ? command.data.name : command.name.toLowerCase();
+      // Reload slash commands
+      if (commandType === 'slash') {
+        client.slashCommands.set(commandKey, command);
+        logger.debug(`[Reload Command] Reloaded Slash Command: ${commandKey}`);
+      } else {
+        // Reload prefix commands
+        client.prefixCommands.set(commandKey, command);
+        logger.debug(`[Reload Command] Reloaded Prefix Command: ${commandKey}`);
+      }
+    } catch (error) {
+      logger.error(`[Reload Command] Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);
+    }
+  });
+
+  logger.info(`All ${commandType} commands reloaded successfully.`);
+}
+
 module.exports =
 {
   loadCommands,
   toggleSlashCommand,
   togglePrefixCommand,
+  reloadAllCommands,
 };
