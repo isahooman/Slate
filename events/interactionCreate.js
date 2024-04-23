@@ -25,7 +25,7 @@ module.exports = {
       return;
     }
     if (interaction.isCommand()) {
-      logger.command(`Slash Command ${interaction.commandName} used by ${interaction.user.username} | ${interaction.user}`);
+      logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in: ${interaction.guild.name}`);
 
       const command = client.slashCommands.get(interaction.commandName);
       if (!command) return;
@@ -35,24 +35,23 @@ module.exports = {
         content: 'This command has been disabled, possibly for maintenance.\nTry the prefix variation if it exists.',
       });
 
-
       // User Cooldown
       if (cooldown.user.enabled(command)) {
-        logger.debug(`User Cooldown activated: ${command.data.name} by ${interaction.user.username}`);
+        logger.debug(`User Cooldown activated: ${command.data.name}, by: ${interaction.user.username}`);
         if (!cooldown.user.data.get(interaction.user.id)) cooldown.user.add(interaction.user.id, command);
         else if (cooldown.user.data.get(interaction.user.id) && cooldown.user.data.get(interaction.user.id).cooldowns.find(x => x.name === command.data.name).time > Date.now()) return interaction.reply('You still have a cooldown on this command');
       }
 
       // Guild Cooldown
       if (cooldown.guild.enabled(command)) {
-        logger.debug(`Guild Cooldown activated: ${command.data.name} in ${interaction.guild.name} by ${interaction.user.username}`);
+        logger.debug(`Guild Cooldown activated: ${command.data.name}, in ${interaction.guild.name}, by: ${interaction.user.username}`);
         if (!cooldown.guild.data.get(interaction.guild.id)) cooldown.guild.add(interaction.guild.id, command);
         else if (cooldown.guild.data.get(interaction.guild.id) && cooldown.guild.data.get(interaction.guild.id).cooldowns.find(x => x.name === command.data.name).time > Date.now()) return interaction.reply('The guild still has a cooldown on this command');
       }
 
       // Global Cooldown
       if (cooldown.global.enabled(command)) {
-        logger.debug(`Global Cooldown activated: ${command.data.name} by ${interaction.user.username}`);
+        logger.debug(`Global Cooldown activated: ${command.data.name}, by: ${interaction.user.username}`);
         if (!cooldown.global.get(command)) cooldown.global.add(command);
         else if (cooldown.global.get(command) && cooldown.global.get(command).cooldowns.find(x => x.name === command.data.name).time > Date.now()) return interaction.reply('This command is still on cooldown globally');
       }
@@ -67,7 +66,7 @@ module.exports = {
       }
     } else if (interaction.isButton()) {
       const button = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!button) return logger.error(`Button interaction ${interaction.customId} was used by ${interaction.user.username} but the command was not found`, client, 'button', { interaction });
+      if (!button) return logger.error(`Button interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, client, 'button', { interaction });
       try {
         await button.executeButton(interaction, client);
         logger.interaction(`Processing button interaction: ${interaction.customId}`);
@@ -76,11 +75,11 @@ module.exports = {
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this button.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`, client));
         else await interaction.reply({ content: 'An error occurred with this button.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`, client));
       } finally {
-        logger.interaction(`Button interaction ${interaction.customId} was used by ${interaction.user.username}`);
+        logger.interaction(`Button interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
       }
     } else if (interaction.isStringSelectMenu()) {
       const stringSelectMenu = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!stringSelectMenu) return logger.error(`String select menu interaction ${interaction.customId} was used by ${interaction.user.username} but the command was not found`, client, 'select', { interaction });
+      if (!stringSelectMenu) return logger.error(`String select menu interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, client, 'select', { interaction });
       try {
         await stringSelectMenu.executeStringSelectMenu(interaction, client);
         logger.interaction(`Processing string select menu interaction: ${interaction.customId}`);
@@ -89,11 +88,11 @@ module.exports = {
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this select menu.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`, client));
         else await interaction.reply({ content: 'An error occurred with this string select menu.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`, client));
       } finally {
-        logger.interaction(`String select menu interaction ${interaction.customId} was used by ${interaction.user.username}`);
+        logger.interaction(`String select menu interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
       }
     } else if (interaction.isModalSubmit()) {
       const modalSubmit = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!modalSubmit) return logger.error(`Modal submit interaction ${interaction.customId} was used by ${interaction.user.username} but the command was not found`, client, 'modal', { interaction });
+      if (!modalSubmit) return logger.error(`Modal submit interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, client, 'modal', { interaction });
       try {
         await modalSubmit.executeModalSubmit(interaction, client);
         logger.interaction(`Processing modal submit interaction: ${interaction.customId}`);
@@ -102,7 +101,7 @@ module.exports = {
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this modal.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`, client));
         else await interaction.reply({ content: 'An error occurred with this modal.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`, client));
       } finally {
-        logger.interaction(`Modal submit interaction ${interaction.customId} was used by ${interaction.user.username}`);
+        logger.interaction(`Modal submit interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
       }
     }
   },

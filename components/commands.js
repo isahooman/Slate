@@ -42,6 +42,7 @@ function loadSlashCommands(client, directory) {
   } catch (error) {
     logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`);
   }
+  logger.info(`All slash commands loaded successfully.`);
 }
 
 /**
@@ -64,6 +65,7 @@ function loadPrefixCommands(client, directory) {
   } catch (error) {
     logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
   }
+  logger.info(`All prefix commands loaded successfully.`);
 }
 
 /**
@@ -129,17 +131,16 @@ function reloadAllCommands(client, commandType) {
       // Reload slash commands
       if (commandType === 'slash') {
         client.slashCommands.set(commandKey, command);
-        logger.debug(`[Reload Command] Reloaded Slash Command: ${commandKey}`);
+        logger.loading(`Reloaded Slash Command: ${commandKey}`);
       } else {
         // Reload prefix commands
         client.prefixCommands.set(commandKey, command);
-        logger.debug(`[Reload Command] Reloaded Prefix Command: ${commandKey}`);
+        logger.loading(`Reloaded Prefix Command: ${commandKey}`);
       }
     } catch (error) {
-      logger.error(`[Reload Command] Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);
+      logger.error(`Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);
     }
   });
-
   logger.info(`All ${commandType} commands reloaded successfully.`);
 }
 

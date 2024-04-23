@@ -20,7 +20,7 @@ module.exports = {
       // Reload all commands of the specified type.
       await reloadAllCommands(interaction.client, commandType);
       await interaction.reply(`All ${commandType} commands were reloaded!`);
-      logger.debug(`[Reload Command] All ${commandType} commands successfully reloaded.`);
+      logger.info(`[Reload Command] All ${commandType} commands successfully reloaded.`);
     } else if (commandName) {
       logger.debug(`[Reload Command] Attempting to reload command: ${commandName}`);
       // Search for commands by name within both command types

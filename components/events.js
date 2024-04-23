@@ -63,13 +63,13 @@ function reloadEvents(client) {
         if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
         else client.on(event.name, (...args) => event.execute(...args, client));
 
-        logger.debug(`Reloaded event: ${event.name}`);
+        logger.loading(`Reloaded event: ${event.name}`);
       } catch (error) {
         logger.error(`Error reloading event ${file}: ${error.message}`);
       }
     }
   }
-  logger.debug('Events reloaded.');
+  logger.debug('All events reloaded successfully.');
 }
 
 /**

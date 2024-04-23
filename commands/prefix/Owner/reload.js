@@ -13,15 +13,18 @@ module.exports = {
 
     // Check if the arg is either 'prefix', 'slash', or 'events'
     if (arg === 'prefix' || arg === 'slash') {
+      // Reload all commands of a given type
       logger.info(`[Reload Command] Reloading all ${arg} commands.`);
       await reloadAllCommands(message.client, arg);
       message.channel.send(`All ${arg} commands were reloaded!`);
       logger.debug(`[Reload Command] All ${arg} commands successfully reloaded.`);
+    // Reload events
     } else if (arg === 'events') {
       logger.info('[Reload Command] Reloading events.');
       reloadEvents(message.client);
       message.channel.send('All events were reloaded!');
       logger.debug('[Reload Command] All events successfully reloaded.');
+    // Reload command of given name
     } else if (arg) {
       logger.debug(`[Reload Command] Attempting to reload command: ${arg}`);
       const nearestSlashCommand = findNearestCommand(arg, message.client.slashCommands, 'slash');
@@ -50,11 +53,12 @@ module.exports = {
 
       logger.debug(`[Reload Command] Reload completed for command: ${arg}`);
     } else {
-      logger.debug('[Reload Command] No command provided. Reloading all commands.');
+      logger.debug('[Reload Command] No command provided. Reloading everything.');
       await reloadAllCommands(message.client, 'slash');
       await reloadAllCommands(message.client, 'prefix');
-      message.channel.send('All commands were reloaded!');
-      logger.debug('[Reload Command] All commands successfully reloaded.');
+      reloadEvents(message.client);
+      message.channel.send('All commands and events were reloaded!');
+      logger.debug('[Reload Command] All commands and events successfully reloaded.');
     }
   },
 };
