@@ -82,11 +82,22 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
     LOADING: chalk.hex('#17d5ad'),
   }[level];
 
-  // Split message by commas but not within brackets
-  const formattedMessage = message.split(/,(?![^[]*\])/).map(part => {
-    // color text within brackets
+  // Format file log output
+  const fileformat = inputMessage =>
+    inputMessage.split(/(?<!\\),/).map(part => {
+    // Remove backslashes from the message
+      part = part.replace(/\\,/g, ',');
+      return part;
+    }).join(',');
+
+  // Format message for console output
+  // Split message by commas but not if preceded by a backslash
+  const formattedMessage = message.split(/(?<!\\),(?![^[]*\])/).map(part => {
+    // Remove backslashes from the message
+    part = part.replace(/\\,/g, ',');
+    // Color text within brackets
     part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
-    // color text after colons
+    // Color text after colons
     if (part.includes(':')) {
       const [firstPart, ...rest] = part.split(':');
       part = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
@@ -94,10 +105,12 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
     return part;
   }).join(',');
 
+  // Console output
   const consoleOutput = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
   process.stdout.write(`${consoleOutput}\n`);
 
-  const fileOutput = `<${timestamp}> <${level}> ${message}\n`;
+  // Log file output
+  const fileOutput = `<${timestamp}> <${level}> ${fileformat(message)}\n`;
   fs.appendFileSync(logFile, fileOutput);
 
   if (level === levels.START && notifyOnReady) notifyReady(client);
