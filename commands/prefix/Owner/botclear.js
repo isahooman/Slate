@@ -12,11 +12,6 @@ module.exports = {
   category: 'Owner',
   description: 'Clears bot messages',
   execute: async(message, args) => {
-    if (!message.guild) {
-      logger.debug('[BotClear Command] Command used outside of a server');
-      return message.reply('This command can only be used in a server.');
-    }
-
     // Check the arg provided
     const scope = args[0] || 'all';
     logger.debug(`[BotClear Command] Scope determined: ${scope}`);
