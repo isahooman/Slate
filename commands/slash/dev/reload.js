@@ -1,3 +1,4 @@
+const { reloadAllCommands, reloadEvents } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
 const path = require('path');
@@ -10,17 +11,31 @@ module.exports = {
     .addStringOption(option => option.setName('command')
       .setDescription('The command to reload'))
     .addStringOption(option => option.setName('type')
-      .setDescription('The type of commands to reload (prefix/slash)')),
+      .setDescription('The type of commands to reload')
+      .addChoices(
+        { name: 'Events', value: 'events' },
+        { name: 'Slash', value: 'slash' },
+        { name: 'Prefix', value: 'prefix' },
+      )),
   async execute(interaction) {
     const commandName = interaction.options.getString('command');
-    const commandType = interaction.options.getString('type');
+    const Type = interaction.options.getString('type');
 
-    if (commandType) {
-      logger.info(`[Reload Command] Reloading all ${commandType} commands.`);
-      // Reload all commands of the specified type.
-      await reloadAllCommands(interaction.client, commandType);
-      await interaction.reply(`All ${commandType} commands were reloaded!`);
-      logger.info(`[Reload Command] All ${commandType} commands successfully reloaded.`);
+    if (Type === 'events') {
+      logger.info('[Reload Command] Reloading all events.');
+      await reloadEvents(interaction.client);
+      await interaction.reply('All events were reloaded!');
+      logger.info('[Reload Command] All events successfully reloaded.');
+    } else if (Type === 'slash') {
+      logger.info('[Reload Command] Reloading all slash commands.');
+      await reloadAllCommands(interaction.client, 'slash');
+      await interaction.reply('All slash commands were reloaded!');
+      logger.info('[Reload Command] All slash commands successfully reloaded.');
+    } else if (Type === 'prefix') {
+      logger.info('[Reload Command] Reloading all prefix commands.');
+      await reloadAllCommands(interaction.client, 'prefix');
+      await interaction.reply('All prefix commands were reloaded!');
+      logger.info('[Reload Command] All prefix commands successfully reloaded.');
     } else if (commandName) {
       logger.debug(`[Reload Command] Attempting to reload command: ${commandName}`);
       // Search for commands by name within both command types
@@ -63,7 +78,7 @@ module.exports = {
  * Search for command names based on "command" option input
  * @param {string} input Input String, Command to search
  * @param {import("discord.js").Collection} commands Collection of commands
- * @param {commandType} type CommandType
+ * @param {string} type CommandType ('slash' or 'prefix')
  * @returns {object} Command
  */
 function findNearestCommand(input, commands, type) {
@@ -128,46 +143,4 @@ async function reloadCommand(command, interaction) {
   } catch (error) {
     logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
   }
-}
-
-/**
- * Reload all commands of a specific type
- * @param {import("discord.js").Client} client Discord Client
- * @param {commandType} commandType Command Type
- */
-function reloadAllCommands(client, commandType) {
-  logger.debug(`[Reload Command] Reloading all ${commandType} commands`);
-  const commands = commandType === 'slash' ? client.slashCommands : client.prefixCommands;
-  const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
-  const commandFiles = readCommandFilesRecursive(baseDir);
-
-  commandFiles.forEach(file => {
-    delete require.cache[require.resolve(file)];
-    try {
-      const newCommand = require(file);
-      const commandKey = commandType === 'slash' ? newCommand.data.name : newCommand.name.toLowerCase();
-      commands.set(commandKey, newCommand);
-      logger.debug(`[Reload Command] Reloaded ${commandType} command: ${commandKey}`);
-    } catch (error) {
-      logger.error(`[Reload Command] Error reloading ${commandType} command at ${file}: ${error.message}`);
-    }
-  });
-}
-
-/**
- * Read command folders and sub folders
- * @param {string} dir Directory
- * @returns {Array} Array pf fo;es
- */
-function readCommandFilesRecursive(dir) {
-  let results = [];
-  const list = fs.readdirSync(dir);
-
-  list.forEach(file => {
-    const filePath = path.resolve(dir, file);
-    const stat = fs.statSync(filePath);
-    if (stat && stat.isDirectory()) results = results.concat(readCommandFilesRecursive(filePath));
-    else if (stat.isFile()) results.push(filePath);
-  });
-  return results;
 }
