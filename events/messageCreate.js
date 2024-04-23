@@ -7,23 +7,22 @@ const toggle = require('../config/commands.json');
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
-    logger.message('Processing new message..');
-
     // Check if the user is blacklisted
+    logger.message(`Processing new message: ${message.content}`);
     if (blacklist.users.includes(message.author.id)) {
       logger.warn(`User ${message.author.tag} (${message.author.id}) is in the blacklist. Ignoring message.`);
       return;
     }
 
     // Check if server is blacklisted
-    if (blacklist.servers.leave.includes(message.guild.id)) {
+    if (message.guild && blacklist.servers.leave.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "leave" blacklist. Leaving server.`);
       await message.guild.leave();
       return;
     }
 
     // Check if the server is ignored
-    if (blacklist.servers.ignore.includes(message.guild.id)) {
+    if (message.guild && blacklist.servers.ignore.includes(message.guild.id)) {
       logger.warn(`Server ${message.guild.name} (${message.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
       return;
     }
@@ -38,7 +37,7 @@ module.exports = {
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
     if (mention.test(message.content)) {
-      logger.message(`Bot mentioned by ${message.author.tag}`);
+      logger.message(`Bot mentioned by: ${message.author.tag}`);
       return message.reply(`My prefix is \`${prefix}\``);
     }
 
@@ -49,8 +48,8 @@ module.exports = {
     }
 
     const content = message.content.startsWith(prefix) ? message.content.slice(prefix.length) : message.content.replace(mentionWithCommand, '');
-    const args = content.trim().split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    let args = content.trim().split(/ +/);
+    let commandName = args.shift().toLowerCase();
 
     // Check message for command or command alises
     const command = client.prefixCommands.get(commandName) || client.commandAliases.get(commandName);
@@ -64,7 +63,7 @@ module.exports = {
 
     // Owner-only commands
     if (command.category.toLowerCase() === 'owner' && !ownerId.includes(message.author.id)) {
-      logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${message.author.tag}`);
+      logger.debug(`Unauthorized attempt to use owner command: ${commandName}`);
       return;
     }
 
@@ -74,9 +73,16 @@ module.exports = {
       return;
     }
 
+    // Check if the command is allowed in DMs
+    const allowDM = command.allowDM !== undefined ? command.allowDM : false;
+    if (!message.guild && !allowDM && command.category.toLowerCase() !== 'owner') {
+      logger.debug(`Command: ${commandName}, is not allowed in DMs.`);
+      return;
+    }
+
     // User Cooldown
     if (cooldown.user.enabled(command)) {
-      logger.debug(`User Cooldown activated: ${commandName} by ${message.author.tag}`);
+      logger.debug(`User Cooldown activated: ${commandName}, by: ${message.author.tag}`);
       if (!cooldown.user.data.get(message.author.id)) cooldown.user.add(message.author.id, command);
       else if (cooldown.user.data.get(message.author.id) && cooldown.user.data.get(message.author.id).cooldowns.find(x =>
         x.name === command.name) && cooldown.user.data.get(message.author.id).cooldowns.find(x =>
@@ -84,8 +90,8 @@ module.exports = {
     }
 
     // Guild Cooldown
-    if (cooldown.guild.enabled(command)) {
-      logger.debug(`Guild Cooldown activated: ${commandName} in ${message.guild.name} by ${message.author.tag}`);
+    if (message.guild && cooldown.guild.enabled(command)) {
+      logger.debug(`Guild Cooldown activated: ${commandName}, in: ${message.guild.name}, by: ${message.author.tag}`);
       if (!cooldown.guild.data.get(message.guild.id)) cooldown.guild.add(message.guild.id, command);
       else if (cooldown.guild.data.get(message.guild.id) && cooldown.guild.data.get(message.guild.id).cooldowns.find(x =>
         x.name === command.name).time > Date.now()) return message.reply('The guild still has a cooldown on this command');
@@ -93,14 +99,14 @@ module.exports = {
 
     // Global Cooldown
     if (cooldown.global.enabled(command)) {
-      logger.debug(`Global Cooldown activated: ${commandName} by ${message.author.tag}`);
+      logger.debug(`Global Cooldown activated: ${commandName}, by: ${message.author.tag}`);
       if (!cooldown.global.get(command)) cooldown.global.add(command);
       else if (cooldown.global.get(command) && cooldown.global.get(command).cooldowns.find(x =>
         x.name === command.name).time > Date.now()) return message.reply('This command is still on cooldown globally');
     }
 
     try {
-      logger.command(`Prefix Command ${command.name} used by ${message.author.tag} in ${message.guild.name}`);
+      logger.command(`Prefix Command: ${command.name}, used by: ${message.author.tag}, in: ${message.guild ? message.guild.name : 'DMs'}`);
       await command.execute(message, args, client);
     } catch (error) {
       logger.error(`${error.stack}`, client, 'prefix', {

@@ -12,7 +12,7 @@
     "GuildMessageReactions": false,
     "GuildMessageTyping": false,
 
-    "DirectMessages": false,
+    "DirectMessages": true,
     "DirectMessageReactions": false,
     "DirectMessageTyping": false,
 

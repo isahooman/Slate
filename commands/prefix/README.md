@@ -19,7 +19,8 @@ module.exports = {
   usage: 'example', // Example of how the command should be used by the user
   category: 'misc', // Category of the command
   aliases: ['ex'], // Aliases provide alternate names for the command.
-  nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channels
+  nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channels	
+  allowDM: false, // Allows the command to be used in dms
   description: 'This is an example description', // Brief description of what the command does
   cooldowns: { // Optional cooldown parameter for each command
     user: 3000, // Milliseconds until the user of the command can use this command again
@@ -53,6 +54,7 @@ module.exports = {
   category: '',
   aliases: [''],
   nsfw: false,
+  allowDM: false,
   description: '',
   execute(message) {
 

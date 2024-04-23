@@ -4,11 +4,10 @@ const logger = require('../components/logger.js');
 const toggle = require('../config/commands.json');
 const { cooldown } = require('../bot.js');
 
-
 module.exports = {
   name: 'messageUpdate',
   execute: async(oldMessage, newMessage, client) => {
-    logger.message('Processing edited message..');
+    logger.message(`Processing edited message: ${newMessage.content}`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(newMessage.author.id)) {
@@ -16,20 +15,20 @@ module.exports = {
       return;
     }
 
-    // Check if the server is leave blacklisted
-    if (blacklist.servers.leave.includes(newMessage.guild.id)) {
+    // Check if server is blacklisted
+    if (newMessage.guild && blacklist.servers.leave.includes(newMessage.guild.id)) {
       logger.warn(`Server ${newMessage.guild.name} (${newMessage.guild.id}) is in the "leave" blacklist. Leaving server.`);
       await newMessage.guild.leave();
       return;
     }
 
     // Check if the server is ignored
-    if (blacklist.servers.ignore.includes(newMessage.guild.id)) {
+    if (newMessage.guild && blacklist.servers.ignore.includes(newMessage.guild.id)) {
       logger.warn(`Server ${newMessage.guild.name} (${newMessage.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
       return;
     }
 
-    if (newMessage.author.bot || !newMessage.guild) {
+    if (newMessage.author.bot) {
       logger.debug('Ignoring bot message.');
       return;
     }
@@ -47,7 +46,7 @@ module.exports = {
     // Check if the message starts with the prefix or mentions the bot
     const isMention = mentionWithCommand.test(newMessage.content);
     if (!newMessage.content.startsWith(prefix) && !isMention) {
-      logger.debug(`Message does not start with prefix or mention: ${newMessage.content}`);
+      logger.debug(`Message does not start with prefix or mention.`);
       return;
     }
 
@@ -83,6 +82,13 @@ module.exports = {
       return;
     }
 
+    // Check if the command is allowed in DMs
+    const allowDM = command.allowDM !== undefined ? command.allowDM : false;
+    if (!newMessage.guild && !allowDM && command.category.toLowerCase() !== 'owner') {
+      logger.debug(`Command: ${commandName}, is not allowed in DMs.`);
+      return;
+    }
+
     // User Cooldown
     if (cooldown.user.enabled(command)) {
       logger.debug(`User Cooldown activated: ${commandName} by ${newMessage.author.tag}`);
@@ -92,8 +98,8 @@ module.exports = {
     }
 
     // Guild Cooldown
-    if (cooldown.guild.enabled(command)) {
-      logger.debug(`Guild Cooldown activated: ${commandName} in ${newMessage.guild.name} by ${newMessage.author.tag}`);
+    if (newMessage.guild && cooldown.guild.enabled(command)) {
+      logger.debug(`Guild Cooldown activated: ${commandName}, in: ${newMessage.guild.name}, by: ${newMessage.author.tag}`);
       if (!cooldown.guild.data.get(newMessage.guild.id)) cooldown.guild.add(newMessage.guild.id, command);
       else if (cooldown.guild.data.get(newMessage.guild.id) && cooldown.guild.data.get(newMessage.guild.id).cooldowns.find(x =>
         x.name === command.name).time > Date.now()) return newMessage.reply('The guild still has a cooldown on this command');
@@ -101,14 +107,14 @@ module.exports = {
 
     // Global Cooldown
     if (cooldown.global.enabled(command)) {
-      logger.debug(`Global Cooldown activated: ${commandName} by ${newMessage.author.tag}`);
+      logger.debug(`Global Cooldown activated: ${commandName}, by: ${newMessage.author.tag}`);
       if (!cooldown.global.get(command)) cooldown.global.add(command);
       else if (cooldown.global.get(command) && cooldown.global.get(command).cooldowns.find(x =>
         x.name === command.name).time > Date.now()) return newMessage.reply('This command is still on cooldown globally');
     }
 
     try {
-      logger.command(`Prefix Command ${command.name} used by ${newMessage.author.tag} in ${newMessage.guild.name}`);
+      logger.command(`Prefix Command ${command.name} used by: ${newMessage.author.tag}, in ${newMessage.guild ? newMessage.guild.name : 'DMs'}`);
       await command.execute(newMessage, args, client);
     } catch (error) {
       logger.error(`${error.stack}`, client, 'prefix', {
