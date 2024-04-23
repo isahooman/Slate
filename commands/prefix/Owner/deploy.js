@@ -1,4 +1,4 @@
-const deployCommands = require('../../../components/deploy.js');
+const { deployCommands } = require('../../../components/deploy.js');
 const logger = require('../../../components/logger.js');
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
       await deployCommands();
       message.reply('Slash commands deployed successfully!');
     } catch (error) {
-      logger.error(`[Deploy Command] Error while deploying slassh commands: ${error}`);
+      logger.error(`[Deploy Command] Error while deploying slash commands: ${error}`);
       message.reply('Failed to deploy slash commands.');
     }
   },
