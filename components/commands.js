@@ -26,9 +26,9 @@ function loadCommands(client) {
 }
 
 /**
- *
- * @param client
- * @param directory
+ * Load slash commands
+ * @param {client} client - Discord client
+ * @param {string} directory - The commands directory
  */
 function loadSlashCommands(client, directory) {
   const commandFiles = readCommands(directory);
@@ -46,9 +46,9 @@ function loadSlashCommands(client, directory) {
 }
 
 /**
- *
- * @param client
- * @param directory
+ * Load prefix commands.
+ * @param {client} client - Discord client
+ * @param {string} directory - The commands directory.
  */
 function loadPrefixCommands(client, directory) {
   const commandFiles = readCommands(directory);
@@ -114,7 +114,12 @@ function readCommands(directory) {
   return commandFiles;
 }
 
-// TODO: jsdocs
+/**
+ * Reloads all commands of the given type.
+ * @param {client} client - Discord client
+ * @param {string} commandType - The type of commands to reload (slash or prefix).
+ *  {void}
+ */
 function reloadAllCommands(client, commandType) {
   // Get directory for given type
   const baseDir = path.join(__dirname, '..', 'commands', commandType);

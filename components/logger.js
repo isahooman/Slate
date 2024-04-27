@@ -59,7 +59,7 @@ function setLevelEnabled(level, enabled) {
  * Formats and logs messages
  * @param {string} level Level name
  * @param {string} message Log Message
- * @param {Client} client Discord Client
+ * @param {import('discord.js').Client} client Discord Client
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
  * @returns {void|string} Void if disabled, String if enabled
@@ -120,7 +120,7 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
 /**
  * Error Handler
  * @param {string} messageText Message Text
- * @param {Client} client Discord Client
+ * @param {client} client - Discord Client
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
  */
@@ -161,25 +161,37 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
   }
   errorEmbed.setTitle(errorTitle);
 
-  // Send the prepared error report to the bot owners
+  // Send the prepared error report
   if (client) sendEmbed(errorEmbed, client);
 }
 
-// TODO: jsdocs
+/**
+ * Notifies that the bot is ready.
+ * @param {client} client - Discord client
+ */
 function notifyReady(client) {
+  // Create an embed to notify that the bot has started
   const startEmbed = new EmbedBuilder()
     .setColor('#17d5ad')
     .setTitle('Bot Started')
     .setDescription('The bot is now ready.');
 
+  // Send the ready embed
   sendEmbed(startEmbed, client);
 }
 
-// TODO: jsdocs
+/**
+ * Sends an embed to all bot owners.
+ * @param {EmbedBuilder} embed - The embed to send.
+ * @param {client} client - Discord client
+ */
 function sendEmbed(embed, client) {
+  // Iterate through each owner ID
   ownerId.forEach(Owners => {
+    // Fetch the owners from ids in config
     client.users.fetch(Owners)
       .then(user => {
+        // Send the embed
         user.send({ embeds: [embed] })
           .catch(err => {
             process.stderr.write(`Failed to send embed to owner (ID: ${Owners}): ${err}\n`);

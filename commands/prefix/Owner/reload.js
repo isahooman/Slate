@@ -90,7 +90,6 @@ function findNearestCommand(input, commands, type) {
  * Reload a specific command
  * @param {object} command Command object
  * @param {import("discord.js").Interaction} interaction Discord Interaction
- * @returns {void}
  */
 async function reloadCommand(command, interaction) {
   const commandName = command.data ? command.data.name : command.name;

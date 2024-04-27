@@ -19,7 +19,7 @@ exports.client = new Client({
 
 /**
  * Starts the bot and loads necessary data
- * @param {Client} bot Discord Client
+ * @param {Client} bot - Discord Client
  */
 async function startBot(bot) {
   logger.debug('Bot starting..');
