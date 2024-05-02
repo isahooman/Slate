@@ -144,3 +144,4 @@ project_structure.text
 # Local Items
 /private
 *.bak
+changelog.*
