@@ -7,7 +7,7 @@ const { cooldown } = require('../bot.js');
 module.exports = {
   name: 'messageUpdate',
   execute: async(oldMessage, newMessage, client) => {
-    logger.message(`Processing edited message: ${newMessage.content}`);
+    logger.message(`Processing edited message:\n====================================\n${newMessage.content.split('\n').map(line => `| ${line}`).join('\n')}\n====================================`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(newMessage.author.id)) {

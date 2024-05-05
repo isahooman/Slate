@@ -7,8 +7,9 @@ const toggle = require('../config/commands.json');
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
+    logger.message(`Processing new message:\n====================================\n${message.content.split('\n').map(line => `| ${line}`).join('\n')}\n====================================`);
+
     // Check if the user is blacklisted
-    logger.message(`Processing new message: ${message.content}`);
     if (blacklist.users.includes(message.author.id)) {
       logger.warn(`User ${message.author.tag} (${message.author.id}) is in the blacklist. Ignoring message.`);
       return;
