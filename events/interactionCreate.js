@@ -7,7 +7,7 @@ const { cooldown } = require('../bot.js');
 module.exports = {
   name: 'interactionCreate',
   execute: async(interaction, client) => {
-    logger.interaction(`Received interaction: ${interaction.id} from ${interaction.member.user.tag}`);
+    logger.interaction(`Received interaction: ${interaction.id}, from: ${interaction.user.username}`);
 
     if (blacklist.users.includes(interaction.user.id)) {
       logger.warn(`User ${interaction.user.username} (${interaction.user.id}) is in the blacklist. Ignoring interaction.`);
@@ -25,7 +25,8 @@ module.exports = {
       return;
     }
     if (interaction.isCommand()) {
-      logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in: ${interaction.guild.name}`);
+      if (interaction.guild) logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in: ${interaction.guild.name}`);
+      else logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in a Direct Message`);
 
       const command = client.slashCommands.get(interaction.commandName);
       if (!command) return;
@@ -60,7 +61,7 @@ module.exports = {
         await command.execute(interaction, client);
         logger.interaction(`Processing slash command: ${interaction.commandName}`);
       } catch (error) {
-        logger.error(`Error executing slash command: ${error}`, client, 'slash', { interaction });
+        logger.error(`Error executing slash command: ${error}\n${error.stack}`, client, 'slash', { interaction });
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(err => logger.error(`Error editing reply: ${err}`, client));
         else await interaction.reply({ content: 'An error occurred with this command.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err}`, client));
       }
