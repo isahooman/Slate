@@ -91,19 +91,36 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
     }).join(',');
 
   // Format message for console output
-  // Split message by commas but not if preceded by a backslash
-  const formattedMessage = message.split(/(?<!\\),(?![^[]*\])/).map(part => {
-    // Remove backslashes from the message
-    part = part.replace(/\\,/g, ',');
-    // Color text within brackets
-    part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
-    // Color text after colons
-    if (part.includes(':')) {
-      const [firstPart, ...rest] = part.split(':');
-      part = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
+  const formattedMessage = (() => {
+    if (level === 'MESSAGE') {
+      // Replace commas in messages to be preceded by a backslash
+      let formatted = message.replace(/(?<!\\),/g, '\\,');
+      // Remove replaced backslashes from the message
+      formatted = formatted.replace(/\\(?=,)/g, '');
+      // Color text within brackets
+      formatted = formatted.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
+      // Color text after colons
+      if (formatted.includes(':')) {
+        const [firstPart, ...rest] = formatted.split(':');
+        formatted = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
+      }
+      return formatted;
+    } else {
+      // Split message by commas but not if preceded by a backslash
+      return message.split(/(?<!\\),(?![^[]*\])/).map(part => {
+        // Remove preceding backslashes from the message
+        part = part.replace(/\\,/g, ',');
+        // Color text within brackets
+        part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
+        // Color text after colons
+        if (part.includes(':')) {
+          const [firstPart, ...rest] = part.split(':');
+          part = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
+        }
+        return part;
+      }).join(',');
     }
-    return part;
-  }).join(',');
+  })();
 
   // Console output
   const consoleOutput = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
