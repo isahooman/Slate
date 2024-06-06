@@ -130,7 +130,7 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   const fileOutput = `<${timestamp}> <${level}> ${fileformat(message)}\n`;
   fs.appendFileSync(logFile, fileOutput);
 
-  if (level === levels.START && notifyOnReady) notifyReady(client);
+  if (level === levels.START && notifyOnReady) notifyReady(client, message);
   if (level === levels.ERROR && reportErrors) handleErrors(message, client, commandType, commandInfo);
 }
 
@@ -185,13 +185,14 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
 /**
  * Notifies that the bot is ready.
  * @param {client} client - Discord client
+ * @param {string} message - Log message to use in the description.
  */
-function notifyReady(client) {
+function notifyReady(client, message) {
   // Create an embed to notify that the bot has started
   const startEmbed = new EmbedBuilder()
     .setColor('#17d5ad')
-    .setTitle('Bot Started')
-    .setDescription('The bot is now ready.');
+    .setTitle('Bot Ready!')
+    .setDescription(message);
 
   // Send the ready embed
   sendEmbed(startEmbed, client);
