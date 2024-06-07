@@ -1,4 +1,5 @@
-const { ownerId, notifyOnReady, reportErrors } = require('../config/config.json');
+const json5Parser = require('./json5Parser.js');
+const { ownerId, notifyOnReady, reportErrors } = json5Parser.readJSON5('./config/config.json5');
 const logging = require('../config/logging.json');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment');

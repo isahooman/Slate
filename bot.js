@@ -1,4 +1,5 @@
-const { clientId, token, guildId, deployOnStart } = require('./config/config.json');
+const { readJSON5 } = require('./components/json5Parser.js');
+const { clientId, token, guildId, deployOnStart } = readJSON5('./config/config.json5');
 const ConfigIntents = require('./config/intents.json');
 const { deployCommands } = require('./components/deploy.js');
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -40,6 +41,7 @@ exports.cooldown = cooldownBuilder;
 startBot(this.client);
 
 // Process Events
+/*
 process.on('exit', message => {
   logger.error(`Shutdown because: ${message}`);
 }).on('uncaughtException', (err, origin) => {
@@ -49,3 +51,4 @@ process.on('exit', message => {
 }).on('warning', warning => {
   logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
 });
+*/

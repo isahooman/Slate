@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const logger = require('./logger.js');
+const { readJSON5, writeJSON5 } = require('./json5Parser.js');
 
-const configPath = path.join(__dirname, '../config/events.json');
+const configPath = path.join(__dirname, '../config/events.json5');
 
 /**
  * Load Events
@@ -84,12 +85,11 @@ function reloadEvents(client) {
 
 /**
  * Load Config Data
- * @returns {JSON|void} Event Config Data
+ * @returns {object|void} Event Config Data
  */
 function loadEventConfig() {
   try {
-    const eventConfigData = fs.readFileSync(configPath, 'utf8');
-    return JSON.parse(eventConfigData);
+    return readJSON5(configPath);
   } catch (error) {
     logger.error(`Error loading event config: ${error.message}`);
     return {};
@@ -124,8 +124,7 @@ function setEventEnabled(eventName, enabled) {
  */
 function saveEventConfig(eventConfig) {
   try {
-    const eventConfigData = JSON.stringify(eventConfig, null, 2);
-    fs.writeFileSync(configPath, eventConfigData);
+    writeJSON5(configPath, eventConfig);
   } catch (error) {
     logger.error(`Error saving event config: ${error.message}`);
   }

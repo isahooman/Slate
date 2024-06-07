@@ -2,8 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const { Collection } = require('discord.js');
 const logger = require('./logger.js');
-const ConfigFile = path.join(__dirname, '../config/commands.json');
-const commandsConfig = require(ConfigFile);
+const { readJSON5, writeJSON5 } = require('./json5Parser.js');
+const ConfigFile = path.join(__dirname, '../config/commands.json5');
+const commandsConfig = readJSON5(ConfigFile);
 
 /**
  * Load all commands and ensure they exist in the config file
@@ -22,7 +23,7 @@ function loadCommands(client) {
   loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
 
   // Save any changes to config file
-  fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+  writeJSON5(ConfigFile, commandsConfig);
 }
 
 /**
@@ -75,7 +76,7 @@ function loadPrefixCommands(client, directory) {
 function toggleSlashCommand(commandName) {
   if (Object.prototype.hasOwnProperty.call(commandsConfig.slash, commandName)) {
     commandsConfig.slash[commandName] = !commandsConfig.slash[commandName];
-    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+    writeJSON5(ConfigFile, commandsConfig);
     logger.info(`Toggled slash command ${commandName}: ${commandsConfig.slash[commandName]}`);
   } else {
     logger.error(`Slash command ${commandName} not found.`);
@@ -90,7 +91,7 @@ function togglePrefixCommand(commandName) {
   commandName = commandName.toLowerCase();
   if (Object.prototype.hasOwnProperty.call(commandsConfig.prefix, commandName)) {
     commandsConfig.prefix[commandName] = !commandsConfig.prefix[commandName];
-    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+    writeJSON5(ConfigFile, commandsConfig);
     logger.info(`Toggled prefix command ${commandName}: ${commandsConfig.prefix[commandName]}`);
   } else {
     logger.error(`Prefix command ${commandName} not found.`);
@@ -136,11 +137,14 @@ function reloadAllCommands(client, commandType) {
       // Reload slash commands
       if (commandType === 'slash') {
         client.slashCommands.set(commandKey, command);
-        logger.loading(`Reloaded Slash Command: ${commandKey}`);
-      } else {
-        // Reload prefix commands
+        logger.loading(`Reloaded Slash Command: ${command.data.name}`);
+      // eslint-disable-next-line brace-style
+      }
+      // Reload prefix commands
+      else {
         client.prefixCommands.set(commandKey, command);
-        logger.loading(`Reloaded Prefix Command: ${commandKey}`);
+        logger.loading(`Reloaded Prefix Command: ${command.name}`);
+        if (command.aliases && Array.isArray(command.aliases)) command.aliases.forEach(alias => client.commandAliases.set(alias.toLowerCase(), command));
       }
     } catch (error) {
       logger.error(`Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);

@@ -1,8 +1,13 @@
 const blacklist = require('../config/blacklist.json');
-const { ownerId } = require('../config/config.json');
-const toggle = require('../config/commands.json');
 const logger = require('../components/logger.js');
 const { cooldown } = require('../bot.js');
+const path = require('path');
+const { readJSON5 } = require('../components/json5Parser');
+
+const configPath = path.join(__dirname, '../config/config.json5');
+const commandsPath = path.join(__dirname, '../config/commands.json5');
+const { ownerId } = readJSON5(configPath);
+const toggle = readJSON5(commandsPath);
 
 module.exports = {
   name: 'interactionCreate',
