@@ -41,7 +41,6 @@ exports.cooldown = cooldownBuilder;
 startBot(this.client);
 
 // Process Events
-/*
 process.on('exit', message => {
   logger.error(`Shutdown because: ${message}`);
 }).on('uncaughtException', (err, origin) => {
@@ -51,4 +50,3 @@ process.on('exit', message => {
 }).on('warning', warning => {
   logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
 });
-*/
