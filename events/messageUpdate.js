@@ -6,13 +6,13 @@ const { readJSON5 } = require('../components/json5Parser');
 
 const configPath = path.join(__dirname, '../config/config.json5');
 const commandsPath = path.join(__dirname, '../config/commands.json5');
-const { prefix } = readJSON5(configPath);
+const { prefix, ownerId } = readJSON5(configPath);
 const { toggle } = readJSON5(commandsPath);
 
 module.exports = {
   name: 'messageUpdate',
   execute: async(oldMessage, newMessage, client) => {
-    logger.message(`Processing edited message:\n====================================\n${newMessage.content.split('\n').map(line => `| ${line}`).join('\n')}\n====================================`);
+    logger.message(`Processing edited message:\n╭──────────────────────────────────╮\n${newMessage.content.split('\n').map(line => `│ ${line}`).join('\n')}\n╰──────────────────────────────────╯`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(newMessage.author.id)) {
@@ -72,7 +72,6 @@ module.exports = {
     }
 
     // Restrict owner-only commands
-    const { ownerId } = require('../config/config.json5');
     if (command.category.toLowerCase() === 'owner' && !ownerId.includes(newMessage.author.id)) {
       logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${newMessage.author.tag}`);
       return;

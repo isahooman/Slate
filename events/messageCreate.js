@@ -12,7 +12,7 @@ const { toggle } = readJSON5(commandsPath);
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
-    logger.message(`Processing new message:\n====================================\n${message.content.split('\n').map(line => `| ${line}`).join('\n')}\n====================================`);
+    logger.message(`Processing new message:\n╭──────────────────────────────────╮\n${message.content.split('\n').map(line => `│ ${line}`).join('\n')}\n╰──────────────────────────────────╯`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(message.author.id)) {
