@@ -1,6 +1,5 @@
 let logger = require('../components/logger.js');
 
-
 module.exports = {
   name: 'shardResume',
   execute(id, replayedEvents) {
