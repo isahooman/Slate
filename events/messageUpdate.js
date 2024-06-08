@@ -12,8 +12,29 @@ const { toggle } = readJSON5(commandsPath);
 module.exports = {
   name: 'messageUpdate',
   execute: async(oldMessage, newMessage, client) => {
-    logger.message(`Processing edited message:\n╭──────────────────────────────────╮\n${newMessage.content.split('\n').map(line => `│ ${line}`).join('\n')}\n╰──────────────────────────────────╯`);
+    let messageContent = newMessage.content.split('\n').map(line => `│ ${line}`).join('\n');
 
+    // Calculate the maximum message length (including newlines)
+    const maxLength = Math.max(...newMessage.content.split('\n').map(line => line.length));
+    const indicatorWidth = 15;
+
+    // Build the border
+    const borderChar = '─';
+    const borderLength = Math.max(maxLength + 4, indicatorWidth + 0);
+    const border = borderChar.repeat(borderLength);
+
+    // Check for attachments
+    const hasAttachments = newMessage.attachments.size > 0;
+    const isOnlyAttachment = hasAttachments && newMessage.content.trim() === '';
+    if (hasAttachments) messageContent += isOnlyAttachment ? '[attachment]' : '\n│ [attachment]'.slice(0, indicatorWidth);
+
+    // Check for embeds
+    const hasEmbeds = newMessage.embeds.length > 0;
+    const isOnlyEmbed = hasEmbeds && newMessage.content.trim() === '';
+    if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
+
+    logger.message(`Processing new message:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+    
     // Check if the user is blacklisted
     if (blacklist.users.includes(newMessage.author.id)) {
       logger.warn(`User ${newMessage.author.tag} (${newMessage.author.id}) is in the blacklist. Ignoring message.`);
