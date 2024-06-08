@@ -1,3 +1,5 @@
+/* eslint-disable jsdoc/require-jsdoc */
+/* eslint-disable no-warning-comments */
 const { readJSON5 } = require('./json5Parser.js');
 const { ownerId, notifyOnReady, reportErrors, guildId, errorChannel, errorUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
 const logging = require('../config/logging.json');
@@ -200,7 +202,6 @@ function notifyReady(client, message) {
 }
 
 // TODO: JSDOCS
-// TODO: Comments
 function sendEmbed(embed, client, targetType = null) {
   const { userId = null, channelId = null } = {};
 
@@ -210,7 +211,7 @@ function sendEmbed(embed, client, targetType = null) {
   else if (targetType === 'ready') recipients = [...ownerId, ...readyUsers];
   else recipients = [...ownerId];
 
-  // Add target user if provided and not already included
+  // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
   if (userId && !recipients.includes(userId)) recipients.push(userId);
 
   // Send embed to specific users
@@ -225,7 +226,7 @@ function sendEmbed(embed, client, targetType = null) {
     process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
   }
   else
-    // Send to error or ready channel based on targetType
+    // Send to channel based on targetType
     if (targetType === 'error') try {
       sendEmbedToChannel(embed, client, errorChannel);
     } catch (err) {
@@ -239,14 +240,15 @@ function sendEmbed(embed, client, targetType = null) {
 }
 
 // TODO: JSDOCS
-// TODO: Comments
 function sendEmbedToUser(embed, client, userId) {
+  // Fetch user for given id
   client.users.fetch(userId)
     .then(user => {
       if (!user) {
         process.stderr.write('Failed to find user for sending embed\n');
         return;
       }
+      // Send embed to found user
       user.send({ embeds: [embed] })
         .then(() => process.stdout.write(`Embed sent to user: ${user.username}\n`))
         .catch(err => process.stderr.write(`Failed to send embed to user (ID: ${userId}): ${err}\n`));
@@ -255,22 +257,25 @@ function sendEmbedToUser(embed, client, userId) {
 }
 
 // TODO: JSDOCS
-// TODO: Comments
-async function sendEmbedToChannel(embed, client, channelIds) {
+function sendEmbedToChannel(embed, client, channelIds) {
+  // Try to fetch the home guild
   const guild = client.guilds.cache.get(guildId);
   if (!guild) {
     process.stderr.write('Failed to find guild for sending embed to channel\n');
     return;
   }
 
+  // Loop through each channel ID
   for (const channelId of channelIds) try {
+    // Try to fetch given channel from home guild
     const channel = guild.channels.cache.get(channelId);
     if (!channel) {
       process.stderr.write(`Failed to find channel (ID: ${channelId}) for sending embed\n`);
-      continue; // Skip to the next channel if not found
+      continue;
     }
 
-    await channel.send({ embeds: [embed] });
+    // Send the embed to the found channel
+    channel.send({ embeds: [embed] });
     process.stdout.write(`Embed sent to channel: ${channel.name}\n`);
   } catch (err) {
     process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
