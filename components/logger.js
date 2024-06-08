@@ -201,7 +201,15 @@ function notifyReady(client, message) {
   sendEmbed(startEmbed, client, 'ready');
 }
 
-// TODO: JSDOCS
+/**
+ * Sends an embed to a specified target or list of targets.
+ * @param {object} embed - The embed being sent
+ * @param {client} client - Discord client
+ * @param {string} [targetType] - Message target type:
+ *  - 'error': Sends to owner(s) and error users
+ *  - 'ready': Sends to owner(s) and ready users
+ *  - Otherwise, sends only to owner(s).
+ */
 function sendEmbed(embed, client, targetType = null) {
   const { userId = null, channelId = null } = {};
 
@@ -239,7 +247,12 @@ function sendEmbed(embed, client, targetType = null) {
     }
 }
 
-// TODO: JSDOCS
+/**
+ * Sends an embed to target users specified by Id.
+ * @param {object} embed - The embed being sent
+ * @param {client} client - Discord client
+ * @param {string} userId - Target user Ids
+ */
 function sendEmbedToUser(embed, client, userId) {
   // Fetch user for given id
   client.users.fetch(userId)
@@ -256,7 +269,12 @@ function sendEmbedToUser(embed, client, userId) {
     .catch(err => process.stderr.write(`Failed to fetch user (ID: ${userId}): ${err}\n`));
 }
 
-// TODO: JSDOCS
+/**
+ * Sends an embed to target channels within the home guild specified by Id.
+ * @param {object} embed - The embed being sent
+ * @param {client} client - Discord client
+ * @param {string[]} channelIds - Array of target channel Ids
+ */
 function sendEmbedToChannel(embed, client, channelIds) {
   // Try to fetch the home guild
   const guild = client.guilds.cache.get(guildId);
