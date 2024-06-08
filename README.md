@@ -94,10 +94,10 @@ cd Slate
 
 4. **Configuring Slate**
 
-Next you'll need to setup config.json as well as the optional extra config files.
+Next you'll need to setup config.json5 as well as the optional extra config files.
 
 ```bash
-sudo vi ./config/config.json
+sudo vi ./config/config.json5
 ```
 
 You can follow the [configuration example](./config/README.md#configjson) here if needed.

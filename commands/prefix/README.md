@@ -2,7 +2,7 @@
 
 ## Usage
 
-These commands are able to be used by combining the command name with the prefix in `config.json`.
+These commands are able to be used by combining the command name with the prefix in `config.json5`.
 For example:
 If the prefix is `.` and the command name is `ping` then you can use the command by typing `.ping` into a channel that the bot can read.
 

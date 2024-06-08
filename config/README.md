@@ -4,7 +4,7 @@ Table of Contents
 
 - [Example Configurations](#example-configurations)
   - [blacklist.json](#blacklistjson)
-  - [config.json](#configjson)
+  - [config.json5](#configjson5)
   - [events.json](#eventsjson)
   - [logging.json](#loggingjson)
   - [status.json](#statusjson)
@@ -45,7 +45,7 @@ Table of Contents
       - Array of Strings: `["496360025099337727"]`
       - Server IDs that are entered into here refer to servers the bot will not allow to use commands.
 
-## config.json
+## config.json5
 
 [Back to top](#example-configurations)
 

@@ -45,8 +45,8 @@ process.on('exit', message => {
   logger.error(`Shutdown because: ${message}`);
 }).on('uncaughtException', (err, origin) => {
   logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
-}).on('unhandledRejection', (reason, promise) => {
-  promise.then(message => logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`)).catch(err => logger.error(err));
+}).on('unhandledRejection', (reason, message) => {
+  logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`);
 }).on('warning', warning => {
   logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
 });
