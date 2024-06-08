@@ -19,7 +19,7 @@
   <a href="https://img.shields.io/github/issues/isahooman/Slate" >
     <img src="https://img.shields.io/github/issues/isahooman/Slate" alt="Issues"/>
   </a>
-  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/isahooman/slate">
+  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/version/isahooman/slate">
 </p>
 <br>
 <h2 align="center">Table of Contents</h2>
