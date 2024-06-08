@@ -1,5 +1,5 @@
-const json5Parser = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors } = json5Parser.readJSON5('./config/config.json5');
+const { readJSON5 } = require('./json5Parser.js');
+const { ownerId, notifyOnReady, reportErrors, guildId, errorChannel, errorUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
 const logging = require('../config/logging.json');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment');
@@ -86,7 +86,7 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   // Format file log output
   const fileformat = inputMessage =>
     inputMessage.split(/(?<!\\),/).map(part => {
-    // Remove backslashes from the message
+      // Remove backslashes from the message
       part = part.replace(/\\,/g, ',');
       return part;
     }).join(',');
@@ -180,7 +180,7 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
   errorEmbed.setTitle(errorTitle);
 
   // Send the prepared error report
-  if (client) sendEmbed(errorEmbed, client);
+  if (client) sendEmbed(errorEmbed, client, 'error');
 }
 
 /**
@@ -196,30 +196,85 @@ function notifyReady(client, message) {
     .setDescription(message);
 
   // Send the ready embed
-  sendEmbed(startEmbed, client);
+  sendEmbed(startEmbed, client, 'ready');
 }
 
-/**
- * Sends an embed to all bot owners.
- * @param {EmbedBuilder} embed - The embed to send.
- * @param {client} client - Discord client
- */
-function sendEmbed(embed, client) {
-  // Iterate through each owner ID
-  ownerId.forEach(Owners => {
-    // Fetch the owners from ids in config
-    client.users.fetch(Owners)
-      .then(user => {
-        // Send the embed
-        user.send({ embeds: [embed] })
-          .catch(err => {
-            process.stderr.write(`Failed to send embed to owner (ID: ${Owners}): ${err}\n`);
-          });
-      })
-      .catch(err => {
-        process.stderr.write(`Failed to fetch owner (ID: ${Owners}): ${err}\n`);
-      });
+// TODO: JSDOCS
+// TODO: Comments
+function sendEmbed(embed, client, targetType = null) {
+  const { userId = null, channelId = null } = {};
+
+  // Determine recipient list based on targetType
+  let recipients;
+  if (targetType === 'error') recipients = [...ownerId, ...errorUsers];
+  else if (targetType === 'ready') recipients = [...ownerId, ...readyUsers];
+  else recipients = [...ownerId];
+
+  // Add target user if provided and not already included
+  if (userId && !recipients.includes(userId)) recipients.push(userId);
+
+  // Send embed to specific users
+  recipients.forEach(recipientId => {
+    sendEmbedToUser(embed, client, recipientId);
   });
+
+  // Send embed to given channels
+  if (channelId) try {
+    sendEmbedToChannel(embed, client, [channelId]);
+  } catch (err) {
+    process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
+  }
+  else
+    // Send to error or ready channel based on targetType
+    if (targetType === 'error') try {
+      sendEmbedToChannel(embed, client, errorChannel);
+    } catch (err) {
+      process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
+    }
+    else if (targetType === 'ready') try {
+      sendEmbedToChannel(embed, client, readyChannel);
+    } catch (err) {
+      process.stderr.write(`Failed to send embed to ready channel: ${err}\n`);
+    }
+}
+
+// TODO: JSDOCS
+// TODO: Comments
+function sendEmbedToUser(embed, client, userId) {
+  client.users.fetch(userId)
+    .then(user => {
+      if (!user) {
+        process.stderr.write('Failed to find user for sending embed\n');
+        return;
+      }
+      user.send({ embeds: [embed] })
+        .then(() => process.stdout.write(`Embed sent to user: ${user.username}\n`))
+        .catch(err => process.stderr.write(`Failed to send embed to user (ID: ${userId}): ${err}\n`));
+    })
+    .catch(err => process.stderr.write(`Failed to fetch user (ID: ${userId}): ${err}\n`));
+}
+
+// TODO: JSDOCS
+// TODO: Comments
+async function sendEmbedToChannel(embed, client, channelIds) {
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) {
+    process.stderr.write('Failed to find guild for sending embed to channel\n');
+    return;
+  }
+
+  for (const channelId of channelIds) try {
+    const channel = guild.channels.cache.get(channelId);
+    if (!channel) {
+      process.stderr.write(`Failed to find channel (ID: ${channelId}) for sending embed\n`);
+      continue; // Skip to the next channel if not found
+    }
+
+    await channel.send({ embeds: [embed] });
+    process.stdout.write(`Embed sent to channel: ${channel.name}\n`);
+  } catch (err) {
+    process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
+  }
 }
 
 module.exports =
