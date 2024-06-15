@@ -26,7 +26,7 @@ module.exports = {
     }
 
     if (blacklist.servers.ignore.includes(interaction.guildId)) {
-      logger.warn(`Server ${interaction.guild.name} (${interaction.guildId}) is in the "ignore" blacklist. Ignoring interaction.`);
+      logger.warn(`Server ${interaction.guild.name} (${interaction.guild.id}) is in the "ignore" blacklist. Ignoring interaction.`);
       return;
     }
     if (interaction.isCommand()) {
@@ -38,7 +38,7 @@ module.exports = {
       if (!command) return;
 
       // Disabled check
-      if (!ownerId.includes(interaction.user.id) && (!Object.prototype.hasOwnProperty.call(toggle.slash, interaction.commandName) || toggle.slash[interaction.commandName] === false)) return interaction.reply({
+      if (!ownerId.includes(interaction.user.id) && (!toggle.slash[interaction.commandName] || !toggle.slash[interaction.commandName].enabled)) return interaction.reply({
         content: 'This command has been disabled, possibly for maintenance.\nTry the prefix variation if it exists.',
       });
 

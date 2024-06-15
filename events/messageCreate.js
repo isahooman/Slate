@@ -7,7 +7,7 @@ const { readJSON5 } = require('../components/json5Parser');
 const configPath = path.join(__dirname, '../config/config.json5');
 const commandsPath = path.join(__dirname, '../config/commands.json5');
 const { prefix, ownerId } = readJSON5(configPath);
-const { toggle } = readJSON5(commandsPath);
+const commands = readJSON5(commandsPath);
 
 module.exports = {
   name: 'messageCreate',
@@ -86,7 +86,7 @@ module.exports = {
     }
 
     // Disabled check with owner exemption
-    if (!ownerId.includes(message.author.id) && (toggle.prefix[commandName] === false)) return message.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
+    if (!ownerId.includes(message.author.id) && (commands.prefix[commandName] === false)) return message.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
 
     // Owner-only commands
     if (command.category.toLowerCase() === 'owner' && !ownerId.includes(message.author.id)) {
