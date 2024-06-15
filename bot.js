@@ -44,7 +44,7 @@ startBot(this.client);
 process.on('exit', message => {
   logger.error(`Shutdown because: ${message}`);
 }).on('uncaughtException', (err, origin) => {
-  logger.error(`Caught exception: ${err}\nException origin: ${origin}`);
+  logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
 }).on('unhandledRejection', (reason, message) => {
   logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`);
 }).on('warning', warning => {
