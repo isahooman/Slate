@@ -7,7 +7,7 @@ const configPath = path.join(__dirname, '../config/events.json5');
 
 /**
  * Load Events
- * @param {import("discord.js").Client} client Discord Client
+ * @param {client} client Discord Client
  */
 function loadEvents(client) {
   // Read all files in the events directory
@@ -42,11 +42,11 @@ function loadEvents(client) {
 
 /**
  * Reload Events
- * @param {import("discord.js").Client} client - Discord Client
+ * @param {client} client - Discord Client
  */
-function reloadEvents(client) {
+function reloadAllEvents(client) {
   // Retrieve all events from the events directory
-  const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+  const eventFiles = fs.readdirSync('../events').filter(file => file.endsWith('.js'));
 
   // Load event configuration data
   const eventConfig = loadEventConfig();
@@ -81,6 +81,35 @@ function reloadEvents(client) {
     }
   }
   logger.debug('All events reloaded successfully.');
+}
+
+/**
+ * Reload a specific event
+ * @param {client} client - Discord Client
+ * @param {string} eventName - The name of the event to reload
+ */
+function reloadEvent(client, eventName) {
+  const eventFile = `../events/${eventName}.js`;
+  const filePath = path.join(__dirname, '../events', eventFile);
+
+  try {
+    // Clear event cache
+    delete require.cache[require.resolve(filePath)];
+
+    // Reload event data
+    const event = require(filePath);
+
+    // Remove all listeners for the event
+    client.removeAllListeners(event.name);
+
+    // Register the new event listener
+    if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
+    else client.on(event.name, (...args) => event.execute(...args, client));
+
+    logger.loading(`Reloaded event: ${event.name}`);
+  } catch (error) {
+    logger.error(`Error reloading event ${eventFile}: ${error.message}`);
+  }
 }
 
 /**
@@ -146,7 +175,8 @@ function isEventEnabled(eventName) {
 module.exports =
 {
   loadEvents,
-  reloadEvents,
+  reloadAllEvents,
   setEventEnabled,
   isEventEnabled,
+  reloadEvent,
 };

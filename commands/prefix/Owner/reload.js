@@ -1,4 +1,4 @@
-const { reloadEvents, reloadAllCommands } = require('../../../components/loader');
+const { reloadAllEvents, reloadAllCommands } = require('../../../components/loader');
 const logger = require('../../../components/logger.js');
 const path = require('path');
 const fs = require('fs');
@@ -21,7 +21,7 @@ module.exports = {
     // Reload events
     } else if (arg === 'events') {
       logger.info('[Reload Command] Reloading events.');
-      reloadEvents(message.client);
+      reloadAllEvents(message.client);
       message.channel.send('All events were reloaded!');
       logger.debug('[Reload Command] All events successfully reloaded.');
     // Reload command of given name
@@ -56,7 +56,7 @@ module.exports = {
       logger.debug('[Reload Command] No command provided. Reloading everything.');
       await reloadAllCommands(message.client, 'slash');
       await reloadAllCommands(message.client, 'prefix');
-      reloadEvents(message.client);
+      reloadAllEvents(message.client);
       message.channel.send('All commands and events were reloaded!');
       logger.debug('[Reload Command] All commands and events successfully reloaded.');
     }
@@ -65,10 +65,10 @@ module.exports = {
 
 /**
  * Search for command names based on "command" option input
- * @param {string} input Input String, Command to search
- * @param {import("discord.js").Collection} commands Collection of commands
- * @param {commandType} type CommandType
- * @returns {object} Command
+ * @param {string} input - Command to search
+ * @param {commands} commands - Collection of commands
+ * @param {string} type - CommandType ('slash' or 'prefix')
+ * @returns {object} - Command
  */
 function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
@@ -88,8 +88,8 @@ function findNearestCommand(input, commands, type) {
 
 /**
  * Reload a specific command
- * @param {object} command Command object
- * @param {import("discord.js").Interaction} interaction Discord Interaction
+ * @param {object} command - Command object
+ * @param {interaction} interaction - Discord Interaction
  */
 async function reloadCommand(command, interaction) {
   const commandName = command.data ? command.data.name : command.name;

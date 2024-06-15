@@ -1,4 +1,4 @@
-const { reloadAllCommands, reloadEvents } = require('../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
 const path = require('path');
@@ -23,7 +23,7 @@ module.exports = {
 
     if (Type === 'events') {
       logger.info('[Reload Command] Reloading all events.');
-      await reloadEvents(interaction.client);
+      await reloadAllEvents(interaction.client);
       await interaction.reply('All events were reloaded!');
       logger.info('[Reload Command] All events successfully reloaded.');
     } else if (Type === 'slash') {
@@ -76,10 +76,10 @@ module.exports = {
 
 /**
  * Search for command names based on "command" option input
- * @param {string} input Input String, Command to search
- * @param {import("discord.js").Collection} commands Collection of commands
- * @param {string} type CommandType ('slash' or 'prefix')
- * @returns {object} Command
+ * @param {string} input - Input String, Command to search
+ * @param {commands} commands - Collection of commands
+ * @param {string} type - CommandType ('slash' or 'prefix')
+ * @returns {object} - Command
  */
 function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
