@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable no-warning-comments */
 const { readJSON5 } = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors, guildId, errorChannel, errorUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
+const { ownerId, notifyOnReady, reportErrors, guildId, reportChannel, reportUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
 const logging = require('../config/logging.json');
 const { EmbedBuilder } = require('discord.js');
 const moment = require('moment');
@@ -215,7 +215,7 @@ function sendEmbed(embed, client, targetType = null) {
 
   // Determine recipient list based on targetType
   let recipients;
-  if (targetType === 'error') recipients = [...ownerId, ...errorUsers];
+  if (targetType === 'error') recipients = [...ownerId, ...reportUsers];
   else if (targetType === 'ready') recipients = [...ownerId, ...readyUsers];
   else recipients = [...ownerId];
 
@@ -236,7 +236,7 @@ function sendEmbed(embed, client, targetType = null) {
   else
     // Send to channel based on targetType
     if (targetType === 'error') try {
-      sendEmbedToChannel(embed, client, errorChannel);
+      sendEmbedToChannel(embed, client, reportChannel);
     } catch (err) {
       process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
     }
