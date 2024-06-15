@@ -24,7 +24,7 @@ function loadCommandFiles(directory) {
 
 /**
  * Deploys slash commands
- * @param {import("discord.js").Client} client Discord Client
+ * @param {client} client Discord Client
  */
 async function deployCommands(client) {
   const rest = new REST({ version: '10' }).setToken(token);

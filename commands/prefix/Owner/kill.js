@@ -8,7 +8,7 @@ module.exports = {
 
   async execute(message) {
     try {
-      // Wait while sending confirmation message
+      // Send confirmation message
       await message.channel.send('Shutting down...');
 
       // Logout of Discord

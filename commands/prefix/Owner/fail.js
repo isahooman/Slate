@@ -17,7 +17,7 @@ module.exports = {
     } catch (error) {
       // Log the failure
       logger.error(`[Fail Command] ${error.message}`);
-      message.reply('Failed.');
+      message.reply('Task Failed Successfully.');
     }
   },
 };
