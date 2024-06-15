@@ -28,22 +28,27 @@ module.exports = {
       return;
     }
 
+    let responseMessage = '### Toggled commands:\n';
+
     // Toggle commands based on type
     if (nearestPrefixCommand && (commandType === 'prefix' || commandType === 'both')) {
       const prefixState = isPrefixCommandEnabled(nearestPrefixCommand.name);
       const newPrefixState = !prefixState;
       togglePrefixCommand(nearestPrefixCommand.name, message.client, newPrefixState);
-      message.reply(`Prefix command '${nearestPrefixCommand.name}' is now ${newPrefixState ? 'enabled' : 'disabled'}.`);
+      responseMessage += `Prefix: **\`${nearestPrefixCommand.name}\`** is now **${newPrefixState ? 'enabled' : 'disabled'}**\n`;
     }
 
     if (nearestSlashCommand && (commandType === 'slash' || commandType === 'both')) {
       const slashState = isSlashCommandEnabled(nearestSlashCommand.data.name);
       const newSlashState = !slashState;
       toggleSlashCommand(nearestSlashCommand.data.name, message.client, newSlashState);
-      message.reply(`Slash command '${nearestSlashCommand.data.name}' is now ${newSlashState ? 'enabled' : 'disabled'}.`);
+      responseMessage += `Slash: **\`${nearestSlashCommand.data.name}\`** is now **${newSlashState ? 'enabled' : 'disabled'}**\n`;
     }
 
-    // Reload events: (messageCreate, messageUpdate, interactionCreate)
+    // Send the combined response message
+    message.reply(responseMessage);
+
+    // Reload toggle cache
     reloadEvent(message.client, 'messageCreate');
     reloadEvent(message.client, 'messageUpdate');
     reloadEvent(message.client, 'interactionCreate');
