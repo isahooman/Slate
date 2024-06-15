@@ -1,4 +1,4 @@
-const { reloadAllCommands, reloadAllEvents } = require('../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents, findNearestCommand } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
 const path = require('path');
@@ -73,29 +73,6 @@ module.exports = {
     }
   },
 };
-
-/**
- * Search for command names based on "command" option input
- * @param {string} input - Input String, Command to search
- * @param {commands} commands - Collection of commands
- * @param {string} type - CommandType ('slash' or 'prefix')
- * @returns {object} - Command
- */
-function findNearestCommand(input, commands, type) {
-  let nearestCommand = null;
-  let highestSimilarity = -1;
-
-  commands.forEach((cmd, cmdName) => {
-    if (cmdName.startsWith(input)) {
-      const similarity = cmdName.length - input.length;
-      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
-        highestSimilarity = similarity;
-        nearestCommand = { ...cmd, type };
-      }
-    }
-  });
-  return nearestCommand;
-}
 
 /**
  * Reload a specific command
