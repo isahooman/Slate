@@ -12,7 +12,7 @@ module.exports = {
       await message.channel.send('Shutting down...');
 
       // Logout of Discord
-      message.client.destroy();
+      await message.client.destroy();
 
       // Kill the process
       process.exit();
