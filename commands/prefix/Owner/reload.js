@@ -45,7 +45,7 @@ module.exports = {
         reloadedTypes.push('prefix');
       }
 
-      let responseMessage = `### Reloaded commands for:\n`;
+      let responseMessage = `### Reloaded commands:\n`;
       if (reloadedTypes.includes('slash')) responseMessage += `Slash: ${nearestSlashCommand ? nearestSlashCommand.data.name : 'none'}\n`;
       if (reloadedTypes.includes('prefix')) responseMessage += `Prefix: ${nearestPrefixCommand ? nearestPrefixCommand.name : 'none'}`;
       if (reloadedTypes.length === 0) responseMessage = `No command found with name '${arg}'.`;
