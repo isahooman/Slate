@@ -3,7 +3,7 @@ const logger = require('../../../components/logger.js');
 module.exports = {
   name: 'logtoggle',
   usage: 'log <level>',
-  aliases: ['ltoggle'],
+  aliases: ['ltoggle', 'togglelog'],
   category: 'Owner',
   description: 'Toggles logging for the specified level',
   execute(message, args) {
