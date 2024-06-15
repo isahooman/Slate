@@ -14,7 +14,7 @@ module.exports = {
   execute: async(oldMessage, newMessage, client) => {
     let messageContent = newMessage.content.split('\n').map(line => `│ ${line}`).join('\n');
 
-    // Calculate the maximum message length (including newlines)
+    // Calculate the message width for border
     const maxLength = Math.max(...newMessage.content.split('\n').map(line => line.length));
     const indicatorWidth = 15;
 
@@ -101,7 +101,7 @@ module.exports = {
     // Check if command is disabled unless the user is an owner
     if (!ownerId.includes(newMessage.author.id) && (commands.prefix[commandName] === false)) return newMessage.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
 
-    // Check if the command is NSFW and the channel is not NSFW
+    // Check if the command is NSFW and if it was used within an NSFW channel
     if (command.nsfw && !newMessage.channel.nsfw) {
       logger.debug(`NSFW command used in non-NSFW channel: ${commandName}`);
       return;

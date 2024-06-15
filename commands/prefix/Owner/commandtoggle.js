@@ -17,7 +17,7 @@ module.exports = {
       commandName = args[0];
     }
 
-    // Find the nearest command using findNearestCommand
+    // Find the nearest command matching the input
     const nearestPrefixCommand = commandType === 'prefix' || commandType === 'both' ? findNearestCommand(commandName, message.client.prefixCommands, 'prefix') : null;
     const nearestSlashCommand = commandType === 'slash' || commandType === 'both' ? findNearestCommand(commandName, message.client.slashCommands, 'slash') : null;
 
@@ -45,7 +45,7 @@ module.exports = {
       responseMessage += `Slash: **\`${nearestSlashCommand.data.name}\`** is now **${newSlashState ? 'enabled' : 'disabled'}**\n`;
     }
 
-    // Send the combined response message
+    // Send a response notifying of the new state
     message.reply(responseMessage);
 
     // Reload toggle cache

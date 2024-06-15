@@ -17,8 +17,8 @@ module.exports = {
       if (removedRoles.size > 0) logDetails.push(`Removed Roles: ${removedRoles.map(role => role.name).join(', ')}`);
     }
 
-    // Check emoji image (URL)
-    if (oldEmoji.url !== newEmoji.url) logDetails.push(`Image (URL) Changed`);
+    // Check emoji image
+    if (oldEmoji.url !== newEmoji.url) logDetails.push(`Image Changed`);
 
     // Log changed information
     if (logDetails.length > 0) logger.info(`Emoji updated;

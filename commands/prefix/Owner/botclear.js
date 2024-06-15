@@ -37,8 +37,8 @@ module.exports = {
 
       logger.debug(`[BotClear Command] Deletable messages: ${deletableMessages.size}`);
 
-      // Filter messages to messages from the last 7 minutes
-      const messagesToDelete = deletableMessages.filter(msg => msg.createdTimestamp > (Date.now() - 420000));
+      // Filter messages to messages from the last 10 minutes
+      const messagesToDelete = deletableMessages.filter(msg => msg.createdTimestamp > (Date.now() - 10 * 60 * 1000));
       logger.debug(`[BotClear Command] Messages to delete: ${messagesToDelete.size}`);
 
       // Bulk delete the filtered messages

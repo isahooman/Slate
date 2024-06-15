@@ -14,7 +14,7 @@ module.exports = {
     // Check sticker type
     if (oldSticker.type !== newSticker.type) logDetails.push(`Type: ${oldSticker.type} -> ${newSticker.type}`);
 
-    // Check sticker image (URL)
+    // Check sticker image
     if (oldSticker.url !== newSticker.url) logDetails.push(`Image (URL) Changed`);
 
     // Log changed information

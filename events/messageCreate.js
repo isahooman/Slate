@@ -14,7 +14,7 @@ module.exports = {
   execute: async(message, client) => {
     let messageContent = message.content.split('\n').map(line => `│ ${line}`).join('\n');
 
-    // Calculate the maximum message length (including newlines)
+    // Calculate the message width for border
     const maxLength = Math.max(...message.content.split('\n').map(line => line.length));
     const indicatorWidth = 15;
 

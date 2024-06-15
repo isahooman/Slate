@@ -1,5 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
-/* eslint-disable no-warning-comments */
 const { readJSON5 } = require('./json5Parser.js');
 const { ownerId, notifyOnReady, reportErrors, guildId, reportChannel, reportUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
 const logging = require('../config/logging.json');
@@ -31,7 +29,7 @@ const levels = {
  */
 function isLevelEnabled(level) {
   if (!Object.prototype.hasOwnProperty.call(logging, level)) {
-    // If the level doesn't exist in logging.json, enable it by default
+    // If the level doesn't exist within the config, enable it by default
     logging[level] = true;
     try {
       fs.writeFileSync(path.join(__dirname, '../config/logging.json'), JSON.stringify(logging, null, 2), 'utf8');

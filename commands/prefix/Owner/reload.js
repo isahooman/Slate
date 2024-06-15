@@ -11,7 +11,7 @@ module.exports = {
   async execute(message, args) {
     const arg = args[0];
 
-    // Check if the arg is either 'prefix', 'slash', or 'events'
+    // Check if the arg is either 'prefix', 'slash',
     if (arg === 'prefix' || arg === 'slash') {
       // Reload all commands of a given type
       logger.info(`[Reload Command] Reloading all ${arg} commands.`);

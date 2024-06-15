@@ -29,7 +29,7 @@ module.exports = {
     const newState = !currentState;
     setEventEnabled(eventName, newState);
 
-    // Reload events to toggle listener
+    // Reload events to toggle listeners
     reloadAllEvents(message.client);
 
     // Reply with the new state
