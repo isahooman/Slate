@@ -242,6 +242,18 @@ function findNearestCommand(input, commands, type) {
       }
     }
   });
+
+  // Search for aliases if no exact match is found
+  if (!nearestCommand && type === 'prefix') commands.forEach((cmd, cmdName) => {
+    if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
+      const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
+      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
+        highestSimilarity = similarity;
+        nearestCommand = { ...cmd, type };
+      }
+    }
+  });
+
   return nearestCommand;
 }
 
