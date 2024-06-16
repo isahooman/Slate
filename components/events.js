@@ -46,7 +46,7 @@ function loadEvents(client) {
  */
 function reloadAllEvents(client) {
   // Retrieve all events from the events directory
-  const eventFiles = fs.readdirSync('../events').filter(file => file.endsWith('.js'));
+  const eventFiles = fs.readdirSync(path.join(__dirname, '../events')).filter(file => file.endsWith('.js'));
 
   // Load event configuration data
   const eventConfig = loadEventConfig();
