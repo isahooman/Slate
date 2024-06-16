@@ -233,6 +233,12 @@ function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
   let highestSimilarity = -1;
 
+  // Search for exact alias matches first
+  if (type === 'prefix') commands.forEach((cmd, cmdName) => {
+    if (cmd.aliases && cmd.aliases.includes(input)) nearestCommand = { ...cmd, type };
+  });
+
+  // If no exact alias match, search for nearest command name
   commands.forEach((cmd, cmdName) => {
     if (cmdName.startsWith(input)) {
       const similarity = cmdName.length - input.length;
@@ -243,7 +249,7 @@ function findNearestCommand(input, commands, type) {
     }
   });
 
-  // Search for aliases if no exact match is found
+  // Search for nearest alias if no command name match is found
   if (!nearestCommand && type === 'prefix') commands.forEach((cmd, cmdName) => {
     if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
       const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
