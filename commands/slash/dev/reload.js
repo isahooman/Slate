@@ -1,8 +1,6 @@
-const { reloadAllCommands, reloadAllEvents, findNearestCommand } = require('../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
-const path = require('path');
-const fs = require('fs');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -73,50 +71,3 @@ module.exports = {
     }
   },
 };
-
-/**
- * Reload a specific command
- * @param {object} command Command object
- * @param {import("discord.js").Interaction} interaction Discord Interaction
- */
-async function reloadCommand(command, interaction) {
-  const commandName = command.data ? command.data.name : command.name;
-  logger.debug(`[Reload Command] Reloading command: ${commandName}`);
-
-  const commandType = command.type === 'slash' ? 'slash' : 'prefix';
-  const baseDir = path.join(__dirname, '..', '..', '..', 'commands', commandType);
-  let foundPath = null;
-
-  // Search for the command file in command subfolders
-  const subdirs = await fs.promises.readdir(baseDir);
-  for (const subdir of subdirs) {
-    const subdirPath = path.join(baseDir, subdir);
-    if ((await fs.promises.stat(subdirPath)).isDirectory()) {
-      const files = await fs.promises.readdir(subdirPath);
-      if (files.includes(`${commandName}.js`)) {
-        foundPath = path.join(subdirPath, `${commandName}.js`);
-        break;
-      }
-    }
-  }
-  if (!foundPath) {
-    logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
-    return;
-  }
-
-  // Delete cached command data
-  delete require.cache[require.resolve(foundPath)];
-
-  try {
-    const newCommand = require(foundPath);
-    if (command.data) {
-      interaction.client.slashCommands.set(newCommand.data.name, newCommand);
-      logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);
-    } else {
-      interaction.client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
-      logger.debug(`[Reload Command] Prefix command '${newCommand.name}' reloaded`);
-    }
-  } catch (error) {
-    logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
-  }
-}

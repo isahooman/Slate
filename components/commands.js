@@ -234,7 +234,7 @@ function findNearestCommand(input, commands, type) {
   let highestSimilarity = -1;
 
   // Search for exact alias matches first
-  if (type === 'prefix') commands.forEach((cmd, cmdName) => {
+  if (type === 'prefix') commands.forEach(cmd => {
     if (cmd.aliases && cmd.aliases.includes(input)) nearestCommand = { ...cmd, type };
   });
 
@@ -250,7 +250,7 @@ function findNearestCommand(input, commands, type) {
   });
 
   // Search for nearest alias if no command name match is found
-  if (!nearestCommand && type === 'prefix') commands.forEach((cmd, cmdName) => {
+  if (!nearestCommand && type === 'prefix') commands.forEach(cmd => {
     if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
       const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
       if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
@@ -263,6 +263,54 @@ function findNearestCommand(input, commands, type) {
   return nearestCommand;
 }
 
+/**
+ * Reload a specific command
+ * @param {object} command - Command object
+ * @param {interaction} interaction - Discord Interaction
+ */
+async function reloadCommand(command, interaction) {
+  const commandName = command.data ? command.data.name : command.name;
+  logger.debug(`[Reload Command] Reloading command: ${commandName}`);
+
+  const commandType = command.type === 'slash' ? 'slash' : 'prefix';
+  const baseDir = path.join(__dirname, '..', 'commands', commandType);
+  let foundPath = null;
+
+  // Search for the command file in command subfolders
+  const subdirs = await fs.promises.readdir(baseDir);
+  for (const subdir of subdirs) {
+    const subdirPath = path.join(baseDir, subdir);
+    if ((await fs.promises.stat(subdirPath)).isDirectory()) {
+      const files = await fs.promises.readdir(subdirPath);
+      if (files.includes(`${commandName}.js`)) {
+        foundPath = path.join(subdirPath, `${commandName}.js`);
+        break;
+      }
+    }
+  }
+
+  if (!foundPath) {
+    logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
+    return;
+  }
+
+  // Delete cached command data
+  delete require.cache[require.resolve(foundPath)];
+
+  try {
+    const newCommand = require(foundPath);
+    if (command.data) {
+      interaction.client.slashCommands.set(newCommand.data.name, newCommand);
+      logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);
+    } else {
+      interaction.client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
+      logger.debug(`[Reload Command] Prefix command '${newCommand.name}' reloaded`);
+    }
+  } catch (error) {
+    logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
+  }
+}
+
 module.exports =
 {
   loadCommands,
@@ -272,4 +320,5 @@ module.exports =
   isPrefixCommandEnabled,
   isSlashCommandEnabled,
   findNearestCommand,
+  reloadCommand,
 };
