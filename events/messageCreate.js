@@ -33,7 +33,7 @@ module.exports = {
     const isOnlyEmbed = hasEmbeds && message.content.trim() === '';
     if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
 
-    logger.message(`Processing new message:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+    logger.message(`Processing new message from: [${message.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(message.author.id)) {

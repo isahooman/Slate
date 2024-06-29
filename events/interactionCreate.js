@@ -12,7 +12,7 @@ const toggle = readJSON5(commandsPath);
 module.exports = {
   name: 'interactionCreate',
   execute: async(interaction, client) => {
-    logger.interaction(`Received interaction: ${interaction.id}, from: ${interaction.user.username}`);
+    logger.interaction(`Received interaction: ${interaction.id}, from: [${interaction.user.username}]`);
 
     if (blacklist.users.includes(interaction.user.id)) {
       logger.warn(`User ${interaction.user.username} (${interaction.user.id}) is in the blacklist. Ignoring interaction.`);
