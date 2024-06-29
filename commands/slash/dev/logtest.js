@@ -5,10 +5,9 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('logtest')
     .setDescription('Test logger levels')
-    .addStringOption(option =>
-      option.setName('output')
-        .setDescription('Text to log')
-        .setRequired(true)),
+    .addStringOption(option => option.setName('output')
+      .setDescription('Text to log')
+      .setRequired(true)),
   async execute(interaction) {
     try {
       const outputText = interaction.options.getString('output');
