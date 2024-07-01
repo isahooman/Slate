@@ -38,7 +38,7 @@ module.exports = {
       if (!command) return;
 
       // Disabled check
-      if (!ownerId.includes(interaction.user.id) && (!toggle.slash[interaction.commandName] || !toggle.slash[interaction.commandName].enabled)) return interaction.reply({
+      if (!ownerId.includes(interaction.user.id) && (!toggle.slash[interaction.commandName] || !toggle.slash[interaction.commandName])) return interaction.reply({
         content: 'This command has been disabled, possibly for maintenance.\nTry the prefix variation if it exists.',
       });
 
