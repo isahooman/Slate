@@ -19,7 +19,7 @@
   <a href="https://img.shields.io/github/issues/isahooman/Slate" >
     <img src="https://img.shields.io/github/issues/isahooman/Slate" alt="Issues"/>
   </a>
-  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/isahooman/slate">
+  <img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/version/isahooman/slate">
 </p>
 <br>
 <h2 align="center">Table of Contents</h2>
@@ -33,34 +33,39 @@
 ## Key Features
 
 - Easily configurable
+  - Easily change your prefix, bot owners, or developer guild
+  - Select which Discord intents your bot should start with
+  - Select which Discord events should load
   - Blacklist users and servers
     - Choose to ignore or leave blacklisted servers
-    - Easily change your prefix, bot owners, or developer guild
-    - Select which Discord events should load
-    - Determine active logging levels
-    - Customizable bot presence
+  - Choose which commands should be loaded
+  - Determine active logging levels
+  - Easily Customizable bot presence
 - Comprehensive Logging and Debugging
 - Support for all Discord.js Events
-- Prefix and Slash commands
-- Command Aliases
-- Optional NSFW Properties
-  <br><br>
+- Supports Prefix and Slash commands
+
+<br><br>
 
 ### Commands
 
-- Owner Category
-  - BotClear - Mass deletes bot commands used in the current channel.
-  - Deploy - Deploys global and guild slash commands
-  - Fail - Tests a given error
-  - Kill - Shuts the bot down gracefully
-  - Logs - Retrieves the latest bot logs
-  - LogTest - Tests each logger level
-  - LogToggle - Toggles logging for the specified level
-  - Raw - Relays the raw data of the replied message
-  - Reload - Reloads a either a given command or all commands
-  - Test - Test command with subcommand and options
-- Miscellaneous - Ping - Shows the bot uptime as well as the bots connection to Discord
-  <br><br><br>
+- Owner<br>
+  - <span style="color:lightgreen;">BotClear</span> - Mass deletes bot commands used in the current channel.<br>
+  - <span style="color:lightgreen;">CommandToggle</span> - Toggles the given command<br>
+  - <span style="color:lightgreen;">Deploy</span> - Deploys global and guild slash commands<br>
+  - <span style="color:lightgreen;">Eval</span> - Evaluates given code<br>
+  - <span style="color:lightgreen;">EventToggle</span> - Toggles the given Discord.js event<br>
+  - <span style="color:lightgreen;">Fail</span> - Tests a given error<br>
+  - <span style="color:lightgreen;">Kill</span> - Shuts the bot down gracefully<br>
+  - <span style="color:lightgreen;">Logs</span> - Retrieves the latest bot logs<br>
+  - <span style="color:lightgreen;">LogTest</span> - Tests each logger level<br>
+  - <span style="color:lightgreen;">LogToggle</span> - Toggles logging for the specified level<br>
+  - <span style="color:lightgreen;">Raw</span> - Relays the raw data of the replied message<br>
+  - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands<br>
+  - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options<br>
+- Miscellaneous<br>
+  - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord
+    <br><br><br>
 
 # Getting Started
 
@@ -94,10 +99,10 @@ cd Slate
 
 4. **Configuring Slate**
 
-Next you'll need to setup config.json5 as well as the optional extra config files.
+Next you'll need to setup [config.json5](./config/config.json5) as well as the optional extra config files.
 
 ```bash
-sudo vi ./config/config.json5
+sudo nano ./config/config.json5
 ```
 
 You can follow the [configuration example](./config/README.md#configjson) here if needed.
@@ -112,7 +117,7 @@ npm run start
 
 ### Windows 10 GUI + Command Line
 
-1. Install node from the one of the following methods
+1. **Install node from the one of the following methods**
 
 - [Node v20.11.0 Direct Install Link](https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi)
 - [Node Website](https://nodejs.org/en)
@@ -121,24 +126,35 @@ npm run start
 winget install OpenJS.NodeJS
 ```
 
-2. Download the zip file of the [Slate Repository](https://github.com/isahooman/Slate/archive/refs/heads/main.zip)
+2. **Download the zip file of the [Slate Repository](https://github.com/isahooman/Slate/archive/refs/heads/main.zip)**
 
 ```bash
 # Get the zip file of Slate
 curl -uri "https://github.com/isahooman/Slate/archive/main.zip" -Method "GET" -Outfile "Slate.zip"
 ```
 
-3. Extract the zip file to a file location of your choice
+3. **Extract the zip file to a file location of your choice**
 
 ```bash
 # Unzips the zip file to your directory
 tar -xvf Slate.zip
 ```
 
-4. You may now use the `start.bat` file
+4. **Configuring Slate**
+
+Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+
+```sh
+# Opens the config file within the notepad text editor
+notepad ./config/config.json5
+```
+
+You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+
+5. **You're now ready to run your bot!**
 
 ```bash
-# Installs the npm prerequisites
+# Installs the npm prerequisites and starts the bot
 npm run start
 ```
 
@@ -169,7 +185,18 @@ curl -L -O https://github.com/isahooman/Slate/archive/main.zip
 tar -xvf Slate-main.zip
 ```
 
-4. You may now use the `start.bat` file
+4. **Configuring Slate**
+
+Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+
+```sh
+# Opens the config file within the notepad text editor
+nano ./config/config.json5
+```
+
+You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+
+5. You're now ready to run your bot using the start.sh file!
 
 ```bash
 # Installs the npm prerequisites
