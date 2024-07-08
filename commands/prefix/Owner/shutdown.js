@@ -1,10 +1,12 @@
 const logger = require('../../../components/logger.js');
+const { aliases } = require('./logtoggle.js');
 
 module.exports = {
-  name: 'kill',
-  usage: 'kill',
+  name: 'shutdown',
+  usage: 'shutdown',
   category: 'Owner',
   description: 'Terminates the bot',
+  aliases: ['kill', 'sd'],
 
   async execute(message) {
     try {
