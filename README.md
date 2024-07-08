@@ -43,7 +43,15 @@
   - Easily Customizable bot presence
 - Comprehensive Logging and Debugging
 - Support for all Discord.js Events
-- Supports Prefix and Slash commands
+- Flexible commands
+  - Supports slash and prefix commands
+  - choose if commands are usable in DMs
+  - optional NSFW properties
+  - Custom aliases
+  - Customizable cooldowns
+    - Per user
+    - Per server
+    - Global
 
 <br><br>
 
