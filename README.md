@@ -71,6 +71,7 @@
   - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands<br>
   - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully<br>
   - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options<br>
+  - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed<br>
 - Miscellaneous<br>
   - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord
     <br><br><br>
