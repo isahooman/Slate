@@ -1,22 +1,38 @@
-const moment = require('moment'); require('moment-duration-format');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const moment = require('moment');
+require('moment-duration-format');
 const logger = require('../../../components/logger.js');
-const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('ping')
-    .setDescription('Check the bot ping and uptime.'),
-
+    .setDescription('Check the bot\'s response time.'),
   async execute(interaction) {
-    const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]');
+    // Log the start of the command
+    logger.debug(`[Ping Command] Starting ping, calculation for user: ${interaction.user.username}`);
 
-    // Get ping from bot client
-    logger.debug(`[Ping Command] Starting ping calculation for ${interaction.member?.user.tag || interaction.user.tag}`);
+    const startTime = Date.now();
+    const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]');
     const botPing = interaction.client.ws.ping;
+
+    await interaction.reply('Pinging...');
+
+    let embedColor;
+    if (botPing < 75) embedColor = '#00ff37';
+    else if (botPing < 150) embedColor = '#FFC107';
+    else embedColor = '#F44336';
+
+    const embed = new EmbedBuilder()
+      .setColor(embedColor)
+      .setTitle('Pong!')
+      .addFields(
+        { name: 'Response time', value: `${Date.now() - startTime}ms`, inline: false },
+        { name: 'Websocket Ping', value: `${botPing}ms`, inline: false },
+        { name: 'Uptime', value: `${uptime}`, inline: false },
+      );
+
     logger.debug(`[Ping Command] Ping calculated: ${botPing}ms, Uptime: ${uptime}`);
 
-    // Reply to user
-    if (interaction.guild) await interaction.reply(`<@${interaction.user.id}> Pong!\n\`\`\`GraphQL\nMy ping: ${botPing}ms\nMy uptime: ${uptime}\n\`\`\``);
-    else await interaction.reply(`Pong!\n\`\`\`GraphQL\nMy ping: ${botPing}ms\nMy uptime: ${uptime}\n\`\`\``, { ephemeral: true });
+    await interaction.editReply({ content: `<@${interaction.user.id}>`, embeds: [embed] });
   },
 };
