@@ -7,7 +7,11 @@ module.exports = {
   name: 'logs',
   usage: 'logs <number of lines>',
   category: 'Owner',
+  allowDM: true,
   description: 'Retrieve the latest bot logs.',
+  cooldowns: {
+    global: 15000,
+  },
   execute(message, args) {
     try {
       // Get the number of lines from the command arguments

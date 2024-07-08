@@ -38,6 +38,7 @@ module.exports = {
   name: 'eval',
   usage: 'eval <code>',
   category: 'Owner',
+  allowDM: true,
   description: 'Evaluates code',
 
   /**

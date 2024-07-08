@@ -9,7 +9,7 @@ module.exports = {
   category: 'misc', // Category of the command
   aliases: ['p'], // Aliases provide alternate names for the command.
   nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channel
-  allowDM: false, // If the command is allowed to be used in direct messages or not
+  allowDM: true, // If the command is allowed to be used in direct messages or not
   description: 'Check the bot\'s response time.', // Brief description of what the command does
   execute(message) {
     // Log the start of the command

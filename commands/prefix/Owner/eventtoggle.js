@@ -4,8 +4,9 @@ const logger = require('../../../components/logger');
 module.exports = {
   name: 'eventtoggle',
   usage: 'eventtoggle <event_name>',
-  aliases: ['etoggle', 'toggleevent'],
   category: 'Owner',
+  aliases: ['etoggle', 'toggleevent'],
+  allowDM: true,
   description: 'Toggles the specified event',
   execute(message, args) {
     const eventName = args[0];

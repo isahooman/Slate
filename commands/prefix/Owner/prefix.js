@@ -8,7 +8,6 @@ module.exports = {
   usage: 'prefix <new prefix>',
   category: 'Owner',
   aliases: ['setprefix'],
-  nsfw: false,
   allowDM: true,
   description: 'Changes the bot\'s prefix.',
   execute(message) {

@@ -5,6 +5,7 @@ module.exports = {
   usage: 'log <level>',
   aliases: ['ltoggle', 'togglelog'],
   category: 'Owner',
+  allowDM: true,
   description: 'Toggles logging for the specified level',
   execute(message, args) {
     // Get the logging level from the command arguments.

@@ -4,8 +4,9 @@ const logger = require('../../../components/logger.js');
 module.exports = {
   name: 'commandtoggle',
   usage: 'commantoggle [type] <command_name>',
-  aliases: ['ctoggle', 'togglecommand'],
   category: 'Owner',
+  aliases: ['ctoggle', 'togglecommand'],
+  allowDM: true,
   description: 'Toggles the specified command',
   execute(message, args) {
     let commandType = args[0];

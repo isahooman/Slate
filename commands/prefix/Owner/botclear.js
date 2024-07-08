@@ -12,8 +12,9 @@ const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?',
 module.exports = {
   name: 'botclear',
   usage: 'bc <self/all>',
-  aliases: ['bc'],
   category: 'Owner',
+  aliases: ['bc'],
+  allowDM: false,
   description: 'Clears bot messages',
   execute: async(message, args) => {
     // Check the arg provided

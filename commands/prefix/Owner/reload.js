@@ -6,6 +6,7 @@ module.exports = {
   category: 'Owner',
   usage: 'reload <slash/prefix/events> or <command name>',
   description: 'Reloads a command, all commands, or events.',
+  allowDM: true,
   async execute(message, args) {
     const arg = args[0];
 

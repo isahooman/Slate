@@ -5,7 +5,11 @@ module.exports = {
   name: 'deploy',
   usage: 'deploy',
   category: 'Owner',
+  allowDM: true,
   description: 'Deploy all slash commands.',
+  cooldowns: {
+    global: 60000,
+  },
   async execute(message) {
     try {
       await deployCommands();

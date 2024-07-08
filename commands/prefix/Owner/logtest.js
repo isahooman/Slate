@@ -5,6 +5,7 @@ module.exports = {
   usage: 'logtest <message>',
   category: 'Owner',
   description: 'Test logger levels',
+  allowDM: true,
   execute(message, args) {
     try {
       // Get text input from command arguments
