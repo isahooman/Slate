@@ -59,22 +59,27 @@
 
 - Owner<br>
   - <span style="color:lightgreen;">BotClear</span> - Mass deletes bot commands used in the current channel.<br>
-  - <span style="color:lightgreen;">CommandToggle</span> - Toggles the given command<br>
-  - <span style="color:lightgreen;">Deploy</span> - Deploys global and guild slash commands<br>
-  - <span style="color:lightgreen;">Eval</span> - Evaluates given code<br>
-  - <span style="color:lightgreen;">EventToggle</span> - Toggles the given Discord.js event<br>
-  - <span style="color:lightgreen;">Fail</span> - Tests a given error<br>
-  - <span style="color:lightgreen;">Logs</span> - Retrieves the latest bot logs<br>
-  - <span style="color:lightgreen;">LogTest</span> - Tests each logger level<br>
-  - <span style="color:lightgreen;">LogToggle</span> - Toggles logging for the specified level<br>
-  - <span style="color:lightgreen;">Raw</span> - Relays the raw data of the replied message<br>
-  - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands<br>
-  - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully<br>
-  - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options<br>
-  - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed<br>
+  - <span style="color:lightgreen;">CommandToggle</span> - Toggles the given command.<br>
+  - <span style="color:lightgreen;">Deploy</span> - Deploys global and guild slash commands.<br>
+  - <span style="color:lightgreen;">Eval</span> - Evaluates given code.<br>
+  - <span style="color:lightgreen;">EventToggle</span> - Toggles the given Discord.js event.<br>
+  - <span style="color:lightgreen;">Fail</span> - Tests a given error.<br>
+  - <span style="color:lightgreen;">Logs</span> - Retrieves the latest bot logs.<br>
+  - <span style="color:lightgreen;">LogTest</span> - Tests each logger level.<br>
+  - <span style="color:lightgreen;">LogToggle</span> - Toggles logging for the specified level.<br>
+  - <span style="color:lightgreen;">Raw</span> - Relays the raw data of the replied message.<br>
+  - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands.<br>
+  - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully.<br>
+  - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options.<br>
+  - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
 - Miscellaneous<br>
-  - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord
+  - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.
     <br><br><br>
+- Utility
+  - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
+- Fun
+  - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
+  - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.<br>
 
 # Getting Started
 
