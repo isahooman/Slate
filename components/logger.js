@@ -60,12 +60,11 @@ function setLevelEnabled(level, enabled) {
  * Formats and logs messages
  * @param {string} level Level name
  * @param {string} message Log Message
- * @param {import('discord.js').Client} client Discord Client
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
  * @returns {void|string} Void if disabled, String if enabled
  */
-function logMessage(level, message, client = bot.client, commandType = 'unknown', commandInfo = {}) {
+function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   if (!isLevelEnabled(level)) return;
 
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -131,18 +130,17 @@ function logMessage(level, message, client = bot.client, commandType = 'unknown'
   const fileOutput = `<${timestamp}> <${level}> ${fileformat(message)}\n`;
   fs.appendFileSync(logFile, fileOutput);
 
-  if (level === levels.START && notifyOnReady) notifyReady(client, message);
-  if (level === levels.ERROR && reportErrors) handleErrors(message, client, commandType, commandInfo);
+  if (level === levels.START && notifyOnReady) notifyReady(message);
+  if (level === levels.ERROR && reportErrors) handleErrors(message, commandType, commandInfo);
 }
 
 /**
  * Error Handler
  * @param {string} messageText Message Text
- * @param {client} client - Discord Client
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
  */
-function handleErrors(messageText, client = bot.client, commandType = 'unknown', commandInfo = {}) {
+function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
   let errorTitle = 'Error';
 
@@ -180,15 +178,14 @@ function handleErrors(messageText, client = bot.client, commandType = 'unknown',
   errorEmbed.setTitle(errorTitle);
 
   // Send the prepared error report
-  if (client) sendEmbed(errorEmbed, client, 'error');
+  sendEmbed(errorEmbed, 'error');
 }
 
 /**
  * Notifies that the bot is ready.
- * @param {client} client - Discord client
  * @param {string} message - Log message to use in the description.
  */
-function notifyReady(client, message) {
+function notifyReady(message) {
   // Create an embed to notify that the bot has started
   const startEmbed = new EmbedBuilder()
     .setColor('#17d5ad')
@@ -196,19 +193,18 @@ function notifyReady(client, message) {
     .setDescription(message);
 
   // Send the ready embed
-  sendEmbed(startEmbed, client, 'ready');
+  sendEmbed(startEmbed, 'ready');
 }
 
 /**
  * Sends an embed to a specified target or list of targets.
  * @param {object} embed - The embed being sent
- * @param {client} client - Discord client
  * @param {string} [targetType] - Message target type:
  *  - 'error': Sends to owner(s) and error users
  *  - 'ready': Sends to owner(s) and ready users
  *  - Otherwise, sends only to owner(s).
  */
-function sendEmbed(embed, client, targetType = null) {
+function sendEmbed(embed, targetType = null) {
   const { userId = null, channelId = null } = {};
 
   // Determine recipient list based on targetType
@@ -222,24 +218,24 @@ function sendEmbed(embed, client, targetType = null) {
 
   // Send embed to specific users
   recipients.forEach(recipientId => {
-    sendEmbedToUser(embed, client, recipientId);
+    sendEmbedToUser(embed, recipientId);
   });
 
   // Send embed to given channels
   if (channelId) try {
-    sendEmbedToChannel(embed, client, [channelId]);
+    sendEmbedToChannel(embed, [channelId]);
   } catch (err) {
     process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
   }
   else
     // Send to channel based on targetType
     if (targetType === 'error') try {
-      sendEmbedToChannel(embed, client, reportChannel);
+      sendEmbedToChannel(embed, reportChannel);
     } catch (err) {
       process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
     }
     else if (targetType === 'ready') try {
-      sendEmbedToChannel(embed, client, readyChannel);
+      sendEmbedToChannel(embed, readyChannel);
     } catch (err) {
       process.stderr.write(`Failed to send embed to ready channel: ${err}\n`);
     }
@@ -248,12 +244,11 @@ function sendEmbed(embed, client, targetType = null) {
 /**
  * Sends an embed to target users specified by Id.
  * @param {object} embed - The embed being sent
- * @param {client} client - Discord client
  * @param {string} userId - Target user Ids
  */
-function sendEmbedToUser(embed, client, userId) {
+function sendEmbedToUser(embed, userId) {
   // Fetch user for given id
-  client.users.fetch(userId)
+  bot.client.users.fetch(userId)
     .then(user => {
       if (!user) {
         process.stderr.write('Failed to find user for sending embed\n');
@@ -270,12 +265,11 @@ function sendEmbedToUser(embed, client, userId) {
 /**
  * Sends an embed to target channels within the home guild specified by Id.
  * @param {object} embed - The embed being sent
- * @param {client} client - Discord client
  * @param {string[]} channelIds - Array of target channel Ids
  */
-function sendEmbedToChannel(embed, client, channelIds) {
+function sendEmbedToChannel(embed, channelIds) {
   // Try to fetch the home guild
-  const guild = client.guilds.cache.get(guildId);
+  const guild = bot.client.guilds.cache.get(guildId);
   if (!guild) {
     process.stderr.write('Failed to find guild for sending embed to channel\n');
     return;
@@ -300,15 +294,15 @@ function sendEmbedToChannel(embed, client, channelIds) {
 
 module.exports =
 {
-  info: (message, client, commandType, commandInfo) => logMessage(levels.INFO, message, client, commandType, commandInfo),
-  warn: (message, client, commandType, commandInfo) => logMessage(levels.WARN, message, client, commandType, commandInfo),
-  error: (message, client, commandType, commandInfo) => logMessage(levels.ERROR, message, client, commandType, commandInfo),
-  command: (message, client, commandType, commandInfo) => logMessage(levels.COMMAND, message, client, commandType, commandInfo),
-  debug: (message, client, commandType, commandInfo) => logMessage(levels.DEBUG, message, client, commandType, commandInfo),
-  start: (message, client, commandType, commandInfo) => logMessage(levels.START, message, client, commandType, commandInfo),
-  message: (message, client, commandType, commandInfo) => logMessage(levels.MESSAGE, message, client, commandType, commandInfo),
-  interaction: (message, client, commandType, commandInfo) => logMessage(levels.INTERACTION, message, client, commandType, commandInfo),
-  loading: (message, client, commandType, commandInfo) => logMessage(levels.LOADING, message, client, commandType, commandInfo),
+  info: (message, commandType, commandInfo) => logMessage(levels.INFO, message, commandType, commandInfo),
+  warn: (message, commandType, commandInfo) => logMessage(levels.WARN, message, commandType, commandInfo),
+  error: (message, commandType, commandInfo) => logMessage(levels.ERROR, message, commandType, commandInfo),
+  debug: (message, commandType, commandInfo) => logMessage(levels.DEBUG, message, commandType, commandInfo),
+  command: message => logMessage(levels.COMMAND, message),
+  start: message => logMessage(levels.START, message),
+  message: message => logMessage(levels.MESSAGE, message),
+  interaction: message => logMessage(levels.INTERACTION, message),
+  loading: message => logMessage(levels.LOADING, message),
   setLevelEnabled,
   isLevelEnabled,
   levels,

@@ -146,7 +146,7 @@ module.exports = {
       await message.reply({
         content: 'An error occurred with this command.',
         allowedMentions: { repliedUser: false },
-      }).catch(err => logger.error(`Reply error: ${err.message}`, client));
+      }).catch(err => logger.error(`Reply error: ${err.message}`));
     }
   },
 };
