@@ -20,14 +20,14 @@
   // whether or not the bot will send a message when it's online and ready
   notifyOnReady: true,
   // (optional) Channel within the home server which will receive ready notification
-  readyChannel: [""],
+  readyChannel: [],
   // (optional) Users who will receive ready notifications
   readyUsers: [],
 
   // whether or not the bot will attempt to send a report when an error occurs
   reportErrors: true,
   // (optional) Channel within the home server which the bot will send error reports to
-  reportChannel: [""],
+  reportChannel: [],
   // (optional) Users who will receive error reports in dms
   reportUsers: [],
 }
