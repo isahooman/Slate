@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
 const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('../../../components/loader.js');
+const { SlashCommandBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
 
 module.exports = {

@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
 const { Collection } = require('discord.js');
+const fs = require('fs');
 const logger = require('./logger.js');
+const path = require('path');
 const { readJSON5, writeJSON5 } = require('./json5Parser.js');
 const ConfigFile = path.join(__dirname, '../config/commands.json5');
 const commandsConfig = readJSON5(ConfigFile);
@@ -9,6 +9,7 @@ const commandsConfig = readJSON5(ConfigFile);
 /**
  * Load all commands and ensure they exist in the config file
  * @param {client} client Discord Client
+ * @author isahooman
  */
 function loadCommands(client) {
   logger.debug('Starting command loading process...');
@@ -33,6 +34,7 @@ function loadCommands(client) {
  * Load slash commands
  * @param {client} client - Discord client
  * @param {string} directory - The commands directory
+ * @author isahooman
  */
 function loadSlashCommands(client, directory) {
   logger.debug(`Loading slash commands from ${path.relative(process.cwd(), directory)}...`);
@@ -56,6 +58,7 @@ function loadSlashCommands(client, directory) {
  * Load prefix commands.
  * @param {client} client - Discord client
  * @param {string} directory - The commands directory.
+ * @author isahooman
  */
 function loadPrefixCommands(client, directory) {
   logger.debug(`Loading prefix commands from ${directory}...`);
@@ -84,6 +87,7 @@ function loadPrefixCommands(client, directory) {
  * Recursively Read Command Directories
  * @param {string} directory - A given directory
  * @returns {Array} - An array of files
+ * @author isahooman
  */
 function readCommands(directory) {
   const files = fs.readdirSync(directory);
@@ -112,6 +116,7 @@ function readCommands(directory) {
  * Reloads all commands of the given type.
  * @param {client} client - Discord client
  * @param {string} commandType - The type of commands to reload (slash or prefix).
+ * @author isahooman
  */
 function reloadAllCommands(client, commandType) {
   logger.debug(`Reloading all ${commandType} commands...`);
@@ -147,6 +152,7 @@ function reloadAllCommands(client, commandType) {
  * Toggle the enabled state of a slash command.
  * @param {string} input - The command to toggle.
  * @param {client} client - Discord client
+ * @author isahooman
  */
 function toggleSlashCommand(input, client) {
   logger.debug(`Attempting to toggle slash command: ${input}`);
@@ -168,6 +174,7 @@ function toggleSlashCommand(input, client) {
  * Toggles the enabled state of a prefix command.
  * @param {string} input - The command to toggle.
  * @param {client} client - Discord client
+ * @author isahooman
  */
 function togglePrefixCommand(input, client) {
   logger.debug(`Attempting to toggle prefix command: ${input}`);
@@ -189,6 +196,7 @@ function togglePrefixCommand(input, client) {
  * Checks the enabled state of a slash command.
  * @param {string} commandName - The name of the command.
  * @returns {boolean} - True if enabled, false otherwise.
+ * @author isahooman
  */
 function isSlashCommandEnabled(commandName) {
   logger.debug(`Checking if slash command ${commandName} is enabled...`);
@@ -207,6 +215,7 @@ function isSlashCommandEnabled(commandName) {
  * Checks the enabled state of a prefix command.
  * @param {string} commandName - The name of the command.
  * @returns {boolean} - True if enabled, false otherwise.
+ * @author isahooman
  */
 function isPrefixCommandEnabled(commandName) {
   commandName = commandName.toLowerCase();
@@ -228,6 +237,7 @@ function isPrefixCommandEnabled(commandName) {
  * @param {commands} commands - A collection of commands to search through.
  * @param {string} type - The type of command (e.g., 'slash' or 'prefix').
  * @returns {commands | null} - The nearest command found, or null if no matching command is found.
+ * @author isahooman
  */
 function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
@@ -275,6 +285,7 @@ function findNearestCommand(input, commands, type) {
  * Reload a specific command
  * @param {object} command - Command object
  * @param {interaction} interaction - Discord Interaction
+ * @author isahooman
  */
 async function reloadCommand(command, interaction) {
   const commandName = command.data ? command.data.name : command.name;

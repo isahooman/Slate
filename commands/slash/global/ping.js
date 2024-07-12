@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const moment = require('moment');
-require('moment-duration-format');
+const moment = require('moment'); require('moment-duration-format');
 const logger = require('../../../components/logger.js');
 
 module.exports = {

@@ -1,12 +1,12 @@
+const bot = require('../bot.js');
+const chalk = require('chalk');
+const { EmbedBuilder } = require('discord.js');
+const fs = require('fs');
+const logging = require('../config/logging.json');
+const moment = require('moment');
+const path = require('path');
 const { readJSON5 } = require('./json5Parser.js');
 const { ownerId, notifyOnReady, reportErrors, guildId, reportChannel, reportUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
-const logging = require('../config/logging.json');
-const { EmbedBuilder } = require('discord.js');
-const moment = require('moment');
-const chalk = require('chalk');
-const path = require('path');
-const fs = require('fs');
-const bot = require('../bot.js');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
 
@@ -26,6 +26,7 @@ const levels = {
  * Checks to see if logging levels are enabled
  * @param {number} level Logging Level
  * @returns {boolean} Active or not
+ * @author isahooman
  */
 function isLevelEnabled(level) {
   if (!Object.prototype.hasOwnProperty.call(logging, level)) {
@@ -44,6 +45,7 @@ function isLevelEnabled(level) {
  * Toggles logging levels
  * @param {string} level Level Name
  * @param {boolean} enabled True or False
+ * @author isahooman
  */
 function setLevelEnabled(level, enabled) {
   if (Object.prototype.hasOwnProperty.call(levels, level)) {
@@ -63,6 +65,7 @@ function setLevelEnabled(level, enabled) {
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
  * @returns {void|string} Void if disabled, String if enabled
+ * @author isahooman
  */
 function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   if (!isLevelEnabled(level)) return;
@@ -139,6 +142,7 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
  * @param {string} messageText Message Text
  * @param {commandType} commandType Command Type
  * @param {commandInfo} commandInfo Command Info
+ * @author isahooman
  */
 function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
@@ -184,6 +188,7 @@ function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
 /**
  * Notifies that the bot is ready.
  * @param {string} message - Log message to use in the description.
+ * @author isahooman
  */
 function notifyReady(message) {
   // Create an embed to notify that the bot has started
@@ -203,6 +208,7 @@ function notifyReady(message) {
  *  - 'error': Sends to owner(s) and error users
  *  - 'ready': Sends to owner(s) and ready users
  *  - Otherwise, sends only to owner(s).
+ * @author isahooman
  */
 function sendEmbed(embed, targetType = null) {
   const { userId = null, channelId = null } = {};
@@ -245,6 +251,7 @@ function sendEmbed(embed, targetType = null) {
  * Sends an embed to target users specified by Id.
  * @param {object} embed - The embed being sent
  * @param {string} userId - Target user Ids
+ * @author isahooman
  */
 function sendEmbedToUser(embed, userId) {
   // Fetch user for given id
@@ -266,6 +273,7 @@ function sendEmbedToUser(embed, userId) {
  * Sends an embed to target channels within the home guild specified by Id.
  * @param {object} embed - The embed being sent
  * @param {string[]} channelIds - Array of target channel Ids
+ * @author isahooman
  */
 function sendEmbedToChannel(embed, channelIds) {
   // Try to fetch the home guild

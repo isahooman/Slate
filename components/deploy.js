@@ -1,10 +1,9 @@
+const path = require('path');
+const { readJSON5 } = require('./json5Parser.js');
+const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
 const { REST, Routes } = require('discord.js');
 const logger = require('./logger.js');
-const path = require('path');
 const fs = require('fs');
-const configPath = path.join(__dirname, '../config/config.json5');
-const { readJSON5 } = require('./json5Parser.js');
-const { clientId, token, guildId } = readJSON5(configPath);
 
 /**
  * Load commands and their data

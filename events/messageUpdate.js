@@ -3,11 +3,8 @@ const logger = require('../components/logger.js');
 const { cooldown } = require('../bot.js');
 const path = require('path');
 const { readJSON5 } = require('../components/json5Parser');
-
-const configPath = path.join(__dirname, '../config/config.json5');
-const commandsPath = path.join(__dirname, '../config/commands.json5');
-const { prefix, ownerId } = readJSON5(configPath);
-const commands = readJSON5(commandsPath);
+const { prefix, ownerId } = readJSON5(path.join(__dirname, '../config/config.json5'));
+const commands = readJSON5(path.join(__dirname, '../config/commands.json5'));
 
 module.exports = {
   name: 'messageUpdate',

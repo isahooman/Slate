@@ -1,9 +1,8 @@
-const path = require('path');
+const { readJSON5, writeJSON5 } = require('./json5Parser.js');
+const configPath = path.join(__dirname, '../config/events.json5');
 const fs = require('fs');
 const logger = require('./logger.js');
-const { readJSON5, writeJSON5 } = require('./json5Parser.js');
-
-const configPath = path.join(__dirname, '../config/events.json5');
+const path = require('path');
 
 /**
  * Load Events
