@@ -3,7 +3,7 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('kill')
+    .setName('shutdown')
     .setDescription('Terminates the bot process'),
 
   async execute(interaction) {
