@@ -35,7 +35,7 @@ module.exports = {
       await interaction.reply('All prefix commands were reloaded!');
       logger.info('[Reload Command] All prefix commands successfully reloaded.');
     } else if (commandName) {
-      logger.debug(`[Reload Command] Attempting to reload command: ${commandName}`);
+      logger.debug(`[Reload Command] Attempting to find command: ${commandName}`);
       // Search for commands by name within both command types
       const nearestSlashCommand = findNearestCommand(commandName, interaction.client.slashCommands, 'slash');
       const nearestPrefixCommand = findNearestCommand(commandName, interaction.client.prefixCommands, 'prefix');
@@ -43,22 +43,23 @@ module.exports = {
 
       // If a slash command is found reload it
       if (nearestSlashCommand) {
-        logger.debug(`[Reload Command] Found slash command: ${nearestSlashCommand.data.name}`);
         await reloadCommand(nearestSlashCommand, interaction);
         reloadedTypes.push('slash');
       }
       // If a prefix command is found reload it
       if (nearestPrefixCommand) {
-        logger.debug(`[Reload Command] Found prefix command: ${nearestPrefixCommand.name}`);
         await reloadCommand(nearestPrefixCommand, interaction);
         reloadedTypes.push('prefix');
       }
 
-      let responseMessage = `### Reloaded commands for:\n`;
+      // Response message
+      let responseMessage = `### Reloaded commands:\n`;
+      // If slash commands were reloaded, add its line to the response
       if (reloadedTypes.includes('slash')) responseMessage += `Slash: ${nearestSlashCommand ? nearestSlashCommand.data.name : 'none'}\n`;
+      // If prefix commands were reloaded, add its line to the response
       if (reloadedTypes.includes('prefix')) responseMessage += `Prefix: ${nearestPrefixCommand ? nearestPrefixCommand.name : 'none'}`;
-      if (reloadedTypes.length === 0) responseMessage = `No command found with name '${commandName}'.`;
-
+      // Indicate if no commands were reloaded
+      if (reloadedTypes.length === 0) responseMessage = `No commands found with name '${commandName}'.`;
       await interaction.reply(responseMessage);
       logger.debug(`[Reload Command] Reload completed for command: ${commandName}`);
     } else {

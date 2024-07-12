@@ -233,9 +233,14 @@ function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
   let highestSimilarity = -1;
 
+  logger.debug(`Searching for command input: ${input}`);
+
   // Search for exact alias matches first
   if (type === 'prefix') commands.forEach(cmd => {
-    if (cmd.aliases && cmd.aliases.includes(input)) nearestCommand = { ...cmd, type };
+    if (cmd.aliases && cmd.aliases.includes(input)) {
+      nearestCommand = { ...cmd, type };
+      logger.debug(`Found alias match for prefix command: ${input} -> ${cmd.name}`);
+    }
   });
 
   // If no exact alias match, search for nearest command name
@@ -245,21 +250,24 @@ function findNearestCommand(input, commands, type) {
       if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
         highestSimilarity = similarity;
         nearestCommand = { ...cmd, type };
+        logger.debug(`Found command name match for ${type} command: ${input} -> ${cmdName}`);
       }
     }
   });
-
   // Search for nearest alias if no command name match is found
-  if (!nearestCommand && type === 'prefix') commands.forEach(cmd => {
-    if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
-      const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
-      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
-        highestSimilarity = similarity;
-        nearestCommand = { ...cmd, type };
+  if (!nearestCommand && type === 'prefix') {
+    logger.debug(`No matches found, searching for nearest alias.`);
+    commands.forEach(cmd => {
+      if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
+        const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
+        if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
+          highestSimilarity = similarity;
+          nearestCommand = { ...cmd, type };
+          logger.debug(`Found alias match for command: ${input} -> ${cmd.aliases.find(alias => alias.startsWith(input))}`);
+        }
       }
-    }
-  });
-
+    });
+  }
   return nearestCommand;
 }
 
