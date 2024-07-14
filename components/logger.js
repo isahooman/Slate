@@ -214,10 +214,9 @@ function sendEmbed(embed, targetType = null) {
   const { userId = null, channelId = null } = {};
 
   // Determine recipient list based on targetType
-  let recipients;
-  if (targetType === 'error') recipients = [...ownerId, ...reportUsers];
-  else if (targetType === 'ready') recipients = [...ownerId, ...readyUsers];
-  else recipients = [...ownerId];
+  let recipients = [...ownerId];
+  if (targetType === 'error' && reportUsers) recipients.push(...reportUsers);
+  if (targetType === 'ready' && readyUsers) recipients.push(...readyUsers);
 
   // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
   if (userId && !recipients.includes(userId)) recipients.push(userId);
@@ -284,7 +283,7 @@ function sendEmbedToChannel(embed, channelIds) {
   }
 
   // Loop through each channel ID
-  for (const channelId of channelIds) try {
+  if (channelIds && channelIds.length > 0) for (const channelId of channelIds) try {
     // Try to fetch given channel from home guild
     const channel = guild.channels.cache.get(channelId);
     if (!channel) {
