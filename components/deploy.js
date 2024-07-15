@@ -9,6 +9,7 @@ const fs = require('fs');
  * Load commands and their data
  * @param {directory} directory File Directory
  * @returns {JSON} Loads command data in JSON
+ * @author isahooman
  */
 function loadCommandFiles(directory) {
   const fullPath = path.join(__dirname, '..', directory);
@@ -24,6 +25,7 @@ function loadCommandFiles(directory) {
 /**
  * Deploys slash commands
  * @param {client} client Discord Client
+ * @author isahooman
  */
 async function deployCommands(client) {
   const rest = new REST({ version: '10' }).setToken(token);

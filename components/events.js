@@ -7,6 +7,7 @@ const logger = require('./logger.js');
 /**
  * Load Events
  * @param {client} client Discord Client
+ * @author isahooman
  */
 function loadEvents(client) {
   // Read all files in the events directory
@@ -42,6 +43,7 @@ function loadEvents(client) {
 /**
  * Reload Events
  * @param {client} client - Discord Client
+ * @author isahooman
  */
 function reloadAllEvents(client) {
   // Retrieve all events from the events directory
@@ -86,6 +88,7 @@ function reloadAllEvents(client) {
  * Reload a specific event
  * @param {client} client - Discord Client
  * @param {string} eventName - The name of the event to reload
+ * @author isahooman
  */
 function reloadEvent(client, eventName) {
   const eventFile = `../events/${eventName}.js`;
@@ -114,6 +117,7 @@ function reloadEvent(client, eventName) {
 /**
  * Load Config Data
  * @returns {object|void} Event Config Data
+ * @author isahoman
  */
 function loadEventConfig() {
   try {
@@ -129,6 +133,7 @@ function loadEventConfig() {
  * If 'enabled' is not provided, it toggles the current state.
  * @param {string} eventName - The name of the event.
  * @param {boolean} [enabled] - (Optional) The new enabled status of the event.
+ * @author isahooman
  */
 function setEventEnabled(eventName, enabled) {
   // Load the current event config
@@ -149,6 +154,7 @@ function setEventEnabled(eventName, enabled) {
 /**
  * Saves the event configuration data.
  * @param {object} eventConfig - The config data to be saved.
+ * @author isahooman
  */
 function saveEventConfig(eventConfig) {
   try {
@@ -162,6 +168,7 @@ function saveEventConfig(eventConfig) {
  * Checks if a given event is enabled in event config.
  * @param {string} eventName - The name of the event to check.
  * @returns {boolean} Returns true if the event is enabled, otherwise false.
+ * @author isahooman
  */
 function isEventEnabled(eventName) {
   // Load config data

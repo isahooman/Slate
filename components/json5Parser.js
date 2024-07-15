@@ -5,6 +5,7 @@ const JSON5 = require('json5');
  * Read and parse a JSON5 file.
  * @param {string} filePath Path to the JSON5 file.
  * @returns {object} Parsed content.
+ * @author isahooman
  */
 function readJSON5(filePath) {
   try {
@@ -20,6 +21,7 @@ function readJSON5(filePath) {
  * Write data to a JSON5 file with custom formatting.
  * @param {string} filePath Path to the JSON5 file.
  * @param {object} data Data to write to the file.
+ * @author isahooman
  */
 function writeJSON5(filePath, data) {
   try {
