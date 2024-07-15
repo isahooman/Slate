@@ -1,17 +1,21 @@
 const logger = require('../../../components/logger.js');
+const { undeploy } = require('../../../components/undeploy.js');
 
 module.exports = {
   name: 'shutdown',
-  usage: 'shutdown',
+  usage: 'shutdown [true]',
   category: 'Owner',
   aliases: ['kill', 'sd'],
   allowDM: true,
-  description: 'Terminates the bot',
+  description: 'Terminates the bot.',
 
-  async execute(message) {
+  async execute(message, args) {
     try {
       // Send confirmation message
       await message.channel.send('Shutting down...');
+
+      // Unregister commands if "true" is passed
+      if (args[0] === 'true') await undeploy();
 
       // Logout of Discord
       await message.client.destroy();
