@@ -1,4 +1,4 @@
-const logger = require('../../../components/logger');
+const logger = require('../../../components/logger.js');
 
 module.exports = {
   name: 'coinflip',
