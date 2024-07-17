@@ -17,7 +17,7 @@ module.exports = {
           const user = repliedMessage.author;
 
           // Log the target user
-          logger.debug(`Retrieving avatar for user ${user.tag}`);
+          logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
 
           // Create an embed to display the avatar.
           const embed = new EmbedBuilder()
@@ -27,14 +27,14 @@ module.exports = {
 
           // Send the avatar embed.
           message.channel.send({ embeds: [embed] }).then(() => {
-            logger.info(`Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
+            logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
           }).catch(error => {
-            logger.error(`Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+            logger.error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
           });
         })
         .catch(error => {
-          logger.error(`Error fetching replied-to message: ${error}`);
-          message.channel.send('Error fetching the replied-to message.');
+          logger.error(`[Avatar Command] Error fetching replied-to message: ${error}`);
+          message.channel.send('[Avatar Command] Error fetching the replied-to message.');
         });
     } else {
       // Retrieve the user from the arguments.
@@ -43,10 +43,10 @@ module.exports = {
       // If no user is provided, use the author
       if (!user) {
         user = message.author;
-        logger.debug(`Retrieving avatar for user ${user.tag}`);
+        logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
       } else {
         // Log the target user
-        logger.debug(`Retrieving avatar for user ${user.tag}`);
+        logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
       }
 
       // Create an embed to display the avatar.
@@ -57,9 +57,9 @@ module.exports = {
 
       // Send the avatar embed.
       message.channel.send({ embeds: [embed] }).then(() => {
-        logger.info(`Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
+        logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
       }).catch(error => {
-        logger.error(`Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+        logger.error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
       });
     }
   },

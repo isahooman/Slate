@@ -16,14 +16,14 @@ module.exports = {
 
     // If no arguments are provided, default to a range of 1-100.
     if (isNaN(min) || isNaN(max)) {
-      logger.debug('No arguments provided, defaulting to range 1-100');
+      logger.debug('[Number Command] No arguments provided, defaulting to range 1-100');
       min = 1;
       max = 100;
     }
 
     // Ensure the minimum value is less than or equal to the maximum value.
     if (min > max) {
-      logger.warn('Invalid range provided: Minimum value is greater than maximum value.');
+      logger.warn('[Number Command] Invalid range provided: Minimum value is greater than maximum value.');
       return message.channel.send('The minimum number must be less than or equal to the maximum number!');
     }
 

@@ -11,7 +11,7 @@ module.exports = {
   execute(message) {
     const args = message.content.split(' ').slice(1);
     if (args.length !== 2) {
-      logger.warn(`Invalid usage! Please use: ${this.usage}`);
+      logger.warn(`[Temperature Command] Invalid usage! Please use: ${this.usage}`);
       return message.channel.send(`Invalid usage! Please use:\n \`${this.usage}\``);
     }
 
@@ -22,7 +22,7 @@ module.exports = {
 
     // Check if the temperature is a valid number.
     if (isNaN(temperature)) {
-      logger.warn('Invalid temperature input.');
+      logger.warn('[Temperature Command] Invalid temperature input.');
       return message.channel.send('Please provide a valid temperature.');
     }
 
@@ -48,7 +48,7 @@ module.exports = {
         kelvin = temperature;
         break;
       default: // If the scale is invalid.
-        logger.warn(`Invalid scale provided: ${scale}.`);
+        logger.warn(`[Temperature Command] Invalid scale provided: ${scale}.`);
         return message.channel.send(`Invalid scale: \`${scale}\`, Please use one of the following:\n- Celsius | C\n- Fahrenheit | F\n- Kelvin | K`);
     }
 

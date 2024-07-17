@@ -17,12 +17,12 @@ module.exports = {
 
           // Check if the user has a banner
           if (!user.bannerURL) {
-            logger.warn(`User ${user.tag} does not have a banner in: ${message.guild.name}`);
+            logger.warn(`[Banner Command] User ${user.tag} does not have a banner in: ${message.guild.name}`);
             return message.channel.send('This user does not have a banner.');
           }
 
           // Log the target user
-          logger.debug(`Retrieving banner for user ${user.tag}`);
+          logger.debug(`[Banner Command] Retrieving banner for user ${user.tag}`);
 
           // Create an embed to display the banner.
           const embed = new EmbedBuilder()
@@ -33,14 +33,14 @@ module.exports = {
           // Send the banner embed.
           message.channel.send({ embeds: [embed] })
             .then(() => {
-              logger.info(`Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
+              logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
             })
             .catch(error => {
-              logger.error(`Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+              logger.error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
             });
         })
         .catch(error => {
-          logger.error(`Error fetching replied-to message: ${error}`);
+          logger.error(`[Banner Command] Error fetching replied-to message: ${error}`);
           message.channel.send('Error fetching the replied-to message.');
         });
     } else {
@@ -50,10 +50,10 @@ module.exports = {
       // If no user is provided, use the author
       if (!user) {
         user = message.author;
-        logger.debug(`Retrieving banner for user ${user.tag}`);
+        logger.debug(`[Banner Command] Retrieving banner for user ${user.tag}`);
       } else {
         // Log the target user
-        logger.debug(`Retrieving banner for user ${user.tag}`);
+        logger.debug(`[Banner Command] Retrieving banner for user ${user.tag}`);
       }
 
       // Create an embed to display the banner.
@@ -64,9 +64,9 @@ module.exports = {
 
       // Send the banner embed.
       message.channel.send({ embeds: [embed] }).then(() => {
-        logger.info(`Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
+        logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
       }).catch(error => {
-        logger.error(`Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+        logger.error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
       });
     }
   },

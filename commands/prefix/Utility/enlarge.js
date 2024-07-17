@@ -11,7 +11,7 @@ module.exports = {
   execute(message, args) {
     // Check if the user provided an emoji.
     if (!args[0]) {
-      logger.warn(`No emoji provided for enlarge command in: ${message.guild.name}`);
+      logger.warn(`[Enlarge Command] No emoji provided for enlarge command in: ${message.guild.name}`);
       return message.channel.send('Please provide an emoji.');
     }
 
@@ -19,7 +19,7 @@ module.exports = {
     const url = `https://cdn.discordapp.com/emojis/${emoji}.png?size=256`; // Construct the URL to the enlarged emoji image.
     const emojiName = message.content.match(/<a?:(.*?):(\d+)>/)[1]; // Get the emoji name from the message
 
-    logger.debug(`Enlarging emoji ${emoji} in ${message.guild.name}`);
+    logger.debug(`[Enlarge Command] Enlarging emoji ${emoji} in ${message.guild.name}`);
 
     // Create an embed to display the enlarged emoji.
     const embed = new EmbedBuilder()
@@ -30,10 +30,10 @@ module.exports = {
     // Send the emoji embed
     message.channel.send({ embeds: [embed] })
       .then(() => {
-        logger.debug(`Emoji enlarged successfully in ${message.guild.name}`);
+        logger.debug(`[Enlarge Command] Emoji enlarged successfully in ${message.guild.name}`);
       })
       .catch(error => {
-        logger.error(`Error sending enlarged emoji in ${message.guild.name}:\n${error}`);
+        logger.error(`[Enlarge Command] Error sending enlarged emoji in ${message.guild.name}:\n${error}`);
       });
   },
 };

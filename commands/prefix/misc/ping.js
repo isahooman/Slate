@@ -13,11 +13,15 @@ module.exports = {
   description: 'Check the bot\'s response time.', // Brief description of what the command does
   execute(message) {
     const startTime = Date.now(); // Record start time
+    logger.debug(`[Ping Command] Start time recorded: ${startTime}`);
     const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]'); // Get uptime from the node process
+    logger.debug(`[Ping Command] Uptime calculated: ${uptime}`);
     const botPing = message.client.ws.ping; // Get response time from the client
+    logger.debug(`[Ping Command] Websocket ping retrieved: ${botPing}ms`);
 
     message.channel.send('Pinging...') // initial message to acknowledge the command
       .then(msg => {
+        logger.debug(`[Ping Command] Initial message sent: 'Pinging...'`);
         let embedColor;
         if (botPing < 75) embedColor = '#00ff37'; // Green for excellent connection
         else if (botPing < 150) embedColor = '#FFC107'; // Yellow for ok connection
@@ -31,11 +35,13 @@ module.exports = {
             { name: 'Websocket Ping', value: `${botPing}ms`, inline: false }, // Add a field for the websocket ping
             { name: 'Uptime', value: `${uptime}`, inline: false }, // Add a field for the uptime
           );
+        logger.debug(`[Ping Command] Embed created.`);
 
         logger.debug(`[Ping Command] Ping calculated: ${botPing}ms, Uptime: ${uptime}`);
 
         // Edit the initial message with the embed and mention
         msg.edit({ content: `<@${message.author.id}>`, embeds: [embed] });
+        logger.debug(`[Ping Command] Initial message edited with embed and mention`);
       });
   },
 };

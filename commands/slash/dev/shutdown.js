@@ -14,26 +14,26 @@ module.exports = {
   async execute(interaction) {
     try {
       // Logging the start of the shutdown process
-      logger.debug('[Kill Command] Starting shutdown process...');
+      logger.debug('[Shutdown Command] Starting shutdown process...');
 
       // Sending a confirmation message before shutting down
       await interaction.reply('Shutting down...');
 
       // Logout of Discord
-      logger.debug('[Kill Command] Destroying Discord client');
+      logger.debug('[Shutdown Command] Destroying Discord client');
       await interaction.client.destroy();
 
       // Unregister all slash commands if option is selected
       if (interaction.options.getBoolean('unregister')) {
-        logger.debug('[Kill Command] Unregistering slash commands');
+        logger.debug('[Shutdown Command] Unregistering slash commands');
         await undeploy();
       }
 
       // Kill the process
-      logger.debug('[Kill Command] Exiting the process');
+      logger.debug('[Shutdown Command] Exiting the process');
       process.exit();
     } catch (error) {
-      logger.error('[Kill Command] Error occurred while shutting down:', error);
+      logger.error('[Shutdown Command] Error occurred while shutting down:', error);
     }
   },
 };
