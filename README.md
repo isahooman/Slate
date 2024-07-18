@@ -74,7 +74,7 @@
   - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
 - Miscellaneous<br>
   - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.
-    <br><br><br>
+    <br>
 - Utility
   - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
   - <span style="color:lightgreen;">Avatar</span> - Fetch the provided user's avatar.<br>
