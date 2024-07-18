@@ -54,7 +54,7 @@ async function deployCommands(client) {
 }
 
 module.exports =
-  {
-    deployCommands,
-  };
+{
+  deployCommands,
+};
 
