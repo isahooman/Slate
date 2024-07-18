@@ -1,4 +1,4 @@
-const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand, reloadLogger } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const { logger } = require('../../../components/loader.js');
 
@@ -14,6 +14,7 @@ module.exports = {
         { name: 'Events', value: 'events' },
         { name: 'Slash', value: 'slash' },
         { name: 'Prefix', value: 'prefix' },
+        { name: 'Logger', value: 'logger' },
       )),
   async execute(interaction) {
     const commandName = interaction.options.getString('command');
@@ -34,6 +35,11 @@ module.exports = {
       await reloadAllCommands(interaction.client, 'prefix');
       await interaction.reply('All prefix commands were reloaded!');
       logger.info('[Reload Command] All prefix commands successfully reloaded.');
+    } else if (Type === 'logger') {
+      logger.info('[Reload Command] Reloading logger.');
+      await reloadLogger();
+      logger.info('[Reload Command] Logger successfully reloaded.');
+      await interaction.reply('Logger was reloaded!');
     } else if (commandName) {
       logger.debug(`[Reload Command] Attempting to find command: ${commandName}`);
       // Search for commands by name within both command types
