@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { logger } = require('../../../components/utils.js');
+const { logger } = require('../../../components/loggerUtil.js');
 const math = require('mathjs');
 
 module.exports = {

@@ -4,7 +4,7 @@ const path = require('path');
 const { readJSON5, writeJSON5 } = require('./json5Parser.js');
 const ConfigFile = path.join(__dirname, '../config/commands.json5');
 const commandsConfig = readJSON5(ConfigFile);
-const { logger } = require('./utils.js');
+const { logger } = require('./loggerUtil.js');
 
 /**
  * Load all commands and ensure they exist in the config file

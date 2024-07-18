@@ -1,8 +1,8 @@
 const { cooldown } = require('../bot.js');
 const blacklist = require('../config/blacklist.json');
-const { logger } = require('../components/utils.js');
+const { logger } = require('../components/loggerUtil.js');
 const path = require('path');
-const { readJSON5 } = require('../components/json5Parser');
+const { readJSON5 } = require('../components/json5Parser.js');
 const { prefix, ownerId } = readJSON5(path.join(__dirname, '../config/config.json5'));
 const commands = readJSON5(path.join(__dirname, '../config/commands.json5'));
 

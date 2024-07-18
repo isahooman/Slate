@@ -12,7 +12,7 @@ If the command name is ping you can type `/ping`
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const { logger } = require('../../../components/utils.js');
+const { logger } = require('../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {

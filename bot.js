@@ -3,7 +3,7 @@ const { clientId, token, guildId, deployOnStart } = readJSON5('./config/config.j
 const ConfigIntents = require('./config/intents.json');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll, deployCommands } = require('./components/loader.js');
-const { logger } = require('./components/utils.js');
+const { logger } = require('./components/loggerUtil.js');
 let cooldownBuilder = require('./components/cooldown.js');
 
 const handleIntents = intents => {

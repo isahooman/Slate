@@ -1,4 +1,4 @@
-const { logger } = require('../../../components/utils.js');
+const { logger } = require('../../../components/loggerUtil.js');
 const Discord = require('discord.js');
 const { inspect } = require('node:util');
 
