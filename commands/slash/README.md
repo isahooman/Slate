@@ -12,7 +12,7 @@ If the command name is ping you can type `/ping`
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
@@ -41,9 +41,6 @@ module.exports = {
   executeModalSubmit(interaction, client) {
     await interaction.reply('This is an example reply message');
   }
-  
-  
-
 
 };
 ```
@@ -73,7 +70,7 @@ module.exports = {
 
   },
   executeModalSubmit(interaction, client) {
-    
+
   }
 };
 ```

@@ -1,6 +1,6 @@
 const { AttachmentBuilder } = require('discord.js');
 const fs = require('fs');
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 const path = require('path');
 
 module.exports = {

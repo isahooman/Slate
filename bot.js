@@ -4,7 +4,7 @@ const ConfigIntents = require('./config/intents.json');
 const { deployCommands } = require('./components/deploy.js');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll } = require('./components/loader.js');
-const logger = require('./components/logger.js');
+const { logger } = require('./components/loader.js');
 let cooldownBuilder = require('./components/cooldown.js');
 
 const handleIntents = intents => {

@@ -1,5 +1,5 @@
 const { deployCommands } = require('../../../components/deploy.js');
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {

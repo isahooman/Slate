@@ -1,6 +1,6 @@
 const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 
 module.exports = {
   data: new SlashCommandBuilder()

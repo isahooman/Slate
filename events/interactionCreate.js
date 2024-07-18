@@ -1,5 +1,5 @@
 const blacklist = require('../config/blacklist.json');
-const logger = require('../components/logger.js');
+const { logger } = require('../components/loader.js');
 const { cooldown } = require('../bot.js');
 const path = require('path');
 const { readJSON5 } = require('../components/json5Parser');

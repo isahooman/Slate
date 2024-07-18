@@ -1,4 +1,4 @@
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 const util = require('util');
 
 module.exports = {

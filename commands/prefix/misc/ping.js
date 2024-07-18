@@ -1,6 +1,6 @@
 const moment = require('moment');
 require('moment-duration-format');
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loader.js');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
