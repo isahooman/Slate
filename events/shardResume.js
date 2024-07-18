@@ -1,4 +1,4 @@
-let logger = require('../components/loader.js');
+const { logger } = require('../components/loader.js');
 
 module.exports = {
   name: 'shardResume',
