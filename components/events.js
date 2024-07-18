@@ -1,20 +1,20 @@
+const { readJSON5, writeJSON5 } = require('./json5Parser.js');
 const path = require('path');
 const fs = require('fs');
-const { readJSON5, writeJSON5 } = require('./json5Parser.js');
+const { logger } = require('./utils.js');
 
 const configPath = path.join(__dirname, '../config/events.json5');
 
 /**
  * Load Events
  * @param {client} client Discord Client
- * @param {logger} logger - Logger
  */
-function loadEvents(client, logger) {
+function loadEvents(client) {
   // Read all files in the events directory
   const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
   // Load event config
-  const eventConfig = loadEventConfig(logger);
+  const eventConfig = loadEventConfig();
 
   // Loop through each event file
   for (const file of eventFiles) {
@@ -23,7 +23,7 @@ function loadEvents(client, logger) {
     // Check if the event exist in the config file
     if (eventConfig[eventName] === undefined) {
       eventConfig[eventName] = true;
-      saveEventConfig(eventConfig, logger);
+      saveEventConfig(eventConfig);
     }
 
     // Check if the event is enabled and load it
@@ -43,14 +43,13 @@ function loadEvents(client, logger) {
 /**
  * Reload Events
  * @param {client} client - Discord Client
- * @param {logger} logger - Logger
  */
-function reloadAllEvents(client, logger) {
+function reloadAllEvents(client) {
   // Retrieve all events from the events directory
   const eventFiles = fs.readdirSync(path.join(__dirname, '../events')).filter(file => file.endsWith('.js'));
 
   // Load event configuration data
-  const eventConfig = loadEventConfig(logger);
+  const eventConfig = loadEventConfig();
 
   // Loop through each file
   for (const file of eventFiles) {
@@ -88,9 +87,8 @@ function reloadAllEvents(client, logger) {
  * Reload a specific event
  * @param {client} client - Discord Client
  * @param {string} eventName - The name of the event to reload
- * @param {logger} logger - Logger
  */
-function reloadEvent(client, eventName, logger) {
+function reloadEvent(client, eventName) {
   const eventFile = `../events/${eventName}.js`;
   const filePath = path.join(__dirname, '../events', eventFile);
 
@@ -116,10 +114,9 @@ function reloadEvent(client, eventName, logger) {
 
 /**
  * Load Config Data
- * @param {logger} logger - Logger
  * @returns {object|void} Event Config Data
  */
-function loadEventConfig(logger) {
+function loadEventConfig() {
   try {
     return readJSON5(configPath);
   } catch (error) {
@@ -133,11 +130,10 @@ function loadEventConfig(logger) {
  * If 'enabled' is not provided, it toggles the current state.
  * @param {string} eventName - The name of the event.
  * @param {boolean} [enabled] - (Optional) The new enabled status of the event.
- * @param {logger} logger - Logger
  */
-function setEventEnabled(eventName, enabled, logger) {
+function setEventEnabled(eventName, enabled) {
   // Load the current event config
-  const eventConfig = loadEventConfig(logger);
+  const eventConfig = loadEventConfig();
 
   // If enabled is provided, set the enabled status of the event
   if (enabled !== undefined) {
@@ -148,15 +144,14 @@ function setEventEnabled(eventName, enabled, logger) {
     eventConfig[eventName] = !eventConfig[eventName];
     logger.log(`Event '${eventName}' toggled ${eventConfig[eventName] ? 'on' : 'off'}.`);
   }
-  saveEventConfig(eventConfig, logger);
+  saveEventConfig(eventConfig);
 }
 
 /**
  * Saves the event configuration data.
  * @param {object} eventConfig - The config data to be saved.
- * @param {logger} logger - Logger
  */
-function saveEventConfig(eventConfig, logger) {
+function saveEventConfig(eventConfig) {
   try {
     writeJSON5(configPath, eventConfig);
   } catch (error) {
@@ -167,12 +162,11 @@ function saveEventConfig(eventConfig, logger) {
 /**
  * Checks if a given event is enabled in event config.
  * @param {string} eventName - The name of the event to check.
- * @param {logger} logger - Logger
  * @returns {boolean} Returns true if the event is enabled, otherwise false.
  */
-function isEventEnabled(eventName, logger) {
+function isEventEnabled(eventName) {
   // Load config data
-  const eventConfig = loadEventConfig(logger);
+  const eventConfig = loadEventConfig();
 
   // Check if the event is enabled in the configuration
   return eventConfig[eventName] === true;

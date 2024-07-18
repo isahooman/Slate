@@ -73,8 +73,9 @@
   - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options.<br>
   - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
 - Miscellaneous<br>
-  - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.
-    <br>
+  - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.<br>
+- Info<br>
+  - <span style="color:lightgreen;">About</span> - Shows information about the bot.<br>
 - Utility
   - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
   - <span style="color:lightgreen;">Avatar</span> - Fetch the provided user's avatar.<br>

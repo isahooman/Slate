@@ -1,5 +1,5 @@
 const { deployCommands } = require('../../../components/deploy.js');
-const { logger } = require('../../../components/loader.js');
+const { logger } = require('../../../components/utils.js');
 
 module.exports = {
   name: 'deploy',

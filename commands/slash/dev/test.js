@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { logger } = require('../../../components/loader.js');
+const { logger } = require('../../../components/utils.js');
 
 const command = new SlashCommandBuilder()
   .setName('test')

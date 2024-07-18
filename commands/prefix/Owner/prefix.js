@@ -1,6 +1,6 @@
 const { readJSON5, writeJSON5 } = require('../../../components/json5Parser.js');
 const { reloadEvent } = require('../../../components/loader');
-const { logger } = require('../../../components/loader.js');
+const { logger } = require('../../../components/utils.js');
 const path = require('path');
 
 module.exports = {
