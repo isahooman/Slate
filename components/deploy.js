@@ -1,23 +1,22 @@
 const path = require('path');
 const { readJSON5 } = require('./json5Parser.js');
 const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
+const { readRecursive } = require('./fileHandler.js');
 const { REST, Routes } = require('discord.js');
 const { logger } = require('./loggerUtil.js');
-const fs = require('fs');
 
 /**
  * Load commands and their data
- * @param {directory} directory File Directory
+ * @param {directory} directory - File Directory
  * @returns {JSON} Loads command data in JSON
  * @author isahooman
  */
-function loadCommandFiles(directory) {
+async function loadCommandFiles(directory) {
   const fullPath = path.join(__dirname, '..', directory);
-  const commandFiles = fs.readdirSync(fullPath)
-    .filter(file => file.endsWith('.js'));
+  const commandFiles = await readRecursive(fullPath);
 
   return commandFiles.map(file => {
-    const command = require(path.join(fullPath, file));
+    const command = require(file);
     return command.data.toJSON();
   });
 }
@@ -32,7 +31,7 @@ async function deployCommands(client) {
 
   try {
     // Load and deploy global commands
-    const globalCommands = loadCommandFiles('commands/slash/global');
+    const globalCommands = await loadCommandFiles('commands/slash/global');
     if (globalCommands.length) {
       await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
       logger.info('Registered global slash commands!');
@@ -41,7 +40,7 @@ async function deployCommands(client) {
     }
 
     // Load and deploy dev commands to a specific guild
-    const devCommands = loadCommandFiles('commands/slash/dev');
+    const devCommands = await loadCommandFiles('commands/slash/dev');
     if (devCommands.length) {
       await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: devCommands });
       logger.info(`Registered dev slash commands for: ${guildId}`);
@@ -49,7 +48,7 @@ async function deployCommands(client) {
       logger.debug(`No dev commands found for guild: ${guildId}`);
     }
   } catch (error) {
-    logger.error(`Error deploying commands: ${error.message}`, client);
+    logger.error(`Error deploying commands: ${error.message}\n${error.stack}}`, client);
   }
 }
 
@@ -57,4 +56,3 @@ module.exports =
 {
   deployCommands,
 };
-
