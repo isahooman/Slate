@@ -45,7 +45,7 @@ process.on('exit', message => {
 }).on('uncaughtException', (err, origin) => {
   logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
 }).on('unhandledRejection', (reason, message) => {
-  logger.error(`Unhandled Rejection at:${message}\nReason:${reason}`);
+  logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
 }).on('warning', warning => {
   logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
 });
