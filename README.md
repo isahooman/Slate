@@ -97,7 +97,7 @@ Slate can be installed by using the following instructions.
 
 1. **Update package lists:**
 
-- Debian/Ubuntu: `sudo apt upgrade`
+- Debian/Ubuntu: `sudo apt update && sudo apt upgrade`
 - Fedora/CentOS: `sudo dnf upgrade`
 - Arch Linux: `sudo pacman -Syu`
 - openSUSE: `sudo zypper dup`
