@@ -97,7 +97,7 @@ Slate can be installed by using the following instructions.
 
 1. **Update package lists:**
 
-- Debian/Ubuntu: `sudo apt upgrade`
+- Debian/Ubuntu: `sudo apt update && sudo apt upgrade`
 - Fedora/CentOS: `sudo dnf upgrade`
 - Arch Linux: `sudo pacman -Syu`
 - openSUSE: `sudo zypper dup`
@@ -105,12 +105,11 @@ Slate can be installed by using the following instructions.
 2. **Installing prerequisites:**
 
 - Debian/Ubuntu: `sudo apt install git nodejs npm`
-- Fedora/CentOS: `sudo dnf install git nodejs npm`
+- Fedora/CentOS: `sudo dnf install git nodejs`
 - Arch Linux: `sudo pacman -S git nodejs npm`
 - openSUSE: `sudo zypper install git nodejs npm`
 
 3. **Clone the GitHub repository**
-
 ```bash
 git clone https://github.com/isahooman/Slate.git .
 cd Slate
