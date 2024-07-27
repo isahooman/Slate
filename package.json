@@ -9,6 +9,7 @@
   ],
   "homepage": "https://github.com/isahooman/slate#readme",
   "scripts": {
+    "tree": "pwsh ./.vscode/scripts/Project_Tree.ps1",
     "start": "cross-os start-os",
     "start-os": {
       "darwin": "sh start.sh",
