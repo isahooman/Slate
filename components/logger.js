@@ -211,6 +211,22 @@ function notifyReady(message) {
  * @author isahooman
  */
 function sendEmbed(embed, targetType = null) {
+  if (!bot.client.user) {
+    // Wait for the client to become available
+    const startTime = Date.now();
+    while (Date.now() - startTime < 3000 && !bot.client.user) {
+      // Do nothing, just wait
+    }
+
+    // Check if the client is available after the wait
+    if (!bot.client.user) {
+      process.stderr.write('Bot is not logged in, cannot send embed to user.\n');
+      return;
+    } else {
+      process.stdout.write('Bot is now logged in, ready to send embed.\n');
+    }
+  }
+
   const { userId = null, channelId = null } = {};
 
   // Determine recipient list based on targetType
