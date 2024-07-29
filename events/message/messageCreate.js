@@ -133,7 +133,7 @@ module.exports = {
       logger.command(`Prefix Command: ${command.name}, used by: ${message.author.tag}, in: ${message.guild ? message.guild.name : 'DMs'}`);
       await command.execute(message, args, client);
     } catch (error) {
-      logger.error(`${error.stack}`, client, 'prefix', {
+      logger.error(`${error.stack}`, 'prefix', {
         context: message,
         args: [command.name, ...args],
         command: command.name,
