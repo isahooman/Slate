@@ -1,6 +1,6 @@
 const path = require('path');
-const { readJSON5 } = require('../../../components/json5Parser.js');
-const config = readJSON5(path.join(__dirname, '../../../config/config.json5'));
+const { readFile } = require('../../../components/fileHandler.js');
+const config = readFile(path.join(__dirname, '../../../config/config.json5'));
 const { logger } = require('../../../components/loggerUtil.js');
 
 const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0,

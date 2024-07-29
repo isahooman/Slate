@@ -8,7 +8,7 @@ let commandsConfig;
 
 /**
  * Load all commands and ensure they exist in the config file
- * @param {client} client Discord Client
+ * @param {client} client - Discord Client
  * @author isahooman
  */
 async function loadCommands(client) {
@@ -243,19 +243,18 @@ async function reloadCommand(command, interaction) {
   const baseDir = path.join(__dirname, '..', 'commands', commandType);
 
   // Use readRecursive to find the command file
-  const commandFiles = await readRecursive(baseDir);
-  const foundPath = commandFiles.find(file => path.basename(file, '.js') === commandName);
+  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
 
-  if (!foundPath) {
+  if (!commandFiles) {
     logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
     return;
   }
 
   // Delete cached command data
-  delete require.cache[require.resolve(foundPath)];
+  delete require.cache[require.resolve(commandFiles)];
 
   try {
-    const newCommand = require(foundPath);
+    const newCommand = require(commandFiles);
     if (command.data) {
       interaction.client.slashCommands.set(newCommand.data.name, newCommand);
       logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);

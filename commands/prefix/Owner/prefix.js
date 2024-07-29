@@ -1,4 +1,4 @@
-const { readJSON5, writeJSON5 } = require('../../../components/json5Parser.js');
+const { readFile, writeFile } = require('../../../components/fileHandler.js');
 const { reloadEvent } = require('../../../components/loader');
 const { logger } = require('../../../components/loggerUtil.js');
 const path = require('path');
@@ -10,7 +10,7 @@ module.exports = {
   aliases: ['setprefix'],
   allowDM: true,
   description: 'Changes the bot\'s prefix.',
-  execute(message) {
+  async execute(message) {
     // Extract the new prefix from the message content.
     const newPrefix = message.content.split(' ')[1];
 
@@ -28,7 +28,7 @@ module.exports = {
       const configPath = path.join(__dirname, '..', '..', '..', 'config', 'config.json5');
 
       // Read the config file
-      const config = readJSON5(configPath);
+      let config = await readFile(configPath);
       logger.debug('[Prefix Command] Config file read successfully.');
 
       // Update the prefix in the config
@@ -38,7 +38,7 @@ module.exports = {
 
       // Write the updated config to the file.
       logger.debug('[Prefix Command] Writing updated config to file.');
-      writeJSON5(configPath, config);
+      await writeFile(configPath, config);
       logger.debug('[Prefix Command] Config file written successfully.');
 
       // Reload the corresponding events

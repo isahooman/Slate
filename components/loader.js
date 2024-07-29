@@ -5,7 +5,7 @@ const { undeploy } = require('./undeploy.js');
 
 /**
  * Load all events and commands
- * @param {client} client Discord Client
+ * @param {client} client - Discord Client
  */
 async function loadAll(client) {
   await loadCommands(client);

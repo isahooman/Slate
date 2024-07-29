@@ -1,5 +1,4 @@
-const { readJSON5 } = require('./components/json5Parser.js');
-const { clientId, token, guildId, deployOnStart } = readJSON5('./config/config.json5');
+const { readFile } = require('./components/fileHandler.js');
 const ConfigIntents = require('./config/intents.json');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll, deployCommands } = require('./components/loader.js');
@@ -22,6 +21,8 @@ exports.client = new Client({
  * @param {Client} bot - Discord Client
  */
 async function startBot(bot) {
+  const { clientId, token, guildId, deployOnStart } = await readFile('./config/config.json5');
+
   logger.debug('Bot starting..');
 
   // Load all events and commands
