@@ -6,7 +6,7 @@ const configPath = path.join(__dirname, '../config/events.json5');
 
 /**
  * Load Events
- * @param {client} client Discord Client
+ * @param {client} client - Discord Client
  * @author isahooman
  */
 async function loadEvents(client) {
@@ -52,27 +52,27 @@ async function loadEvents(client) {
  * @author isahoman
  */
 async function reloadAllEvents(client) {
-  // Retrieve all events from the events directory
-  const eventFiles = await readFile(path.join(__dirname, '../events'), 'utf-8').then(data => data.split('\n'));
+  const eventsDirectory = path.join(__dirname, '../events');
 
-  // Load event configuration data
-  const eventConfig = await loadEventConfig();
+  try {
+    // Read all files in the events directory using readRecursive
+    const eventFiles = await readRecursive(eventsDirectory);
 
-  // Loop through each file
-  for (const file of eventFiles) {
-    // Extract the event name from the event file
-    const eventName = file.slice(0, -3);
+    // Load event config
+    const eventConfig = await loadEventConfig();
 
-    // Check if the event exist in the event config
-    if (eventConfig[eventName]) {
-      const filePath = path.join(__dirname, '../events', file);
+    // Loop through each event file
+    for (const file of eventFiles) {
+      // Extract the event name from the file path
+      const eventName = path.basename(file, '.js');
 
-      try {
+      // Check if the event is enabled and reload it
+      if (eventConfig[eventName] === true) {
         // Clear event cache
-        delete require.cache[require.resolve(filePath)];
+        delete require.cache[require.resolve(file)];
 
-        // reload event data
-        const event = require(filePath);
+        // Reload event data
+        const event = require(file);
 
         // Remove all listeners for the event
         client.removeAllListeners(event.name);
@@ -82,12 +82,13 @@ async function reloadAllEvents(client) {
         else client.on(event.name, (...args) => event.execute(...args, client));
 
         logger.loading(`Reloaded event: ${event.name}`);
-      } catch (error) {
-        logger.error(`Error reloading event ${file}: ${error.message}`);
       }
     }
+    logger.info('All events reloaded successfully.');
+  } catch (error) {
+    // If readRecursive throws an error, the directory doesn't exist
+    logger.error(`Error reading events directory: ${error.message}\n${error.stack}`);
   }
-  logger.debug('All events reloaded successfully.');
 }
 
 /**
@@ -96,16 +97,26 @@ async function reloadAllEvents(client) {
  * @param {string} eventName - The name of the event to reload
  * @author isahooman
  */
-function reloadEvent(client, eventName) {
-  const eventFile = `../events/${eventName}.js`;
-  const filePath = path.join(__dirname, '../events', eventFile);
+async function reloadEvent(client, eventName) {
+  const eventsDirectory = path.join(__dirname, '../events');
 
   try {
+    // Read all files in the events directory using readRecursive
+    const eventFiles = await readRecursive(eventsDirectory);
+
+    // Find the specific event file
+    const eventFile = eventFiles.find(file => path.basename(file, '.js') === eventName);
+
+    if (!eventFile) {
+      logger.warn(`[Reload Event] Event file not found for event: ${eventName}.`);
+      return;
+    }
+
     // Clear event cache
-    delete require.cache[require.resolve(filePath)];
+    delete require.cache[require.resolve(eventFile)];
 
     // Reload event data
-    const event = require(filePath);
+    const event = require(eventFile);
 
     // Remove all listeners for the event
     client.removeAllListeners(event.name);
@@ -116,13 +127,13 @@ function reloadEvent(client, eventName) {
 
     logger.loading(`Reloaded event: ${event.name}`);
   } catch (error) {
-    logger.error(`Error reloading event ${eventFile}: ${error.message}`);
+    logger.error(`[Reload Event] Error reloading event ${eventName}: ${error.message}`);
   }
 }
 
 /**
  * Load Config Data
- * @returns {Promise<object|void>} Event Config Data
+ * @returns {Promise<object|void>} - Event Config Data
  * @author isahooman
  */
 async function loadEventConfig() {
@@ -173,7 +184,7 @@ async function saveEventConfig(eventConfig) {
 /**
  * Checks if a given event is enabled in event config.
  * @param {string} eventName - The name of the event to check.
- * @returns {Promise<boolean>} Returns true if the event is enabled, otherwise false.
+ * @returns {Promise<boolean>} - Returns true if the event is enabled, otherwise false.
  * @author isahooman
  */
 async function isEventEnabled(eventName) {
