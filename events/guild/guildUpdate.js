@@ -2,7 +2,7 @@ const { logger } = require('../../components/loggerUtil.js');
 
 module.exports = {
   name: 'guildUpdate',
-  execute(oldGuild, newGuild) {
+  execute(oldGuild, newGuild, client) {
     const logDetails = [];
 
     // Check region
@@ -36,5 +36,9 @@ module.exports = {
         Updated At: ${new Date().toISOString()},
         ${logDetails.join('\n')}
       `);
+
+    // Update guild cache
+    client.guilds.set(newGuild.id, newGuild);
+    logger.debug(`Updating guild cache for guild: ${newGuild.name} (${newGuild.id})`);
   },
 };

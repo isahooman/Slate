@@ -2,7 +2,7 @@ const { logger } = require('../../components/loggerUtil.js');
 
 module.exports = {
   name: 'guildMemberUpdate',
-  execute(oldMember, newMember) {
+  execute(oldMember, newMember, client) {
     const logDetails = [];
 
     // Check username
@@ -26,5 +26,9 @@ module.exports = {
         Updated At: ${new Date().toISOString()},
         ${logDetails.join('\n')}
       `);
+
+    // Update user cache
+    client.users.set(newMember.user.id, newMember.user);
+    logger.debug(`Updating user cache for user: ${newMember.user.tag} (${newMember.user.id})`);
   },
 };

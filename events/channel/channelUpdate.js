@@ -2,7 +2,7 @@ const { logger } = require('../../components/loggerUtil.js');
 
 module.exports = {
   name: 'channelUpdate',
-  execute(oldChannel, newChannel) {
+  execute(oldChannel, newChannel, client) {
     const logDetails = [];
 
     // Check channel name
@@ -32,5 +32,14 @@ module.exports = {
         Updated At: ${new Date().toISOString()},
         ${logDetails.join('\n')}
       `);
+
+    // Update channel cache
+    if (newChannel.type === 'GUILD_TEXT') {
+      client.textChannels.set(newChannel.id, newChannel);
+      logger.debug(`Updating text channel cache for channel: ${newChannel.name} (${newChannel.id})`);
+    } else if (newChannel.type === 'GUILD_VOICE') {
+      client.voiceChannels.set(newChannel.id, newChannel);
+      logger.debug(`Updating voice channel cache for channel: ${newChannel.name} (${newChannel.id})`);
+    }
   },
 };

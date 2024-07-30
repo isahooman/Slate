@@ -2,7 +2,7 @@ const { logger } = require('../../components/loggerUtil.js');
 
 module.exports = {
   name: 'threadUpdate',
-  execute(oldThread, newThread) {
+  execute(oldThread, newThread, client) {
     const logDetails = [];
 
     // Check name
@@ -23,5 +23,9 @@ module.exports = {
         Updated At: ${new Date().toISOString()},
         ${logDetails.join('\n')}
       `);
+
+    // Update thread cache
+    client.threads.set(newThread.id, newThread);
+    logger.debug(`Updating thread cache for thread: ${newThread.name} (${newThread.id})`);
   },
 };
