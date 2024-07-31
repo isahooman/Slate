@@ -10,9 +10,7 @@ module.exports = {
     logger.debug('Bot is ready and online.');
 
     // Cache servers
-    client.servers = new Map();
     client.guilds.cache.forEach(guild => {
-      client.servers.set(guild.id, guild);
       logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
     });
 

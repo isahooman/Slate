@@ -6,14 +6,14 @@ module.exports = {
   name: 'cache',
   usage: 'cache <clear/refresh/stats>',
   category: 'Owner',
-  aliases: [''],
+  aliases: [],
   nsfw: false,
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {
     const action = args[0]?.toLowerCase();
 
-    if (action === 'clear' || action === 'refresh') {
+    if (action === 'clear' || action === 'refresh' || action === 'reload') {
       // Reload all cache
       reloadCache(message.client);
       message.reply('Cache cleared/refreshed!');
@@ -42,7 +42,6 @@ module.exports = {
 function reloadCache(client) {
   // Reload guilds
   client.guilds.cache.forEach(guild => {
-    client.servers.set(guild.id, guild);
     logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
   });
 
@@ -67,7 +66,7 @@ function reloadCache(client) {
   client.guilds.cache.forEach(async guild => {
     try {
       await guild.members.fetch();
-      logger.info(`Cached all members for guild: ${guild.name} (${guild.id})`);
+      logger.info(`Cached: ${guild.memberCount}, members for guild: ${guild.name} (${guild.id})`);
     } catch (error) {
       logger.error(`Error caching members for guild: ${guild.name} (${guild.id})`, error);
     }

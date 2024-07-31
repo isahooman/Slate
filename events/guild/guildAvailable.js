@@ -8,7 +8,7 @@ module.exports = {
     `);
 
     // Update guild cache
-    client.guilds.set(guild.id, guild);
+    client.guilds.cache.set(guild.id, guild);
     logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
   },
 };
