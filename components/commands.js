@@ -276,7 +276,7 @@ async function reloadCommand(command, interaction) {
 async function reloadAllCommands(client, commandType) {
   logger.debug(`Reloading all ${commandType} commands...`);
   const baseDir = path.join(__dirname, '..', 'commands', commandType);
-  const commandFiles = await readRecursive(baseDir);
+  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
 
   for (const commandFilePath of commandFiles) {
     delete require.cache[require.resolve(commandFilePath)];

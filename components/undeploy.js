@@ -31,7 +31,7 @@ async function undeploy() {
 
     process.stdout.write('Successfully deleted all guild application commands.\n');
   } catch (error) {
-    process.stderr.write('Error deleting commands:', error);
+    process.stderr.write(`Error deleting commands: ${error}`);
   }
 }
 

@@ -16,6 +16,7 @@ module.exports = {
 
       // Unregister commands if "true" is passed
       if (args[0] === 'true') await undeploy();
+      logger.debug('[Shutdown Command] Unregistered commands');
 
       // Logout of Discord
       await message.client.destroy();
