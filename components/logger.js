@@ -6,7 +6,7 @@ const logging = require('../config/logging.json');
 const moment = require('moment');
 const path = require('path');
 const { readJSON5 } = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors, guildId, reportChannel, reportUsers, readyUsers, readyChannel } = readJSON5('./config/config.json5');
+const { ownerId, notifyOnReady, reportErrors, guildId, errorChannel, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
 
@@ -229,7 +229,7 @@ function sendEmbed(embed, targetType = null) {
 
   // Determine recipient list based on targetType
   let recipients = [...ownerId];
-  if (targetType === 'error' && reportUsers) recipients.push(...reportUsers);
+  if (targetType === 'error' && errorUsers) recipients.push(...errorUsers);
   if (targetType === 'ready' && readyUsers) recipients.push(...readyUsers);
 
   // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
@@ -249,12 +249,12 @@ function sendEmbed(embed, targetType = null) {
   else
     // Send to channel based on targetType
     if (targetType === 'error') try {
-      sendEmbedToChannel(embed, reportChannel);
+      sendEmbedToChannel(embed, errorChannel);
     } catch (err) {
       process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
     }
     else if (targetType === 'ready') try {
-      sendEmbedToChannel(embed, readyChannel);
+      sendEmbedToChannel(embed, readyChannels);
     } catch (err) {
       process.stderr.write(`Failed to send embed to ready channel: ${err}\n`);
     }
