@@ -41,12 +41,41 @@ exports.cooldown = cooldownBuilder;
 startBot(this.client);
 
 // Process Events
-process.on('exit', message => {
-  logger.error(`Shutdown because: ${message}`);
-}).on('uncaughtException', (err, origin) => {
-  logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
-}).on('unhandledRejection', (reason, message) => {
-  logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
-}).on('warning', warning => {
-  logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
-});
+process
+  .on('exit', message => {
+    logger.error(`Shutdown because: ${message}`);
+  })
+
+  .on('warning', warning => {
+    logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
+  })
+
+  .on('uncaughtException', async(err, origin) => {
+    const startTime = Date.now();
+    logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
+    // Attempt to reconnect if the client died.
+    if (!this.client.user) try {
+      logger.info('Attempting to reconnect to Discord...');
+      await this.client.login;
+      const endTime = Date.now();
+      logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
+    } catch (error) {
+      logger.error('Failed to reconnect:', error);
+    }
+    else logger.info('Client is logged in, skipping reconnect.');
+  })
+
+  .on('unhandledRejection', async(reason, message) => {
+    const startTime = Date.now();
+    logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
+    // Attempt to reconnect if the client died.
+    if (!this.client.user) try {
+      logger.info('Attempting to reconnect to Discord...');
+      await this.client.login;
+      const endTime = Date.now();
+      logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
+    } catch (error) {
+      logger.error('Failed to reconnect:', error);
+    }
+    else logger.info('Client is logged in, skipping reconnect.');
+  });

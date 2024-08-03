@@ -148,41 +148,45 @@ function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
   let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
   let errorTitle = 'Error';
 
-  // Prepare error report for slash commands
-  if (commandType === 'slash' && commandInfo.interaction) {
-    const interaction = commandInfo.interaction;
-    errorTitle = `Error in slash command: ${interaction.commandName}`;
+  try {
+    // Prepare error report for slash commands
+    if (commandType === 'slash' && commandInfo.interaction) {
+      const interaction = commandInfo.interaction;
+      errorTitle = `Error in slash command: ${interaction.commandName}`;
+      errorEmbed.setTitle(errorTitle);
+
+      const args = interaction.options.data.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
+      errorEmbed.addFields(
+        { name: 'User', value: interaction.user ? `${interaction.user.username} <@${interaction.user.id}>` : 'N/A' },
+        { name: 'Channel', value: interaction.channelId ? `<#${interaction.channelId}> (ID: ${interaction.channelId})` : 'N/A' },
+        { name: 'Server', value: interaction.guild ? `${interaction.guild.name} | ${interaction.guild.id}` : 'N/A' },
+        { name: 'Arguments', value: args },
+        { name: 'Error', value: messageText },
+      );
+    // Prepare error report for prefix commands
+    } else if (commandType === 'prefix' && commandInfo.context) {
+      const context = commandInfo.context;
+      const commandName = commandInfo.args[0];
+      errorTitle = `Error in prefix command: ${commandName}`;
+      errorEmbed.addFields(
+        { name: 'Server', value: context.guild ? `${context.guild.name} | ${context.guild.id}` : 'N/A' },
+        { name: 'User', value: `<@${context.author.id}> | ${context.author.username}` },
+        { name: 'Channel', value: `<#${context.channel.id}> | ID: ${context.channel.id}` },
+        { name: 'Arguments', value: commandInfo.args.join(' ') || 'None' },
+        { name: 'Error', value: messageText },
+      );
+    } else {
+      errorEmbed.addFields(
+        { name: 'Message', value: messageText },
+      );
+    }
     errorEmbed.setTitle(errorTitle);
 
-    const args = interaction.options.data.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
-    errorEmbed.addFields(
-      { name: 'User', value: interaction.user ? `${interaction.user.username} <@${interaction.user.id}>` : 'N/A' },
-      { name: 'Channel', value: interaction.channelId ? `<#${interaction.channelId}> (ID: ${interaction.channelId})` : 'N/A' },
-      { name: 'Server', value: interaction.guild ? `${interaction.guild.name} | ${interaction.guild.id}` : 'N/A' },
-      { name: 'Arguments', value: args },
-      { name: 'Error', value: messageText },
-    );
-  // Prepare error report for prefix commands
-  } else if (commandType === 'prefix' && commandInfo.context) {
-    const context = commandInfo.context;
-    const commandName = commandInfo.args[0];
-    errorTitle = `Error in prefix command: ${commandName}`;
-    errorEmbed.addFields(
-      { name: 'Server', value: context.guild ? `${context.guild.name} | ${context.guild.id}` : 'N/A' },
-      { name: 'User', value: `<@${context.author.id}> | ${context.author.username}` },
-      { name: 'Channel', value: `<#${context.channel.id}> | ID: ${context.channel.id}` },
-      { name: 'Arguments', value: commandInfo.args.join(' ') || 'None' },
-      { name: 'Error', value: messageText },
-    );
-  } else {
-    errorEmbed.addFields(
-      { name: 'Message', value: messageText },
-    );
+    // Send the prepared error report
+    sendEmbed(errorEmbed, 'error');
+  } catch (error) {
+    process.stderr.write(`Error sending error embed:\n${error}\n`);
   }
-  errorEmbed.setTitle(errorTitle);
-
-  // Send the prepared error report
-  sendEmbed(errorEmbed, 'error');
 }
 
 /**
