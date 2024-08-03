@@ -4,10 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const { pipeline, Readable } = require('stream');
-const { createReadStream, createWriteStream, appendFile } = require('fs');
+const { createWriteStream, appendFile } = require('fs');
 const pipelineAsync = promisify(pipeline);
 
-const MAX_SIZE = 1.8 * 1024 * 1024 * 1024; // 1.8GB limit to avoid the 2GB fs limit
+const MAX_SIZE = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs limit
 
 /**
  * Reads the contents of a file.
@@ -31,8 +31,8 @@ async function readFile(filePath) {
         const stats = await promisify(fs.stat)(filePath);
         logger.debug(`File size: ${stats.size}`);
         if (stats.size > MAX_SIZE) {
-          // If the file size exceeds the `MAX_SIZE` limit, use readLargeFile
-          return readLargeFile(filePath);
+          // If the file size exceeds the `MAX_SIZE` limit, return a message
+          return `File is too large to read.`;
         } else {
           // If the file size is within the limit, use fs.readFile
           const data = await promisify(fs.readFile)(filePath, 'utf-8');
@@ -45,40 +45,6 @@ async function readFile(filePath) {
     }
   } catch (error) {
     logger.error(`Error reading file at ${filePath}: ${error.message}`);
-    throw error;
-  }
-}
-
-/**
- * Reads files larger than the `MAX_SIZE` limit using a stream.
- * @param {string} filePath The path to the file to read.
- * @returns {Promise<string>} A promise that resolves to the file contents as a string.
- * @author isahooman
- */
-async function readLargeFile(filePath) {
-  logger.debug(`Reading large file: ${filePath}`);
-  try {
-    // Initialize an array to store data read from the file.
-    const data = [];
-
-    // Creates a readable stream to read the file.
-    const readStream = createReadStream(filePath, 'utf-8');
-    readStream.on('data', chunk => {
-      // When data is received, it's converted to a string and pushed into the `data` array.
-      data.push(chunk.toString('utf-8'));
-    });
-
-    // Creates a new promise to wait for the file reading to complete.
-    await new Promise((resolve, reject) => {
-      readStream.on('end', resolve);
-      readStream.on('error', reject);
-    });
-
-    logger.debug(`Finished reading large file: ${filePath}`);
-    // Joins the chunks of data in the `data` array into a single string and returns it.
-    return data.join('');
-  } catch (error) {
-    logger.error(`Error reading large file at ${filePath}: ${error.message}`);
     throw error;
   }
 }
