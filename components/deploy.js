@@ -52,7 +52,39 @@ async function deployCommands(client) {
   }
 }
 
+/**
+ * Unregisters all slash commands
+ * @author isahooman
+ */
+async function undeploy() {
+  const rest = new REST({ version: '10' }).setToken(token);
+
+  try {
+    logger.info('Started unregistering global commands.');
+
+    // Register an empty array for Global Commands effectively deleting all registered slash commands
+    await rest.put(
+      Routes.applicationCommands(clientId),
+      { body: [] },
+    );
+    logger.info('Successfully unregistered global commands.');
+
+    logger.info('Started unregistering guild application commands.');
+
+    // Register an empty array for Guild Commands effectively deleting all registered slash commands
+    await rest.put(
+      Routes.applicationGuildCommands(clientId, guildId),
+      { body: [] },
+    );
+
+    logger.info('Successfully deleted all guild application commands.');
+  } catch (error) {
+    logger.error(`Error unregistering commands: ${error}`);
+  }
+}
+
 module.exports =
 {
   deployCommands,
+  undeploy,
 };
