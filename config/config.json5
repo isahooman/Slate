@@ -2,7 +2,7 @@
   // Your discord bot token
   "token": "",
   // Your discord application client id
-  "clientId":"",
+  "clientId": "",
 
   // Your id along with any other owners
   "ownerId": [""],
@@ -14,6 +14,8 @@
 
   // whether or not slash commands will be redeployed when the bot starts
   "deployOnStart": true,
+  // whether or not slash commands will be cleared when the bot is stopped
+  "undeployOnExit" : false,
 
   // whether or not the bot will send a message when it's online and ready
   "notifyOnReady": true,

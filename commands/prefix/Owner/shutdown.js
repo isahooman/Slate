@@ -1,5 +1,4 @@
 const { logger } = require('../../../components/loggerUtil.js');
-const { undeploy } = require('../../../components/undeploy.js');
 
 module.exports = {
   name: 'shutdown',
@@ -9,20 +8,15 @@ module.exports = {
   allowDM: true,
   description: 'Terminates the bot.',
 
-  async execute(message, args) {
+  async execute(message) {
     try {
+      logger.debug('[Shutdown Command] Starting shutdown process...');
+
       // Send confirmation message
       await message.channel.send('Shutting down...');
 
-      // Unregister commands if "true" is passed
-      if (args[0] === 'true') await undeploy();
-      logger.debug('[Shutdown Command] Unregistered commands');
-
-      // Logout of Discord
-      await message.client.destroy();
-
-      // Kill the process
-      process.exit();
+      // Send shutdown signal
+      process.emit('SIGINT');
     } catch (error) {
       logger.error('[Shutdown Command] Error occurred while shutting down:', error);
     }

@@ -1,7 +1,8 @@
-const { readFile } = require('./components/fileHandler.js');
+const { readJSON5 } = require('./components/json5Parser.js');
+const { clientId, token, guildId, deployOnStart, undeployOnExit } = readJSON5('./config/config.json5');
 const ConfigIntents = require('./config/intents.json');
 const { Client, GatewayIntentBits } = require('discord.js');
-const { loadAll, deployCommands } = require('./components/loader.js');
+const { loadAll, deployCommands, undeploy } = require('./components/loader.js');
 const { logger } = require('./components/loggerUtil.js');
 let cooldownBuilder = require('./components/cooldown.js');
 
@@ -21,8 +22,6 @@ exports.client = new Client({
  * @param {Client} bot - Discord Client
  */
 async function startBot(bot) {
-  const { clientId, token, guildId, deployOnStart } = await readFile('./config/config.json5');
-
   logger.debug('Bot starting..');
 
   // Load all events and commands
@@ -78,4 +77,18 @@ process
       logger.error('Failed to reconnect:', error);
     }
     else logger.info('Client is logged in, skipping reconnect.');
+  })
+
+  .on('SIGINT', async() => {
+    logger.info('Received SIGINT. Shutting down...');
+    if (undeployOnExit) try {
+      await undeploy(clientId, guildId, token);
+    } catch (error) {
+      logger.error(`Error during undeploy: ${error}`);
+    }
+
+    // Logout of Discord
+    await this.client.destroy();
+    logger.info('Bot successfully logged out.');
+    process.exit(0);
   });

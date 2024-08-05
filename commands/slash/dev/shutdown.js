@@ -1,6 +1,5 @@
 const { logger } = require('../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
-const { undeploy } = require('../../../components/undeploy.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -19,19 +18,8 @@ module.exports = {
       // Sending a confirmation message before shutting down
       await interaction.reply('Shutting down...');
 
-      // Logout of Discord
-      logger.debug('[Shutdown Command] Destroying Discord client');
-      await interaction.client.destroy();
-
-      // Unregister all slash commands if option is selected
-      if (interaction.options.getBoolean('unregister')) {
-        logger.debug('[Shutdown Command] Unregistering slash commands');
-        await undeploy();
-      }
-
-      // Kill the process
-      logger.debug('[Shutdown Command] Exiting the process');
-      process.exit();
+      // Sends shutdown signal
+      process.emit('SIGINT');
     } catch (error) {
       logger.error('[Shutdown Command] Error occurred while shutting down:', error);
     }
