@@ -1,4 +1,4 @@
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 const Discord = require('discord.js');
 const { inspect } = require('node:util');
 
@@ -39,6 +39,7 @@ module.exports = {
     .addStringOption(option => option.setName('code')
       .setDescription('Code to evaluate')
       .setRequired(true)),
+  category: 'owner',
 
   /**
    * Executes the Eval Slash command

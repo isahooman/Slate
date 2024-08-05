@@ -1,4 +1,4 @@
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
       .setDescription('Unregister all slash commands before shutting down')
       .setRequired(false),
     ),
-
+  category: 'owner',
   async execute(interaction) {
     try {
       // Logging the start of the shutdown process

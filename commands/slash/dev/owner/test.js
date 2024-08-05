@@ -1,24 +1,23 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { logger } = require('../../../components/loggerUtil.js');
-
-const command = new SlashCommandBuilder()
-  .setName('test')
-  .setDescription('Test command with subcommands and options')
-  .addSubcommand(subcommand => subcommand
-    .setName('subcommand1')
-    .setDescription('Subcommand 1 description')
-    .addStringOption(option => option.setName('option1')
-      .setDescription('Option 1 for subcommand 1')
-      .setRequired(true)))
-  .addSubcommand(subcommand => subcommand
-    .setName('subcommand2')
-    .setDescription('Subcommand 2 description')
-    .addIntegerOption(option => option.setName('option2')
-      .setDescription('Option 2 for subcommand 2')
-      .setRequired(false)));
+const { logger } = require('../../../../components/loggerUtil.js');
 
 module.exports = {
-  data: command,
+  data: new SlashCommandBuilder()
+    .setName('test')
+    .setDescription('Test command with subcommands and options')
+    .addSubcommand(subcommand => subcommand
+      .setName('subcommand1')
+      .setDescription('Subcommand 1 description')
+      .addStringOption(option => option.setName('option1')
+        .setDescription('Option 1 for subcommand 1')
+        .setRequired(true)))
+    .addSubcommand(subcommand => subcommand
+      .setName('subcommand2')
+      .setDescription('Subcommand 2 description')
+      .addIntegerOption(option => option.setName('option2')
+        .setDescription('Option 2 for subcommand 2')
+        .setRequired(false))),
+  category: 'owner',
   async execute(interaction) {
     // Check if a subcommand is present
     const subcommand = interaction.options.getSubcommand(false);

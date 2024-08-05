@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,6 +8,7 @@ module.exports = {
     .addStringOption(option => option.setName('output')
       .setDescription('Text to log')
       .setRequired(true)),
+  category: 'owner',
   async execute(interaction) {
     try {
       const outputText = interaction.options.getString('output');

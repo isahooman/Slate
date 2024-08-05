@@ -1,11 +1,19 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment'); require('moment-duration-format');
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('Check the bot\'s response time.'),
+    .setName('ping') // Command name
+    .setDescription('Check the bot\'s response time.') // Brief description of what the command does
+    .setNSFW(false) // Age-Restrict this command allowing it to only be used in age-restricted channels
+    .setDMPermission(false),
+  category: 'misc',
+  cooldowns: {
+    user: 3000,
+    guild: 4000,
+    global: 5000,
+  },
   async execute(interaction) {
     // Log the start of the command
     logger.debug(`[Ping Command] Starting ping, calculation for user: ${interaction.user.username}`);

@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 const path = require('path');
-const { readFile, writeFile, deleteFile } = require('../../../components/fileHandler.js');
+const { readFile, writeFile, deleteFile } = require('../../../../components/fileHandler.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ module.exports = {
     .addIntegerOption(option => option.setName('lines')
       .setDescription('Number of lines to retrieve')
       .setRequired(true)),
-
+  category: 'owner',
   async execute(interaction) {
     try {
       logger.debug('[Logs Command] Reading bot logs');

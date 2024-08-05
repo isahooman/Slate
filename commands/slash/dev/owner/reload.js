@@ -1,6 +1,6 @@
-const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
-const { logger, reloadLogger } = require('../../../components/loggerUtil.js');
+const { logger, reloadLogger } = require('../../../../components/loggerUtil.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,6 +16,7 @@ module.exports = {
         { name: 'Prefix', value: 'prefix' },
         { name: 'Logger', value: 'logger' },
       )),
+  category: 'owner',
   async execute(interaction) {
     const commandName = interaction.options.getString('command');
     const Type = interaction.options.getString('type');

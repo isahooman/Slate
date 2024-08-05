@@ -46,11 +46,11 @@ async function loadCommands(client) {
 async function loadSlashCommands(client, directory) {
   logger.debug(`Loading slash commands from ${path.relative(process.cwd(), directory)}...`);
   // Use readRecursive to get all command files
-  const commandFiles = await readRecursive(directory);
-  // Filter for .js files
-  const jsCommandFiles = commandFiles.filter(file => path.extname(file) === '.js');
-  for (const filePath of jsCommandFiles) try {
+  const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  for (const filePath of commandFiles) try {
     const command = require(filePath);
+    // Set the filePath property on the command object
+    command.filePath = filePath;
     client.slashCommands.set(command.data.name, command);
 
     // Only set to true if the command doesn't exist in the config
@@ -73,10 +73,8 @@ async function loadSlashCommands(client, directory) {
 async function loadPrefixCommands(client, directory) {
   logger.debug(`Loading prefix commands from ${directory}...`);
   // Use readRecursive to get all command files
-  const commandFiles = await readRecursive(directory);
-  // Filter for .js files
-  const jsCommandFiles = commandFiles.filter(file => path.extname(file) === '.js');
-  for (const filePath of jsCommandFiles) try {
+  const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  for (const filePath of commandFiles) try {
     const command = require(filePath);
     client.prefixCommands.set(command.name.toLowerCase(), command);
 

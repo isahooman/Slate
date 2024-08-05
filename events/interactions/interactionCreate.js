@@ -11,21 +11,23 @@ module.exports = {
   execute: async(interaction, client) => {
     logger.interaction(`Received interaction: ${interaction.id}, from: [${interaction.user.username}]`);
 
+    // Check if the user is blacklisted
     if (blacklist.users.includes(interaction.user.id)) {
       logger.warn(`User ${interaction.user.username} (${interaction.user.id}) is in the blacklist. Ignoring interaction.`);
       return;
     }
-
+    // Check if the server is blacklisted
     if (blacklist.servers.leave.includes(interaction.guildId)) {
       logger.warn(`Server ${interaction.guild.name} (${interaction.guildId}) is in the "leave" blacklist. Leaving server.`);
       await interaction.guild.leave();
       return;
     }
-
+    // Check if the server is ignored
     if (blacklist.servers.ignore.includes(interaction.guildId)) {
       logger.warn(`Server ${interaction.guild.name} (${interaction.guild.id}) is in the "ignore" blacklist. Ignoring interaction.`);
       return;
     }
+
     if (interaction.isCommand()) {
       logger.interaction(`Processing slash command: ${interaction.commandName}`);
       if (interaction.guild) logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in: ${interaction.guild.name}`);
@@ -34,10 +36,19 @@ module.exports = {
       const command = client.slashCommands.get(interaction.commandName);
       if (!command) return;
 
+      // Get the command category, defaulting to the directory name if not specified
+      const commandCategory = command.category || path.basename(path.dirname(command.filePath));
+
       // Disabled check
       if (!ownerId.includes(interaction.user.id) && (!toggle.slash[interaction.commandName] || !toggle.slash[interaction.commandName])) return interaction.reply({
         content: 'This command has been disabled, possibly for maintenance.\nTry the prefix variation if it exists.',
       });
+
+      // Owner-only command check
+      if (commandCategory.toLowerCase() === 'owner' && !ownerId.includes(interaction.user.id)) {
+        logger.debug(`Unauthorized attempt to use owner command: ${interaction.commandName}`);
+        return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+      }
 
       // User Cooldown
       if (cooldown.user.enabled(command)) {
@@ -61,7 +72,7 @@ module.exports = {
       }
 
       try {
-        await command.execute(interaction, client);
+        await command.execute(interaction, client, commandCategory);
       } catch (error) {
         logger.error(`Error executing slash command: ${error}\n${error.stack}`, 'slash', { interaction });
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(err => logger.error(`Error editing reply: ${err}`));
@@ -71,6 +82,7 @@ module.exports = {
       logger.interaction(`Processing button interaction: ${interaction.customId}`);
       const button = client.slashCommands.get(interaction.message.interaction.commandName);
       if (!button) return logger.error(`Button interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'button', { interaction });
+
       try {
         await button.executeButton(interaction, client);
       } catch (error) {
@@ -84,6 +96,7 @@ module.exports = {
       logger.interaction(`Processing string select menu interaction: ${interaction.customId}`);
       const stringSelectMenu = client.slashCommands.get(interaction.message.interaction.commandName);
       if (!stringSelectMenu) return logger.error(`String select menu interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'select', { interaction });
+
       try {
         await stringSelectMenu.executeStringSelectMenu(interaction, client);
       } catch (error) {
@@ -97,6 +110,7 @@ module.exports = {
       logger.interaction(`Processing modal submit interaction: ${interaction.customId}`);
       const modalSubmit = client.slashCommands.get(interaction.message.interaction.commandName);
       if (!modalSubmit) return logger.error(`Modal submit interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'modal', { interaction });
+
       try {
         await modalSubmit.executeModalSubmit(interaction, client);
       } catch (error) {

@@ -1,6 +1,6 @@
-const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('../../../components/loader.js');
+const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('../../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
-const { logger } = require('../../../components/loggerUtil.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,7 +16,7 @@ module.exports = {
       ))
     .addStringOption(option => option.setName('target')
       .setDescription('The name of the event, command, or log level to toggle')),
-
+  category: 'owner',
   execute(interaction, client) {
     logger.debug(`[Toggle Command] Starting toggle for type: ${interaction.options.getString('type')} and target: ${interaction.options.getString('target')}`);
     const type = interaction.options.getString('type').toLowerCase();

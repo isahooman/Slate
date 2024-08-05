@@ -1,11 +1,12 @@
-const { deployCommands } = require('../../../components/loader.js');
-const { logger } = require('../../../components/loggerUtil.js');
+const { deployCommands } = require('../../../../components/loader.js');
+const { logger } = require('../../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('deploy')
     .setDescription('Deploy all slash commands.'),
+  category: 'owner',
 
   async execute(interaction) {
     try {
