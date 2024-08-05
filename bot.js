@@ -81,12 +81,12 @@ process
 
   .on('SIGINT', async() => {
     logger.info('Received SIGINT. Shutting down...');
+    // Undeploy commands if true in config
     if (undeployOnExit) try {
       await undeploy(clientId, guildId, token);
     } catch (error) {
       logger.error(`Error during undeploy: ${error}`);
     }
-
     // Logout of Discord
     await this.client.destroy();
     logger.info('Bot successfully logged out.');
