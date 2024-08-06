@@ -84,7 +84,9 @@
   - <span style="color:lightgreen;">Math</span> - Solve the provided math equation.<br>
 - Fun
   - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
-  - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.<br>
+  - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.
+
+<br><br>
 
 # Getting Started
 
