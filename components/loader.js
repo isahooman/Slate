@@ -1,9 +1,10 @@
-const { loadEvents, reloadEvents, setEventEnabled, isEventEnabled } = require('./events.js');
-const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands } = require('./commands.js');
+const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands, isPrefixCommandEnabled, isSlashCommandEnabled, findNearestCommand, reloadCommand } = require('./commands.js');
+const { loadEvents, reloadAllEvents, setEventEnabled, isEventEnabled, reloadEvent } = require('./events.js');
+const { deployCommands, undeploy } = require('./deploy.js');
 
 /**
  * Load all events and commands
- * @param {import("discord.js").Client} client Discord Client
+ * @param {client} client - Discord Client
  */
 async function loadAll(client) {
   await loadCommands(client);
@@ -13,10 +14,17 @@ async function loadAll(client) {
 module.exports =
 {
   loadAll,
-  reloadEvents,
+  reloadAllEvents,
   togglePrefixCommand,
   toggleSlashCommand,
   setEventEnabled,
   isEventEnabled,
   reloadAllCommands,
+  isPrefixCommandEnabled,
+  isSlashCommandEnabled,
+  reloadEvent,
+  findNearestCommand,
+  reloadCommand,
+  deployCommands,
+  undeploy,
 };

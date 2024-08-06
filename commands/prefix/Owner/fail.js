@@ -1,14 +1,15 @@
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loggerUtil.js');
 
 module.exports = {
   name: 'fail',
   usage: 'fail',
   category: 'Owner',
+  allowDM: true,
   description: 'Intentionally throw an error for testing.',
   cooldowns: {
-    user: 5000,
-    guild: 10000,
-    global: 15000,
+    user: 2500,
+    guild: 5000,
+    global: 10000,
   },
   execute(message) {
     try {
@@ -17,7 +18,7 @@ module.exports = {
     } catch (error) {
       // Log the failure
       logger.error(`[Fail Command] ${error.message}`);
-      message.reply('Failed.');
+      message.reply('Task Failed Successfully.');
     }
   },
 };

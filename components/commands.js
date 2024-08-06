@@ -1,16 +1,25 @@
-const fs = require('fs');
-const path = require('path');
 const { Collection } = require('discord.js');
-const logger = require('./logger.js');
-const ConfigFile = path.join(__dirname, '../config/commands.json');
-const commandsConfig = require(ConfigFile);
+const path = require('path');
+const ConfigFile = path.join(__dirname, '../config/commands.json5');
+const { logger } = require('./loggerUtil.js');
+const { readFile, writeFile, readRecursive } = require('./fileHandler.js');
+
+let commandsConfig;
 
 /**
  * Load all commands and ensure they exist in the config file
- * @param {import("discord.js").Client} client Discord Client
+ * @param {client} client - Discord Client
+ * @author isahooman
  */
-function loadCommands(client) {
-  // Ensure both arrays exist in config file
+async function loadCommands(client) {
+  logger.debug('Starting command loading process...');
+  try {
+    commandsConfig = await readFile(ConfigFile);
+  } catch (error) {
+    logger.error(`Error reading command config file: ${error.message}`);
+    commandsConfig = { slash: {}, prefix: {} };
+  }
+
   if (!commandsConfig.slash) commandsConfig.slash = {};
   if (!commandsConfig.prefix) commandsConfig.prefix = {};
 
@@ -18,134 +27,276 @@ function loadCommands(client) {
   client.prefixCommands = new Collection();
   client.commandAliases = new Collection();
 
-  loadSlashCommands(client, path.join(__dirname, '../commands/slash'));
-  loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
+  logger.debug('Loading slash commands...');
+  await loadSlashCommands(client, path.join(__dirname, '../commands/slash'));
+  logger.debug('Loading prefix commands...');
+  await loadPrefixCommands(client, path.join(__dirname, '../commands/prefix'));
 
-  // Save any changes to config file
-  fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
+  logger.debug('Saving command configuration...');
+  await writeFile(ConfigFile, commandsConfig);
+  logger.debug('Command loading complete.');
 }
 
 /**
  * Load slash commands
  * @param {client} client - Discord client
  * @param {string} directory - The commands directory
+ * @author isahooman
  */
-function loadSlashCommands(client, directory) {
-  const commandFiles = readCommands(directory);
-  for (const fileData of commandFiles) try {
-    const command = require(fileData.path);
+async function loadSlashCommands(client, directory) {
+  logger.debug(`Loading slash commands from ${path.relative(process.cwd(), directory)}...`);
+  // Use readRecursive to get all command files
+  const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  for (const filePath of commandFiles) try {
+    const command = require(filePath);
+    // Set the filePath property on the command object
+    command.filePath = filePath;
     client.slashCommands.set(command.data.name, command);
-    // Ensure command is in config file
-    if (commandsConfig.slash[command.data.name] === undefined) commandsConfig.slash[command.data.name] = true;
 
-    logger.loading(`Slash Command Loaded: ${command.data.name}`);
+    // Only set to true if the command doesn't exist in the config
+    if (!Object.hasOwn(commandsConfig.slash, command.data.name)) commandsConfig.slash[command.data.name] = true;
+
+    logger.loading(`Loaded slash command: ${command.data.name}`);
   } catch (error) {
-    logger.error(`Error loading slash command at ${fileData.path}: ${error.message}`);
+    logger.error(`Error loading slash command at ${filePath}: ${error.message}`);
   }
-  logger.info(`All slash commands loaded successfully.`);
+
+  logger.info('All slash commands loaded successfully.');
 }
 
 /**
  * Load prefix commands.
  * @param {client} client - Discord client
  * @param {string} directory - The commands directory.
+ * @author isahooman
  */
-function loadPrefixCommands(client, directory) {
-  const commandFiles = readCommands(directory);
-  for (const fileData of commandFiles) try {
-    const command = require(fileData.path);
+async function loadPrefixCommands(client, directory) {
+  logger.debug(`Loading prefix commands from ${directory}...`);
+  // Use readRecursive to get all command files
+  const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  for (const filePath of commandFiles) try {
+    const command = require(filePath);
     client.prefixCommands.set(command.name.toLowerCase(), command);
-    // Ensure command is in config file
-    if (commandsConfig.prefix[command.name.toLowerCase()] === undefined) commandsConfig.prefix[command.name.toLowerCase()] = true;
 
-    // Handle command aliases
-    if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
+    // Only set to true if the command doesn't exist in the config
+    if (!Object.hasOwn(commandsConfig.prefix, command.name.toLowerCase())) commandsConfig.prefix[command.name.toLowerCase()] = true;
 
-    logger.loading(`Prefix Command Loaded: ${command.name}`);
+    if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) {
+      client.commandAliases.set(alias.toLowerCase(), command);
+      logger.debug(`Registered alias for prefix command: ${alias} -> ${command.name}`);
+    }
+
+    logger.loading(`Loaded prefix command: ${command.name}`);
   } catch (error) {
-    logger.error(`Error loading prefix command at ${fileData.path}: ${error.message}`);
+    logger.error(`Error loading prefix command at ${filePath}: ${error.message}`);
   }
-  logger.info(`All prefix commands loaded successfully.`);
+
+  logger.info('All prefix commands loaded successfully.');
 }
 
 /**
- * Toggle the enabled state of a slash command
- * @param {string} commandName Name of the command to toggle
+ * Toggle the enabled state of a slash command.
+ * @param {string} input - The command to toggle.
+ * @param {client} client - Discord client
+ * @author isahooman
  */
-function toggleSlashCommand(commandName) {
-  if (Object.prototype.hasOwnProperty.call(commandsConfig.slash, commandName)) {
-    commandsConfig.slash[commandName] = !commandsConfig.slash[commandName];
-    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
-    logger.info(`Toggled slash command ${commandName}: ${commandsConfig.slash[commandName]}`);
+function toggleSlashCommand(input, client) {
+  logger.debug(`Attempting to toggle slash command: ${input}`);
+  const nearestCommand = findNearestCommand(input, client.slashCommands, 'slash');
+  if (nearestCommand) {
+    const commandName = nearestCommand.data.name;
+    let currentStatus = commandsConfig.slash[commandName];
+    commandsConfig.slash[commandName] = currentStatus === undefined ? true : !currentStatus;
+    const newStatus = commandsConfig.slash[commandName];
+    logger.debug(`Toggled command ${commandName} from ${currentStatus} to ${newStatus}`);
+    writeFile(ConfigFile, commandsConfig);
+    logger.info(`Toggled slash command ${commandName}: ${newStatus}`);
   } else {
-    logger.error(`Slash command ${commandName} not found.`);
+    logger.warn(`No slash command found with name '${input}'.`);
   }
 }
 
 /**
- * Toggle the enabled state of a prefix command
- * @param {string} commandName Name of the command to toggle
+ * Toggles the enabled state of a prefix command.
+ * @param {string} input - The command to toggle.
+ * @param {client} client - Discord client
+ * @author isahooman
  */
-function togglePrefixCommand(commandName) {
+function togglePrefixCommand(input, client) {
+  logger.debug(`Attempting to toggle prefix command: ${input}`);
+  const nearestCommand = findNearestCommand(input, client.prefixCommands, 'prefix');
+  if (nearestCommand) {
+    const commandName = nearestCommand.name;
+    let currentStatus = commandsConfig.prefix[commandName];
+    commandsConfig.prefix[commandName] = currentStatus === undefined ? true : !currentStatus;
+    const newStatus = commandsConfig.prefix[commandName];
+    logger.debug(`Toggled command ${commandName} from ${currentStatus} to ${newStatus}`);
+    writeFile(ConfigFile, commandsConfig);
+    logger.info(`Toggled prefix command ${commandName}: ${newStatus}`);
+  } else {
+    logger.warn(`No prefix command found with name '${input}'.`);
+  }
+}
+
+/**
+ * Checks the enabled state of a slash command.
+ * @param {string} commandName - The name of the command.
+ * @returns {boolean} - True if enabled, false otherwise.
+ * @author isahooman
+ */
+function isSlashCommandEnabled(commandName) {
+  logger.debug(`Checking if slash command ${commandName} is enabled...`);
+  if (!Object.hasOwn(commandsConfig.slash, commandName)) {
+    logger.debug(`Slash command ${commandName} not found in configuration, adding and enabling it...`);
+    commandsConfig.slash[commandName] = true;
+    writeFile(ConfigFile, commandsConfig);
+  }
+
+  const isEnabled = commandsConfig.slash[commandName];
+  logger.debug(`Slash command ${commandName} is ${isEnabled ? 'enabled' : 'disabled'}.`);
+  return isEnabled;
+}
+
+/**
+ * Checks the enabled state of a prefix command.
+ * @param {string} commandName - The name of the command.
+ * @returns {boolean} - True if enabled, false otherwise.
+ * @author isahooman
+ */
+function isPrefixCommandEnabled(commandName) {
   commandName = commandName.toLowerCase();
-  if (Object.prototype.hasOwnProperty.call(commandsConfig.prefix, commandName)) {
-    commandsConfig.prefix[commandName] = !commandsConfig.prefix[commandName];
-    fs.writeFileSync(ConfigFile, JSON.stringify(commandsConfig, null, 2));
-    logger.info(`Toggled prefix command ${commandName}: ${commandsConfig.prefix[commandName]}`);
-  } else {
-    logger.error(`Prefix command ${commandName} not found.`);
+  logger.debug(`Checking if prefix command ${commandName} is enabled...`);
+  if (!Object.hasOwn(commandsConfig.prefix, commandName)) {
+    logger.debug(`Prefix command ${commandName} not found in configuration, adding and enabling it...`);
+    commandsConfig.prefix[commandName] = true;
+    writeFile(ConfigFile, commandsConfig);
   }
+
+  const isEnabled = commandsConfig.prefix[commandName];
+  logger.debug(`Prefix command ${commandName} is ${isEnabled ? 'enabled' : 'disabled'}.`);
+  return isEnabled;
 }
 
 /**
- * Recursively Read Command Directories
- * @param {string} directory A given directory
- * @returns {Array} An array of files
+ * Finds the nearest command to the input.
+ * @param {string} input - the input to search
+ * @param {commands} commands - A collection of commands to search through.
+ * @param {string} type - The type of command (e.g., 'slash' or 'prefix').
+ * @returns {commands | null} - The nearest command found, or null if no matching command is found.
+ * @author isahooman
  */
-function readCommands(directory) {
-  const files = fs.readdirSync(directory);
-  let commandFiles = [];
-  for (const file of files) {
-    const filepath = path.join(directory, file);
-    if (fs.statSync(filepath).isDirectory()) commandFiles = commandFiles.concat(readCommands(filepath));
-    else if (file.endsWith('.js')) commandFiles.push({ path: filepath, directory });
-    else if (!file.endsWith('.md')) logger.error(`Invalid file found in commands directory: ${file}`);
+function findNearestCommand(input, commands, type) {
+  let nearestCommand = null;
+  let highestSimilarity = -1;
+
+  logger.debug(`Searching for command input: ${input}`);
+
+  // Search for exact alias matches first
+  if (type === 'prefix') commands.forEach(cmd => {
+    if (cmd.aliases && cmd.aliases.includes(input)) {
+      nearestCommand = { ...cmd, type };
+      logger.debug(`Found alias match for prefix command: ${input} -> ${cmd.name}`);
+    }
+  });
+
+  // If no exact alias match, search for nearest command name
+  commands.forEach((cmd, cmdName) => {
+    if (cmdName.startsWith(input)) {
+      const similarity = cmdName.length - input.length;
+      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
+        highestSimilarity = similarity;
+        nearestCommand = { ...cmd, type };
+        logger.debug(`Found command name match for ${type} command: ${input} -> ${cmdName}`);
+      }
+    }
+  });
+  // Search for nearest alias if no command name match is found
+  if (!nearestCommand && type === 'prefix') {
+    logger.debug(`No matches found, searching for nearest alias.`);
+    commands.forEach(cmd => {
+      if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
+        const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
+        if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
+          highestSimilarity = similarity;
+          nearestCommand = { ...cmd, type };
+          logger.debug(`Found alias match for command: ${input} -> ${cmd.aliases.find(alias => alias.startsWith(input))}`);
+        }
+      }
+    });
   }
-  return commandFiles;
+  return nearestCommand;
+}
+
+/**
+ * Reload a specific command
+ * @param {object} command - Command object
+ * @param {interaction} interaction - Discord Interaction
+ * @author isahooman
+ */
+async function reloadCommand(command, interaction) {
+  const commandName = command.data ? command.data.name : command.name;
+  logger.debug(`[Reload Command] Reloading command: ${commandName}`);
+
+  const commandType = command.type === 'slash' ? 'slash' : 'prefix';
+  const baseDir = path.join(__dirname, '..', 'commands', commandType);
+
+  // Use readRecursive to find the command file
+  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
+
+  if (!commandFiles) {
+    logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
+    return;
+  }
+
+  // Delete cached command data
+  delete require.cache[require.resolve(commandFiles)];
+
+  try {
+    const newCommand = require(commandFiles);
+    if (command.data) {
+      interaction.client.slashCommands.set(newCommand.data.name, newCommand);
+      logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);
+    } else {
+      interaction.client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
+      logger.debug(`[Reload Command] Prefix command '${newCommand.name}' reloaded`);
+    }
+  } catch (error) {
+    logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
+  }
 }
 
 /**
  * Reloads all commands of the given type.
  * @param {client} client - Discord client
  * @param {string} commandType - The type of commands to reload (slash or prefix).
- *  {void}
+ * @author isahooman
  */
-function reloadAllCommands(client, commandType) {
-  // Get directory for given type
+async function reloadAllCommands(client, commandType) {
+  logger.debug(`Reloading all ${commandType} commands...`);
   const baseDir = path.join(__dirname, '..', 'commands', commandType);
-  const commandFiles = readCommands(baseDir);
+  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
 
-  // Iterate over each command file
-  commandFiles.forEach(fileData => {
-    const commandFilePath = fileData.path;
-    // Clear the cache for each command
+  for (const commandFilePath of commandFiles) {
     delete require.cache[require.resolve(commandFilePath)];
     try {
+      logger.debug(`Reloading ${commandFilePath}...`);
       const command = require(commandFilePath);
       const commandKey = commandType === 'slash' ? command.data.name : command.name.toLowerCase();
-      // Reload slash commands
       if (commandType === 'slash') {
         client.slashCommands.set(commandKey, command);
-        logger.loading(`Reloaded Slash Command: ${commandKey}`);
+        logger.debug(`Reloaded Slash Command: ${command.data.name}`);
       } else {
-        // Reload prefix commands
         client.prefixCommands.set(commandKey, command);
-        logger.loading(`Reloaded Prefix Command: ${commandKey}`);
+        logger.debug(`Reloaded Prefix Command: ${command.name}`);
+        if (command.aliases && Array.isArray(command.aliases)) command.aliases.forEach(alias => {
+          client.commandAliases.set(alias.toLowerCase(), command);
+          logger.debug(`Re-registered alias for prefix command: ${alias} -> ${command.name}`);
+        });
       }
     } catch (error) {
       logger.error(`Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);
     }
-  });
+  }
   logger.info(`All ${commandType} commands reloaded successfully.`);
 }
 
@@ -155,4 +306,8 @@ module.exports =
   toggleSlashCommand,
   togglePrefixCommand,
   reloadAllCommands,
+  isPrefixCommandEnabled,
+  isSlashCommandEnabled,
+  findNearestCommand,
+  reloadCommand,
 };

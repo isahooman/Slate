@@ -1,0 +1,105 @@
+{
+  "interactionCreate": true,
+  "messageCreate": true,
+  "messageUpdate": true,
+  "ready": true,
+  "warn": false,
+  "error": false,
+
+  "debug": false,
+
+  "applicationCommandCreate": false,
+  "applicationCommandDelete": false,
+  "applicationCommandUpdate": false,
+
+  "channelCreate": true,
+  "channelDelete": true,
+  "channelUpdate": true,
+  "channelPinsUpdate": false,
+
+  "emojiCreate": false,
+  "emojiDelete": false,
+  "emojiUpdate": false,
+
+  "guildCreate": true,
+  "guildDelete": true,
+  "guildUpdate": true,
+  "guildAvailable": true,
+  "guildUnavailable": true,
+  "guildBanAdd": false,
+  "guildBanRemove": false,
+  "guildIntegrationsUpdate": false,
+  "guildAuditLogEntryCreate": false,
+
+  "guildScheduledEventCreate": false,
+  "guildScheduledEventDelete": false,
+  "guildScheduledEventUpdate": false,
+  "guildScheduledEventUserAdd": false,
+  "guildScheduledEventUserRemove": false,
+
+  "guildMemberAdd": true,
+  "guildMemberRemove": true,
+  "guildMemberUpdate": true,
+  "guildMemberAvailable": true,
+  "guildMembersChunk": false,
+
+  "inviteCreate": false,
+  "inviteDelete": false,
+
+  "messageDelete": false,
+  "messageDeleteBulk": false,
+  "messageReactionAdd": false,
+  "messageReactionRemove": false,
+  "messageReactionRemoveAll": false,
+  "messageReactionRemoveEmoji": false,
+
+  "presenceUpdate": false,
+
+  "roleCreate": false,
+  "roleDelete": false,
+  "roleUpdate": false,
+
+  "shardDisconnect": true,
+  "shardError": true,
+  "shardReady": true,
+  "shardReconnecting": true,
+  "shardResume": true,
+
+  "stageInstanceCreate": false,
+  "stageInstanceDelete": false,
+  "stageInstanceUpdate": false,
+
+  "stickerCreate": false,
+  "stickerDelete": false,
+  "stickerUpdate": false,
+
+  "threadCreate": true,
+  "threadDelete": true,
+  "threadUpdate": true,
+  "threadListSync": false,
+  "threadMembersUpdate": false,
+  "threadMemberUpdate": false,
+
+  "autoModerationActionExecution": false,
+  "autoModerationRuleCreate": false,
+  "autoModerationRuleDelete": false,
+  "autoModerationRuleUpdate": false,
+
+  "cacheSweep": false,
+
+  "webhookUpdate": false,
+
+  "rateLimit": false,
+
+  "typingStart": false,
+
+  "userUpdate": false,
+
+  "voiceStateUpdate": false,
+
+  "invalidated": false,
+
+  "invalidRequestWarning": false,
+  
+  "applicationCommandPermissionsUpdate": false
+}

@@ -1,6 +1,8 @@
 {
     "Guilds": true,
     "GuildMembers": true,
+    "GuildMessages": true,
+    
     "GuildModeration": false,
     "GuildEmojisAndStickers": false,
     "GuildIntegrations": false,
@@ -8,7 +10,6 @@
     "GuildInvites": false,
     "GuildVoiceStates": false,
     "GuildPresences": false,
-    "GuildMessages": true,
     "GuildMessageReactions": false,
     "GuildMessageTyping": false,
 

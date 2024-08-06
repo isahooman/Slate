@@ -1,10 +1,11 @@
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loggerUtil.js');
 
 module.exports = {
   name: 'logtest',
   usage: 'logtest <message>',
   category: 'Owner',
   description: 'Test logger levels',
+  allowDM: true,
   execute(message, args) {
     try {
       // Get text input from command arguments

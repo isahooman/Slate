@@ -12,19 +12,23 @@ If the command name is ping you can type `/ping`
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('example') // Sets the command name. You cannot use capital letters and must only include text.
-    .setDescription('This is an example description.'), // Sets the command description
+    .setDescription('This is an example description.') // Sets the command description
+    .setNSFW(false) // Age-restricts the command.
+    .setDMPermission(true), // Determines if the command can be used in DMs.
+  category: 'misc', // Sets the command category.
   cooldowns: { // Optional cooldown parameter for each command
     user: 3000, // Milliseconds until the user of the command can use this command again
     guild: 0, // Milliseconds until the guild that used the command can use this command again
     global: 0, // Milliseconds until anyone can use the command again in the entirety of the bot
   },
 
+  
   async execute(interaction, client) {
     // This shows a debug message of the command with your given input
     logger.debug('This is an example debugging message.');
@@ -41,9 +45,6 @@ module.exports = {
   executeModalSubmit(interaction, client) {
     await interaction.reply('This is an example reply message');
   }
-  
-  
-
 
 };
 ```
@@ -56,7 +57,11 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('')
-    .setDescription(''),
+    .setDescription('')
+    .setCategory('')
+    .setNSFW(Boolean)
+    .setDMPermission(Boolean),
+  category: '',
   cooldowns: {
     user: Number,
     guild: Number,
@@ -73,7 +78,7 @@ module.exports = {
 
   },
   executeModalSubmit(interaction, client) {
-    
+
   }
 };
 ```

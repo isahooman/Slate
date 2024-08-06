@@ -4,7 +4,7 @@ Table of Contents
 
 - [Example Configurations](#example-configurations)
   - [blacklist.json](#blacklistjson)
-  - [config.json](#configjson)
+  - [config.json5](#configjson5)
   - [events.json](#eventsjson)
   - [logging.json](#loggingjson)
   - [status.json](#statusjson)
@@ -15,20 +15,10 @@ Table of Contents
 
 ```json
 {
-  "users":
-  [
-    "496360025099337727"
-  ],
-  "servers":
-  {
-    "leave":
-      [
-        "496360025099337727"
-      ],
-    "ignore":
-      [
-        "496360025099337727"
-      ]
+  "users": ["496360025099337727"],
+  "servers": {
+    "leave": ["496360025099337727"],
+    "ignore": ["496360025099337727"]
   }
 }
 ```
@@ -45,26 +35,51 @@ Table of Contents
       - Array of Strings: `["496360025099337727"]`
       - Server IDs that are entered into here refer to servers the bot will not allow to use commands.
 
-## config.json
+## config.json5
 
 [Back to top](#example-configurations)
 
-```json
+```json5
 {
-  "token": "mXZwafniuvnd.fuwyfbsjsdk123NWNS",
-  "clientId": "496360025099337727",
-  "ownerId": ["496360025099337727", "932498572837456323"],
-  "guildId": "762498572837456323",
-  "prefix": ".",
-  "deployOnStart": true
+  // Your discord bot token
+  token: "MTA2MjkzMTk3MzU3NzkwNDEzOQ.GTX3J-.62b_6VJfJu6jNbOGNyAyqeJkvzRvo5YVpSbANY",
+
+  // Your discord application client id
+  clientId: "1032931173577814139",
+
+  // Your id along with any other owners
+  ownerId: ["496360025099337727", "932498572837456323"],
+
+  // Your home server id
+  guildId: "762498572837456323",
+
+  // Prefix in which the bot will respond too
+  prefix: "!",
+
+  // whether or not slash commands will be redeployed when the bot starts
+  deployOnStart: true,
+
+  // whether or not the bot will send a message when it's online and ready
+  notifyOnReady: true,
+  // (optional) Channel within the home server which will receive ready notification
+  readyChannel: ["1177831782468437121"],
+  // (optional) Users who will receive ready notifications
+  readyUsers: ["496360025099337728"],
+
+  // whether or not the bot will attempt to send a report when an error occurs
+  reportErrors: true,
+  // (optional) Channel within the home server which the bot will send error reports to
+  reportChannel: ["1177831782468437121"],
+  // (optional) Users who will receive error reports in dms
+  reportUsers: ["496360025099337728"],
 }
 ```
 
 - `token`
-  - String: `"mXZwafniuvnd.fuwyfbsjsdk123NWNS"`
+  - String: `"MTA2MjkzMTk3MzU3NzkwNDEzOQb_6VJfJu6jNbOGNyAyqeJkvzRvo5YVpSbANY"`
   - This refers to the bot token, or login information, of your bot. Do not share this with anyone.
 - `clientId`
-  - String: `"496360025099337727"`
+  - String: `"1032931173577814139"`
   - This refers to the user ID of your bot.
 - `ownerId`
   - Array of Strings: `["496360025099337727", "932498572837456323"]`
@@ -73,11 +88,31 @@ Table of Contents
   - String: `"762498572837456323"`
   - Any guild ID entered into this field will be considered your home or dev server.
 - `prefix`
-  - String: `"."`
+  - String: `"!"`
   - This refers to the prefix the bot will respond to when using commands.
 - `deployOnStart`
   - Boolean: `true` or `false`
   - This refers to whether or not the bot should deploy commands upon starting
+    <br><br>
+- `notifyOnReady`
+  - Boolean: `true` or `false`
+  - This refers to whether or not the bot will send a message when it's online and ready
+- `readyChannel`
+  - Array of Strings: `["1177831782468437121"]`
+  - This refers to the channel within the home server which will receive ready notification
+- `readyUsers`
+  - Array of Strings: `["496360025099337728"]`
+  - This refers to the users who will receive ready notifications
+    <br><br>
+- `reportErrors`
+  - Boolean: `true` or `false`
+  - This refers to whether or not the bot will attempt to send a report when an error occurs
+- `reportChannel`
+  - Array of Strings: `["1177831782468437121"]`
+  - This refers to the channel within the home server which the bot will send error reports to
+- `reportUsers`
+  - Array of Strings: `["496360025099337728"]`
+  - This refers to the users who will receive error reports in dms
 
 ## events.json
 
@@ -186,7 +221,7 @@ Table of Contents
   "invalidated": false,
 
   "invalidRequestWarning": false,
-  
+
   "applicationCommandPermissionsUpdate": false
 }
 ```
@@ -432,28 +467,28 @@ Table of Contents
 
 ```json
 {
-    "Guilds": true,
-    "GuildMembers": true,
-    "GuildModeration": true,
-    "GuildEmojisAndStickers": false,
-    "GuildIntegrations": false,
-    "GuildWebhooks": false,
-    "GuildInvites": false,
-    "GuildVoiceStates": false,
-    "GuildPresences": false,
-    "GuildMessages": true,
-    "GuildMessageReactions": false,
-    "GuildMessageTyping": false,
+  "Guilds": true,
+  "GuildMembers": true,
+  "GuildModeration": true,
+  "GuildEmojisAndStickers": false,
+  "GuildIntegrations": false,
+  "GuildWebhooks": false,
+  "GuildInvites": false,
+  "GuildVoiceStates": false,
+  "GuildPresences": false,
+  "GuildMessages": true,
+  "GuildMessageReactions": false,
+  "GuildMessageTyping": false,
 
-    "DirectMessages": false,
-    "DirectMessageReactions": false,
-    "DirectMessageTyping": false,
+  "DirectMessages": false,
+  "DirectMessageReactions": false,
+  "DirectMessageTyping": false,
 
-    "MessageContent": true,
-    
-    "GuildScheduledEvents": false,
-    "AutoModerationConfiguration": false,
-    "AutoModerationExecution": false
+  "MessageContent": true,
+
+  "GuildScheduledEvents": false,
+  "AutoModerationConfiguration": false,
+  "AutoModerationExecution": false
 }
 ```
 
@@ -533,7 +568,6 @@ Table of Contents
   "COMMAND": true,
   "MESSAGE": true,
   "INTERACTION": true
-
 }
 ```
 
@@ -564,36 +598,19 @@ Table of Contents
 - `INTERACTION`
   - Boolean: `true` or `false`
   - If true, the bot will log interaction events.
-  
+
 ## status.json
 
 ```json
 {
-  "playing":
-  [
-    "with your friends",
-    "with fire",
-  ],
+  "playing": ["with your friends", "with fire"],
 
-  "streaming":
-  [
-    "PUBG",
-    "Minecraft"
-  ],
+  "streaming": ["PUBG", "Minecraft"],
 
-  "listening":
-  [
-    "music",
-    "keyboard tapping"
-  ],
+  "listening": ["music", "keyboard tapping"],
 
-  "watching":
-  [
-    "out for you",
-    "Youtube"
-  ]
+  "watching": ["out for you", "Youtube"]
 }
-
 ```
 
 - `playing`

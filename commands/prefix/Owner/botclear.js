@@ -1,5 +1,8 @@
-const config = require('../../../config/config.json');
-const logger = require('../../../components/logger.js');
+const path = require('path');
+const { readFile } = require('../../../components/fileHandler.js');
+const config = readFile(path.join(__dirname, '../../../config/config.json5'));
+const { logger } = require('../../../components/loggerUtil.js');
+
 const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0,
   '-', '$$', '&&', 'a!', 'b!', 'c!', 'd!', 'e!', 'f!', 'g!', 'h!', 'i!', 'j!', 'k!', 'l!', 'm!', 'n!', 'o!', 'p!',
   'q!', 'r!', 's!', 't!', 'u!', 'v!', 'w!', 'x!', 'y!', 'z!', '/', '//', '\\', '=', '>', '->', '`', ', ', '|', '[',
@@ -8,8 +11,9 @@ const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?',
 module.exports = {
   name: 'botclear',
   usage: 'bc <self/all>',
-  aliases: ['bc'],
   category: 'Owner',
+  aliases: ['bc'],
+  allowDM: false,
   description: 'Clears bot messages',
   execute: async(message, args) => {
     // Check the arg provided
@@ -33,8 +37,8 @@ module.exports = {
 
       logger.debug(`[BotClear Command] Deletable messages: ${deletableMessages.size}`);
 
-      // Filter messages to messages from the last 7 minutes
-      const messagesToDelete = deletableMessages.filter(msg => msg.createdTimestamp > (Date.now() - 420000));
+      // Filter messages to messages from the last 10 minutes
+      const messagesToDelete = deletableMessages.filter(msg => msg.createdTimestamp > (Date.now() - 10 * 60 * 1000));
       logger.debug(`[BotClear Command] Messages to delete: ${messagesToDelete.size}`);
 
       // Bulk delete the filtered messages

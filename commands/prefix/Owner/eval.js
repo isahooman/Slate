@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loggerUtil.js');
 const Discord = require('discord.js');
 const { inspect } = require('node:util');
 const { client } = require('../../../bot.js');
@@ -38,6 +38,7 @@ module.exports = {
   name: 'eval',
   usage: 'eval <code>',
   category: 'Owner',
+  allowDM: true,
   description: 'Evaluates code',
 
   /**

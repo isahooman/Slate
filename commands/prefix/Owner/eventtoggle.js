@@ -1,11 +1,12 @@
-const { setEventEnabled, isEventEnabled, reloadEvents } = require('../../../components/events.js');
-const logger = require('../../../components/logger');
+const { setEventEnabled, isEventEnabled, reloadAllEvents } = require('../../../components/loader.js');
+const { logger } = require('../../../components/loggerUtil.js');
 
 module.exports = {
   name: 'eventtoggle',
   usage: 'eventtoggle <event_name>',
-  aliases: ['etoggle'],
   category: 'Owner',
+  aliases: ['etoggle', 'toggleevent'],
+  allowDM: true,
   description: 'Toggles the specified event',
   execute(message, args) {
     const eventName = args[0];
@@ -28,7 +29,9 @@ module.exports = {
     const currentState = isEventEnabled(eventName);
     const newState = !currentState;
     setEventEnabled(eventName, newState);
-    reloadEvents(message.client);
+
+    // Reload events to toggle listeners
+    reloadAllEvents(message.client);
 
     // Reply with the new state
     message.reply(`Event '${eventName}' is now ${newState ? 'enabled' : 'disabled'}.`);

@@ -2,7 +2,7 @@
 
 ## Usage
 
-These commands are able to be used by combining the command name with the prefix in `config.json`.
+These commands are able to be used by combining the command name with the prefix in `config.json5`.
 For example:
 If the prefix is `.` and the command name is `ping` then you can use the command by typing `.ping` into a channel that the bot can read.
 
@@ -12,14 +12,14 @@ If the prefix is `.` and the command name is `ping` then you can use the command
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const logger = require('../../../components/logger.js');
+const { logger } = require('../../../components/loggerUtil.js');
 
 module.exports = {
   name: 'example', // Command name
   usage: 'example', // Example of how the command should be used by the user
   category: 'misc', // Category of the command
   aliases: ['ex'], // Aliases provide alternate names for the command.
-  nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channels	
+  nsfw: false, // Mark command as nsfw, this allows the command to only be used in age-restricted channels
   allowDM: false, // Allows the command to be used in dms
   description: 'This is an example description', // Brief description of what the command does
   cooldowns: { // Optional cooldown parameter for each command
@@ -40,7 +40,6 @@ module.exports = {
     return message.channel.send({ content: 'This is message content' });
     // Option 4, This will make it so only the command user can see this message
     return message.channel.send({ content: 'This is message content', ephemeral: true });
-
   },
 };
 ```
