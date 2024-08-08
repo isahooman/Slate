@@ -1,15 +1,15 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'guildUnavailable',
-  execute(guild, client) {
+  execute(guild) {
     logger.info(`Guild became unavailable;
       Guild Name: ${guild.name} | ${guild.id},
       Unavailable At: ${new Date().toISOString()},
     `);
 
-    // Update guild cache
-    client.guilds.set(guild.id, guild);
-    logger.debug(`Updating guild cache for guild: ${guild.name} (${guild.id})`);
+    // Update the guild cache
+    cache.updateGuild(guild);
   },
 };

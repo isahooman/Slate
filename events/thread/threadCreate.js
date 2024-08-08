@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'threadCreate',
-  execute(thread, client) {
+  execute(thread) {
     logger.info(`Thread created;
       Thread Name: ${thread.name} | ${thread.id},
       Created At: ${thread.createdAt.toISOString()},
@@ -12,7 +13,6 @@ module.exports = {
     `);
 
     // Update thread cache
-    client.threads.set(thread.id, thread);
-    logger.debug(`Adding thread to cache: ${thread.name} (${thread.id})`);
+    cache.updateThread(thread);
   },
 };

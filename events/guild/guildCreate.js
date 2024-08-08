@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'guildCreate',
-  execute(guild, client) {
+  execute(guild) {
     logger.info(`Bot joined a new server;
       Server: ${guild.name} | ${guild.id},
       Members: ${guild.memberCount},
@@ -15,8 +16,10 @@ module.exports = {
       Bot Count: ${guild.members.cache.filter(member => member.user.bot).size}
     `);
 
-    // Update guild cache
-    client.guilds.set(guild.id, guild);
-    logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
+    // Update the guild cache
+    cache.updateGuild(guild);
+
+    // Cache all members of the new guild
+    cache.cacheMembers(guild);
   },
 };

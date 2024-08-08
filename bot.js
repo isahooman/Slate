@@ -5,6 +5,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll, deployCommands, undeploy } = require('./components/loader.js');
 const { logger } = require('./components/loggerUtil.js');
 let cooldownBuilder = require('./components/cooldown.js');
+let cache = new (require('./components/cache.js'));
 
 const handleIntents = intents => {
   let totalIntentsBits = [];
@@ -36,6 +37,8 @@ async function startBot(bot) {
 
 // Cooldowns globalized
 exports.cooldown = cooldownBuilder;
+// Cache globalized
+exports.cache = cache;
 
 startBot(this.client);
 

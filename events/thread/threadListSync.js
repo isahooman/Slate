@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'threadListSync',
-  execute(threads, guild, client) {
+  execute(threads, guild) {
     logger.info(`Thread list synchronized;
       Guild: ${guild.name} | ${guild.id},
       Thread Count: ${threads.size},
@@ -11,7 +12,7 @@ module.exports = {
 
     // Update thread cache
     threads.forEach(thread => {
-      client.threads.set(thread.id, thread);
+      cache.updateThread(thread);
       logger.debug(`Adding thread to cache: ${thread.name} (${thread.id})`);
     });
   },

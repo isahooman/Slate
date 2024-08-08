@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'guildMemberUpdate',
-  execute(oldMember, newMember, client) {
+  execute(oldMember, newMember) {
     const logDetails = [];
 
     // Check username
@@ -27,8 +28,7 @@ module.exports = {
         ${logDetails.join('\n')}
       `);
 
-    // Update user cache
-    client.users.set(newMember.user.id, newMember.user);
-    logger.debug(`Updating user cache for user: ${newMember.user.tag} (${newMember.user.id})`);
+    // Update member cache
+    cache.updateMember(newMember);
   },
 };
