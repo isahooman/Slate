@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'channelDelete',
-  execute(channel, client) {
+  execute(channel) {
     logger.info(`Channel deleted;
       Name: ${channel.name},
       ID: ${channel.id},
@@ -10,13 +11,7 @@ module.exports = {
       Guild ID: ${channel.guild ? channel.guild.id : 'N/A'},
     `);
 
-    // Update channel cache
-    if (channel.type === 'GUILD_TEXT') {
-      logger.debug(`Removing text channel from cache: ${channel.name} (${channel.id})`);
-      client.textChannels.delete(channel.id);
-    } else if (channel.type === 'GUILD_VOICE') {
-      logger.debug(`Removing voice channel from cache: ${channel.name} (${channel.id})`);
-      client.voiceChannels.delete(channel.id);
-    }
+    // Remove the channel from the cache
+    cache.removeChannel(channel.id);
   },
 };

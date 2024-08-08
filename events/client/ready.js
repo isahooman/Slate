@@ -1,6 +1,7 @@
 const statuses = require('../../config/status.json');
 const { logger } = require('../../components/loggerUtil.js');
 const { ActivityType } = require('discord.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'ready',
@@ -9,38 +10,12 @@ module.exports = {
     logger.start(`Logged in as ${client.user.tag}!`);
     logger.debug('Bot is ready and online.');
 
-    // Cache servers
+    // Cache servers, channels, threads and users on startup
+    cache.cacheServers(client);
+    cache.cacheChannels(client);
+    cache.cacheThreads(client);
     client.guilds.cache.forEach(guild => {
-      logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
-    });
-
-    // Cache all channels
-    client.textChannels = new Map();
-    client.voiceChannels = new Map();
-    client.channels.cache.forEach(channel => {
-      if (channel.type === 'GUILD_TEXT') client.textChannels.set(channel.id, channel);
-      else if (channel.type === 'GUILD_VOICE') client.voiceChannels.set(channel.id, channel);
-    });
-
-    // Initialize the threads Map
-    client.threads = new Map();
-
-    // Cache threads for each guild
-    client.guilds.cache.forEach(guild => {
-      guild.channels.cache.forEach(channel => {
-        if (channel.isThread()) client.threads.set(channel.id, channel);
-      });
-      logger.info(`Cached: ${client.threads.size}, threads for guild: ${guild.name}`);
-    });
-
-    // Cache all guild members
-    client.guilds.cache.forEach(async guild => {
-      try {
-        await guild.members.fetch();
-        logger.info(`Cached all members for guild: ${guild.name} (${guild.id})`);
-      } catch (error) {
-        logger.error(`Error caching members for guild: ${guild.name} (${guild.id})`, error);
-      }
+      cache.cacheMembers(guild);
     });
 
     // Set the bot status status

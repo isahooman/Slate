@@ -1,8 +1,9 @@
 const { logger } = require('../../components/loggerUtil.js');
+const { cache } = require('../../bot.js');
 
 module.exports = {
   name: 'threadDelete',
-  execute(thread, client) {
+  execute(thread) {
     logger.info(`Thread deleted;
       Thread Name: ${thread.name} | ${thread.id},
       Deleted At: ${new Date().toISOString()},
@@ -11,8 +12,7 @@ module.exports = {
       Member Count: ${thread.members.size}
     `);
 
-    // Update thread cache
-    client.threads.delete(thread.id);
-    logger.debug(`Removing thread from cache: ${thread.name} (${thread.id})`);
+    // Remove the thread from the cache
+    cache.removeThread(thread.id);
   },
 };
