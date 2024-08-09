@@ -6,7 +6,7 @@ const logging = require('../config/logging.json');
 const moment = require('moment');
 const path = require('path');
 const { readJSON5 } = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors, guildId, errorChannel, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
+const { ownerId, notifyOnReady, reportErrors, guildId, errorChannels, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
 
@@ -253,7 +253,7 @@ function sendEmbed(embed, targetType = null) {
   else
     // Send to channel based on targetType
     if (targetType === 'error') try {
-      sendEmbedToChannel(embed, errorChannel);
+      sendEmbedToChannel(embed, errorChannels);
     } catch (err) {
       process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
     }
