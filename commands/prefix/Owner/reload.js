@@ -9,60 +9,64 @@ module.exports = {
   allowDM: true,
   async execute(message, args) {
     const arg = args[0];
+    logger.debug(`[Reload Command] Received reload command with argument: ${arg}`);
 
     // Reload the logger
     if (arg === 'logger') {
       logger.info('[Reload Command] Reloading logger.');
       await reloadLogger();
       message.channel.send('Logger reloaded');
-    // Check if the arg is either 'prefix', 'slash',
-    } else if (arg === 'prefix' || arg === 'slash') {
-      // Reload all commands of a given type
-      logger.info(`[Reload Command] Reloading all ${arg} commands.`);
-      await reloadAllCommands(message.client, arg);
-      message.channel.send(`All ${arg} commands were reloaded!`);
-      logger.debug(`[Reload Command] All ${arg} commands successfully reloaded.`);
-    // Reload events
-    } else if (arg === 'events') {
-      logger.info('[Reload Command] Reloading events.');
-      reloadAllEvents(message.client);
-      message.channel.send('All events were reloaded!');
-      logger.debug('[Reload Command] All events successfully reloaded.');
-    // Reload command of given name
+      logger.debug('[Reload Command] Logger reloaded successfully.');
+    } else if (arg === 'prefix' || arg === 'slash' || arg === 'events') {
+      // Reload all commands or events of a given type
+      if (arg === 'prefix') {
+        logger.info('[Reload Command] Reloading all prefix commands.');
+        await reloadAllCommands(message.client, 'prefix');
+        message.channel.send('All prefix commands were reloaded!');
+      } else if (arg === 'slash') {
+        logger.info('[Reload Command] Reloading all slash commands.');
+        await reloadAllCommands(message.client, 'slash');
+        message.channel.send('All slash commands were reloaded!');
+      } else if (arg === 'events') {
+        logger.info('[Reload Command] Reloading events.');
+        reloadAllEvents(message.client);
+        message.channel.send('All events were reloaded!');
+      }
     } else if (arg) {
-      logger.debug(`[Reload Command] Attempting to reload command: ${arg}`);
+      // Search for commands with the given arg
       const nearestSlashCommand = findNearestCommand(arg, message.client.slashCommands, 'slash');
       const nearestPrefixCommand = findNearestCommand(arg, message.client.prefixCommands, 'prefix');
 
-      let reloadedTypes = [];
+      let responseMessage = '### Reloaded commands:\n';
 
+      // Reload the command based on the type found
       if (nearestSlashCommand) {
-        // Log found slash command and reload it
-        logger.debug(`[Reload Command] Found slash command: ${nearestSlashCommand.data.name}`);
-        await reloadCommand(nearestSlashCommand, message);
-        reloadedTypes.push('slash');
+        logger.info(`[Reload Command] Reloading slash command: ${nearestSlashCommand.data.name}`);
+        await reloadCommand(message.client, nearestSlashCommand.data.name, 'slash');
+        responseMessage += `Slash: ${nearestSlashCommand.data.name}\n`;
       }
       if (nearestPrefixCommand) {
-        // Log found prefix command and reload it
-        logger.debug(`[Reload Command] Found prefix command: ${nearestPrefixCommand.name}`);
-        await reloadCommand(nearestPrefixCommand, message);
-        reloadedTypes.push('prefix');
+        logger.info(`[Reload Command] Reloading prefix command: ${nearestPrefixCommand.name}`);
+        await reloadCommand(message.client, nearestPrefixCommand.name, 'prefix');
+        responseMessage += `Prefix: ${nearestPrefixCommand.name}\n`;
       }
 
-      let responseMessage = `### Reloaded commands:\n`;
-      if (reloadedTypes.includes('slash')) responseMessage += `Slash: ${nearestSlashCommand ? nearestSlashCommand.data.name : 'none'}\n`;
-      if (reloadedTypes.includes('prefix')) responseMessage += `Prefix: ${nearestPrefixCommand ? nearestPrefixCommand.name : 'none'}`;
-      if (reloadedTypes.length === 0) responseMessage = `No command found with name '${arg}'.`;
-      message.channel.send(responseMessage);
+      // If no command was found let the user know
+      if (!nearestSlashCommand && !nearestPrefixCommand) responseMessage = `No command found with name '${arg}'.`;
 
-      logger.debug(`[Reload Command] Reload completed for command: ${arg}`);
+      message.channel.send(responseMessage);
     } else {
-      logger.debug('[Reload Command] No command provided. Reloading everything.');
+      logger.debug('[Reload Command] No argument provided. Reloading everything.');
+      logger.info('[Reload Command] Reloading all slash commands.');
       await reloadAllCommands(message.client, 'slash');
+      logger.info('[Reload Command] Reloading all prefix commands.');
       await reloadAllCommands(message.client, 'prefix');
+      logger.info(`[Reload Command] Reloading all events.`);
       reloadAllEvents(message.client);
-      message.channel.send('All commands and events were reloaded!');
-      logger.debug('[Reload Command] All commands and events successfully reloaded.');
+      logger.info('[Reload Command] Reloading logger.');
+      reloadLogger();
+      logger.debug('[Reload Command] Everything has been reloaded.');
+      message.reply('All Commands, Events and Logger have been successfully reloaded.');
     }
   },
 };
