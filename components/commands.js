@@ -15,17 +15,23 @@ async function loadCommands(client) {
   logger.debug('Starting command loading process...');
   try {
     commandsConfig = await readFile(ConfigFile);
+    logger.debug(`Command config file read successfully: ${ConfigFile}`);
   } catch (error) {
     logger.error(`Error reading command config file: ${error.message}`);
     commandsConfig = { slash: {}, prefix: {} };
   }
 
   if (!commandsConfig.slash) commandsConfig.slash = {};
+  logger.debug('Slash command config initialized.');
   if (!commandsConfig.prefix) commandsConfig.prefix = {};
+  logger.debug('Prefix command config initialized.');
 
   client.slashCommands = new Collection();
+  logger.debug('Slash command collection initialized.');
   client.prefixCommands = new Collection();
+  logger.debug('Prefix command collection initialized.');
   client.commandAliases = new Collection();
+  logger.debug('Command alias collection initialized.');
 
   logger.debug('Loading slash commands...');
   await loadSlashCommands(client, path.join(__dirname, '../commands/slash'));
@@ -47,16 +53,18 @@ async function loadSlashCommands(client, directory) {
   logger.debug(`Loading slash commands from ${path.relative(process.cwd(), directory)}...`);
   // Use readRecursive to get all command files
   const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  logger.debug(`Found ${commandFiles.length} slash command files.`);
   for (const filePath of commandFiles) try {
     const command = require(filePath);
-    // Set the filePath property on the command object
     command.filePath = filePath;
     client.slashCommands.set(command.data.name, command);
+    logger.debug(`Slash command loaded: ${command.data.name}`);
 
     // Only set to true if the command doesn't exist in the config
-    if (!Object.hasOwn(commandsConfig.slash, command.data.name)) commandsConfig.slash[command.data.name] = true;
-
-    logger.loading(`Loaded slash command: ${command.data.name}`);
+    if (!Object.hasOwn(commandsConfig.slash, command.data.name)) {
+      commandsConfig.slash[command.data.name] = true;
+      logger.debug(`Slash command added to config: ${command.data.name}`);
+    }
   } catch (error) {
     logger.error(`Error loading slash command at ${filePath}: ${error.message}`);
   }
@@ -74,19 +82,23 @@ async function loadPrefixCommands(client, directory) {
   logger.debug(`Loading prefix commands from ${directory}...`);
   // Use readRecursive to get all command files
   const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  logger.debug(`Found ${commandFiles.length} prefix command files.`);
   for (const filePath of commandFiles) try {
     const command = require(filePath);
+    command.filePath = filePath;
     client.prefixCommands.set(command.name.toLowerCase(), command);
+    logger.debug(`Prefix command loaded: ${command.name}`);
 
     // Only set to true if the command doesn't exist in the config
-    if (!Object.hasOwn(commandsConfig.prefix, command.name.toLowerCase())) commandsConfig.prefix[command.name.toLowerCase()] = true;
+    if (!Object.hasOwn(commandsConfig.prefix, command.name.toLowerCase())) {
+      commandsConfig.prefix[command.name.toLowerCase()] = true;
+      logger.debug(`Prefix command added to config: ${command.name}`);
+    }
 
     if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) {
       client.commandAliases.set(alias.toLowerCase(), command);
       logger.debug(`Registered alias for prefix command: ${alias} -> ${command.name}`);
     }
-
-    logger.loading(`Loaded prefix command: ${command.name}`);
   } catch (error) {
     logger.error(`Error loading prefix command at ${filePath}: ${error.message}`);
   }
@@ -192,14 +204,18 @@ function findNearestCommand(input, commands, type) {
   logger.debug(`Searching for command input: ${input}`);
 
   // Search for exact alias matches first
-  if (type === 'prefix') commands.forEach(cmd => {
-    if (cmd.aliases && cmd.aliases.includes(input)) {
-      nearestCommand = { ...cmd, type };
-      logger.debug(`Found alias match for prefix command: ${input} -> ${cmd.name}`);
-    }
-  });
+  if (type === 'prefix') {
+    logger.debug('Searching for exact alias matches in prefix commands.');
+    commands.forEach(cmd => {
+      if (cmd.aliases && cmd.aliases.includes(input)) {
+        nearestCommand = { ...cmd, type };
+        logger.debug(`Found alias match for prefix command: ${input} -> ${cmd.name}`);
+      }
+    });
+  }
 
   // If no exact alias match, search for nearest command name
+  logger.debug('Searching for nearest command name matches.');
   commands.forEach((cmd, cmdName) => {
     if (cmdName.startsWith(input)) {
       const similarity = cmdName.length - input.length;
@@ -210,9 +226,10 @@ function findNearestCommand(input, commands, type) {
       }
     }
   });
+
   // Search for nearest alias if no command name match is found
   if (!nearestCommand && type === 'prefix') {
-    logger.debug(`No matches found, searching for nearest alias.`);
+    logger.debug('No command name matches found, searching for nearest alias.');
     commands.forEach(cmd => {
       if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
         const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
@@ -228,40 +245,48 @@ function findNearestCommand(input, commands, type) {
 }
 
 /**
- * Reload a specific command
- * @param {object} command - Command object
- * @param {interaction} interaction - Discord Interaction
+ * Reloads a specific command.
+ * @param {client} client - Discord client
+ * @param {string} commandName - The name of the command to reload.
+ * @param {string} commandType - The type of command to reload (slash or prefix).
  * @author isahooman
  */
-async function reloadCommand(command, interaction) {
-  const commandName = command.data ? command.data.name : command.name;
-  logger.debug(`[Reload Command] Reloading command: ${commandName}`);
-
-  const commandType = command.type === 'slash' ? 'slash' : 'prefix';
-  const baseDir = path.join(__dirname, '..', 'commands', commandType);
-
-  // Use readRecursive to find the command file
-  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
-
-  if (!commandFiles) {
-    logger.warn(`[Reload Command] Command file not found for command: ${commandName}.`);
-    return;
-  }
-
-  // Delete cached command data
-  delete require.cache[require.resolve(commandFiles)];
-
-  try {
-    const newCommand = require(commandFiles);
-    if (command.data) {
-      interaction.client.slashCommands.set(newCommand.data.name, newCommand);
-      logger.debug(`[Reload Command] Slash command '${newCommand.data.name}' reloaded`);
+function reloadCommand(client, commandName, commandType) {
+  logger.debug(`Reloading ${commandType} command: ${commandName}`);
+  if (commandType === 'slash') {
+    const command = client.slashCommands.get(commandName);
+    if (command) {
+      // Clear the cache for the command file
+      delete require.cache[require.resolve(command.filePath)]; // Use command.filePath here
+      // Reload the command from the file
+      const newCommand = require(command.filePath); // Use command.filePath here
+      // Update the command in the collection
+      newCommand.filePath = command.filePath; // Re-add the filePath property
+      client.slashCommands.set(newCommand.data.name, newCommand);
+      logger.info(`Reloaded slash command: ${commandName}`);
     } else {
-      interaction.client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
-      logger.debug(`[Reload Command] Prefix command '${newCommand.name}' reloaded`);
+      logger.warn(`Slash command not found: ${commandName}`);
     }
-  } catch (error) {
-    logger.error(`[Reload Command] Error reloading command '${commandName}': ${error.message}`);
+  } else if (commandType === 'prefix') {
+    const command = client.prefixCommands.get(commandName.toLowerCase());
+    if (command) {
+      // Clear the cache for the command file
+      delete require.cache[require.resolve(command.filePath)]; // Use command.filePath here
+      // Reload the command from the file
+      const newCommand = require(command.filePath); // Use command.filePath here
+      // Update the command in the collection
+      newCommand.filePath = command.filePath; // Re-add the filePath property
+      client.prefixCommands.set(newCommand.name.toLowerCase(), newCommand);
+      // Update aliases if they exist
+      if (newCommand.aliases && Array.isArray(newCommand.aliases)) newCommand.aliases.forEach(alias => {
+        client.commandAliases.set(alias.toLowerCase(), newCommand);
+      });
+      logger.info(`Reloaded prefix command: ${commandName}`);
+    } else {
+      logger.warn(`Prefix command not found: ${commandName}`);
+    }
+  } else {
+    logger.warn(`Invalid command type: ${commandType}`);
   }
 }
 
@@ -273,31 +298,25 @@ async function reloadCommand(command, interaction) {
  */
 async function reloadAllCommands(client, commandType) {
   logger.debug(`Reloading all ${commandType} commands...`);
-  const baseDir = path.join(__dirname, '..', 'commands', commandType);
-  const commandFiles = (await readRecursive(baseDir)).filter(file => path.extname(file) === '.js');
-
-  for (const commandFilePath of commandFiles) {
-    delete require.cache[require.resolve(commandFilePath)];
-    try {
-      logger.debug(`Reloading ${commandFilePath}...`);
-      const command = require(commandFilePath);
-      const commandKey = commandType === 'slash' ? command.data.name : command.name.toLowerCase();
-      if (commandType === 'slash') {
-        client.slashCommands.set(commandKey, command);
-        logger.debug(`Reloaded Slash Command: ${command.data.name}`);
-      } else {
-        client.prefixCommands.set(commandKey, command);
-        logger.debug(`Reloaded Prefix Command: ${command.name}`);
-        if (command.aliases && Array.isArray(command.aliases)) command.aliases.forEach(alias => {
-          client.commandAliases.set(alias.toLowerCase(), command);
-          logger.debug(`Re-registered alias for prefix command: ${alias} -> ${command.name}`);
-        });
-      }
-    } catch (error) {
-      logger.error(`Error reloading ${commandType} command at ${commandFilePath}: ${error.message}`);
-    }
+  if (commandType === 'slash') {
+    client.slashCommands.forEach(command => {
+      delete require.cache[require.resolve(command.filePath)];
+    });
+    client.slashCommands.clear();
+    logger.info('Slash command collection cleared.');
+    await loadSlashCommands(client, path.join(__dirname, '..', 'commands', 'slash'));
+  } else if (commandType === 'prefix') {
+    client.prefixCommands.forEach(command => {
+      delete require.cache[require.resolve(command.filePath)];
+    });
+    client.prefixCommands.clear();
+    logger.info('Prefix command collection cleared.');
+    client.commandAliases.clear();
+    logger.info('Command alias collection cleared.');
+    await loadPrefixCommands(client, path.join(__dirname, '..', 'commands', 'prefix'));
+  } else {
+    logger.warn(`Invalid command type: ${commandType}`);
   }
-  logger.info(`All ${commandType} commands reloaded successfully.`);
 }
 
 module.exports =

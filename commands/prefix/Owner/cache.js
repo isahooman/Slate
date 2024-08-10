@@ -1,6 +1,7 @@
 const { logger } = require('../../../components/loggerUtil.js');
 const { EmbedBuilder } = require('discord.js');
 const { inspect } = require('util');
+const { cache } = require('../../../bot.js');
 
 module.exports = {
   name: 'cache',
@@ -11,81 +12,75 @@ module.exports = {
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {
-    const action = args[0]?.toLowerCase();
+    const arg = args[0];
 
-    if (action === 'clear' || action === 'refresh' || action === 'reload') {
-      // Reload all cache
-      reloadCache(message.client);
-      message.reply('Cache cleared/refreshed!');
-    } else if (action === 'stats' || !action) {
+    if (arg === 'clear' || arg === 'refresh' || arg === 'reload') {
+      logger.info('[Cache Command] Clearing cache.');
+      // Clear existing cache data
+      cache.guilds.clear();
+      cache.channels.clear();
+      cache.threads.clear();
+      cache.members.clear();
+      // Gather new data
+      cache.cacheServers(message.client);
+      cache.cacheChannels(message.client);
+      cache.cacheThreads(message.client);
+      message.client.guilds.cache.forEach(guild => {
+        cache.cacheMembers(guild);
+      });
+      message.reply('Cache refreshed!');
+    } else if (arg === 'stats' || !arg) {
+      logger.info('[Cache Command] Displaying cache stats.');
       // Display cache stats
       const embed = new EmbedBuilder()
         .setTitle('Cache Statistics')
         .addFields(
-          { name: 'Guilds', value: `Total: ${message.client.guilds.cache ? message.client.guilds.cache.size : 0}` },
-          { name: 'Channels', value: `Total: ${message.client.channels.cache ? message.client.channels.cache.size : 0}\nThis guild: ${message.guild ? message.guild.channels.cache.size : 0}`, inline: true },
-          { name: 'Users', value: `Total: ${message.client.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0)}\nThis guild: ${message.guild ? message.guild.memberCount : 0}`, inline: true },
-          { name: 'Threads', value: `Total: ${message.client.threads.size}\nThis guild: ${message.guild ? message.guild.channels.cache.filter(channel => channel.isThread()).size : 0}`, inline: true },
+          { name: 'Guilds', value: `Total: ${cache.guilds.size}` },
+          { name: 'Channels', value: `Total: ${cache.channels.size}\nThis guild: ${message.guild ? message.guild.channels.cache.size : 0}`, inline: true },
+          { name: 'Users', value: `Total: ${cache.members.size}\nThis guild: ${message.guild ? message.guild.memberCount : 0}`, inline: true },
+          { name: 'Threads', value: `Total: ${cache.threads.size}\nThis guild: ${message.guild ? message.guild.channels.cache.filter(channel => channel.isThread()).size : 0}`, inline: true },
         )
-        .setFooter({ text: `Cache Size: ${getCacheSize(message.client)}` });
+        .setFooter({ text: `Cache Size: ${getCacheSize(cache)}` });
       message.reply({ embeds: [embed] });
+
+      // Log the stats
+      logger.info(`[Cache Command] Cache Stats:`);
+      logger.info(`- Total Guilds: ${cache.guilds.size}`);
+      logger.info(`- Total Channels: ${cache.channels.size}`);
+      logger.info(`- Total Users: ${cache.members.size}`);
+      logger.info(`- Total Threads: ${cache.threads.size}`);
+      logger.info(`- Cache Size: ${getCacheSize(cache)}`);
+
+      // Log current guild stats
+      if (message.guild) {
+        logger.info(`[Cache Command] Current Guild Stats:`);
+        logger.info(`- Guild Name: ${message.guild.name}`);
+        logger.info(`- Guild ID: ${message.guild.id}`);
+        logger.info(`- Channels: ${message.guild.channels.cache.size}`);
+        logger.info(`- Members: ${message.guild.memberCount}`);
+        logger.info(`- Threads: ${message.guild.channels.cache.filter(channel => channel.isThread()).size}`);
+      }
     } else {
+      logger.warn(`[Cache Command] Invalid action: ${arg}`);
       message.reply('Invalid action.');
     }
   },
 };
 
 /**
- * Function to refresh cache
- * @param {client} client - Discord client
- */
-function reloadCache(client) {
-  // Reload guilds
-  client.guilds.cache.forEach(guild => {
-    logger.debug(`Adding guild to cache: ${guild.name} (${guild.id})`);
-  });
-
-  // Reload channels
-  client.textChannels = new Map();
-  client.voiceChannels = new Map();
-  client.channels.cache.forEach(channel => {
-    if (channel.type === 'GUILD_TEXT') client.textChannels.set(channel.id, channel);
-    else if (channel.type === 'GUILD_VOICE') client.voiceChannels.set(channel.id, channel);
-  });
-
-  // Reload threads
-  client.threads = new Map();
-  client.guilds.cache.forEach(guild => {
-    guild.channels.cache.forEach(channel => {
-      if (channel.isThread()) client.threads.set(channel.id, channel);
-    });
-    logger.info(`Cached: ${client.threads.size}, threads for guild: ${guild.name}`);
-  });
-
-  // Reload members
-  client.guilds.cache.forEach(async guild => {
-    try {
-      await guild.members.fetch();
-      logger.info(`Cached: ${guild.memberCount}, members for guild: ${guild.name} (${guild.id})`);
-    } catch (error) {
-      logger.error(`Error caching members for guild: ${guild.name} (${guild.id})`, error);
-    }
-  });
-}
-
-/**
- * Calculates the approximate size of the client cache.
- * @param {client} client - The Discord client instance.
+ *
+ * @param {cache} cacheInstance - The cache instance.
  * @returns {string} - The approximate cache size.
  */
-function getCacheSize(client) {
+function getCacheSize(cacheInstance) {
+  logger.debug('[Cache Command] Calculating cache size.');
   let totalSize = 0;
 
   // Calculate size of the cache
-  if (client.threads && client.guilds.cache) totalSize += inspect(client.guilds.cache).length;
-  if (client.threads && client.channels.cache) totalSize += inspect(client.channels.cache).length;
-  if (client.threads && client.users.cache) totalSize += inspect(client.users.cache).length;
-  if (client.threads && client.threads.cache) totalSize += inspect(client.threads.cache).length;
+  totalSize += inspect(cacheInstance.guilds).length;
+  totalSize += inspect(cacheInstance.channels).length;
+  totalSize += inspect(cacheInstance.members).length;
+  totalSize += inspect(cacheInstance.threads).length;
 
   // Convert size to KB, MB, or GB
   const sizeKB = totalSize / 1024;
