@@ -16,6 +16,7 @@ module.exports = {
         { name: 'Slash', value: 'slash' },
         { name: 'Prefix', value: 'prefix' },
         { name: 'Logger', value: 'logger' },
+        { name: 'Cache', value: 'cache' },
       )),
   category: 'owner',
   async execute(interaction) {
@@ -42,6 +43,22 @@ module.exports = {
       await reloadLogger();
       logger.info('[Reload Command] Logger successfully reloaded.');
       await interaction.reply('Logger was reloaded!');
+    } else if (type === 'cache') {
+      logger.info('[Reload Command] Reloading cache.');
+      cache.guilds.clear();
+      cache.channels.clear();
+      cache.threads.clear();
+      cache.members.clear();
+      // Gather new data
+      cache.cacheServers(interaction.client);
+      cache.cacheChannels(interaction.client);
+      cache.cacheThreads(interaction.client);
+      interaction.client.guilds.cache.forEach(guild => {
+        cache.cacheMembers(guild);
+      });
+
+      logger.info('[Reload Command] Cache successfully reloaded.');
+      await interaction.reply('Cache was reloaded!');
     } else if (commandName) {
       logger.debug(`[Reload Command] Attempting to find command: ${commandName}`);
       // Search for commands by name within both command types
@@ -68,12 +85,35 @@ module.exports = {
       await interaction.reply(responseMessage);
       logger.debug(`[Reload Command] Reload completed for command: ${commandName}`);
     } else {
-      // Reload all commands of all types if no input is provided
-      logger.debug('[Reload Command] No command provided. Reloading all commands.');
+      logger.debug('[Reload Command] No argument provided. Reloading everything.');
+      // Reload slash commands
+      logger.info('[Reload Command] Reloading all slash commands.');
       await reloadAllCommands(interaction.client, 'slash');
+      // Reload prefix commands
+      logger.info('[Reload Command] Reloading all prefix commands.');
       await reloadAllCommands(interaction.client, 'prefix');
-      await interaction.reply('All commands were reloaded!');
-      logger.debug('[Reload Command] All commands successfully reloaded.');
+      // Reload events
+      logger.info(`[Reload Command] Reloading all events.`);
+      reloadAllEvents(interaction.client);
+      // Reload logger
+      logger.info('[Reload Command] Reloading logger.');
+      reloadLogger();
+      // Refresh cache
+      // Clear existing cache data
+      cache.guilds.clear();
+      cache.channels.clear();
+      cache.threads.clear();
+      cache.members.clear();
+      // Gather new data
+      cache.cacheServers(interaction.client);
+      cache.cacheChannels(interaction.client);
+      cache.cacheThreads(interaction.client);
+      interaction.client.guilds.cache.forEach(guild => {
+        cache.cacheMembers(guild);
+      });
+
+      logger.debug('[Reload Command] Everything has been reloaded.');
+      interaction.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n- Logger');
     }
   },
 };

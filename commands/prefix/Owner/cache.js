@@ -12,19 +12,24 @@ module.exports = {
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {
-    const action = args[0]?.toLowerCase();
+    const arg = args[0];
 
-    logger.debug(`[Cache Command] Received action: ${action}`);
-
-    if (action === 'clear' || action === 'refresh' || action === 'reload') {
+    if (arg === 'clear' || arg === 'refresh' || arg === 'reload') {
       logger.info('[Cache Command] Clearing cache.');
-      // Reload all cache
+      // Clear existing cache data
       cache.guilds.clear();
       cache.channels.clear();
       cache.threads.clear();
       cache.members.clear();
-      message.reply('Cache cleared/refreshed!');
-    } else if (action === 'stats' || !action) {
+      // Gather new data
+      cache.cacheServers(message.client);
+      cache.cacheChannels(message.client);
+      cache.cacheThreads(message.client);
+      message.client.guilds.cache.forEach(guild => {
+        cache.cacheMembers(guild);
+      });
+      message.reply('Cache refreshed!');
+    } else if (arg === 'stats' || !arg) {
       logger.info('[Cache Command] Displaying cache stats.');
       // Display cache stats
       const embed = new EmbedBuilder()
@@ -56,7 +61,7 @@ module.exports = {
         logger.info(`- Threads: ${message.guild.channels.cache.filter(channel => channel.isThread()).size}`);
       }
     } else {
-      logger.warn(`[Cache Command] Invalid action: ${action}`);
+      logger.warn(`[Cache Command] Invalid action: ${arg}`);
       message.reply('Invalid action.');
     }
   },

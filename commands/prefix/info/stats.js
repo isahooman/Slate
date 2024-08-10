@@ -1,7 +1,7 @@
 const { logger } = require('../../../components/loggerUtil');
 const moment = require('moment'); require('moment-duration-format');
 const { EmbedBuilder } = require('discord.js');
-const bot = require('../../../bot.js');
+const { client, cache } = require('../../../bot.js');
 const { cpu, mem } = require('node-os-utils');
 
 module.exports = {
@@ -26,21 +26,20 @@ module.exports = {
       cpu.usage().then(cpuPercentage => {
         logger.debug(`[Stats Command] CPU usage: ${cpuPercentage.toFixed(2)}%`);
 
-        const prefixCommandsCount = bot.client.prefixCommands.size;
-        const slashCommandsCount = bot.client.slashCommands.size;
+        const prefixCommandsCount = client.prefixCommands.size;
+        const slashCommandsCount = client.slashCommands.size;
         const discordJSVersion = require('discord.js').version;
         const nodeJSVersion = process.version;
         const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]');
-        const threads = bot.client.threads.size;
-        const textChannels = bot.client.channels.cache.filter(channel => channel.type === 'GUILD_TEXT').size;
-        const voiceChannels = bot.client.channels.cache.filter(channel => channel.type === 'GUILD_VOICE').size;
-        const servers = bot.client.guilds.cache.size;
-        const users = bot.client.users.cache.size;
+        const threads = cache.threads.size;
+        const channels = cache.channels.size;
+        const servers = cache.guilds.size;
+        const users = cache.members.size;
 
         // Build stats embed
         const embed = new EmbedBuilder()
-          .setAuthor({ name: `${bot.client.user.username} stats`, iconURL: bot.client.user.displayAvatarURL() })
-          .setThumbnail(bot.client.user.displayAvatarURL())
+          .setAuthor({ name: `${client.user.username} stats`, iconURL: client.user.displayAvatarURL() })
+          .setThumbnail(client.user.displayAvatarURL())
           .addFields(
             { name: 'CPU Usage', value: `${cpuPercentage.toFixed(2)}%`, inline: true },
             { name: 'Memory usage', value: `${memoryUsage}GB/${totalSysMem}GB`, inline: true },
@@ -49,8 +48,7 @@ module.exports = {
             { name: 'Slash Commands', value: `${slashCommandsCount}`, inline: true },
             { name: '‎', value: `‎`, inline: true },
             { name: 'Threads', value: `${threads}`, inline: true },
-            { name: 'Text Channels', value: `${textChannels}`, inline: true },
-            { name: 'Voice Channels', value: `${voiceChannels}`, inline: true },
+            { name: 'Channels', value: `${channels}`, inline: true },
             { name: 'Servers', value: `${servers}`, inline: true },
             { name: 'Users', value: `${users}`, inline: true },
             { name: '‎', value: `‎`, inline: true },
