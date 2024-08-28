@@ -28,7 +28,7 @@ module.exports = {
     global: 0, // Milliseconds until anyone can use the command again in the entirety of the bot
   },
 
-  
+
   async execute(interaction, client) {
     // This shows a debug message of the command with your given input
     logger.debug('This is an example debugging message.');
@@ -58,7 +58,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('')
     .setDescription('')
-    .setCategory('')
     .setNSFW(Boolean)
     .setDMPermission(Boolean),
   category: '',
