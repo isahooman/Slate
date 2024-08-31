@@ -13,7 +13,7 @@ const { logger } = require('./loggerUtil.js');
  */
 async function loadCommandFiles(directory) {
   const fullPath = path.join(__dirname, '..', directory);
-  const commandFiles = await readRecursive(fullPath);
+  const commandFiles = (await readRecursive(fullPath)).filter(file => path.extname(file).toLowerCase() === '.js');
 
   return commandFiles.map(file => {
     const command = require(file);
