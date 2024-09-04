@@ -130,10 +130,13 @@ module.exports = {
     }
 
     try {
+      // logger.debug('Before command execution'); // Debugging line
       logger.command(`Prefix Command: ${command.name}, used by: ${message.author.tag}, in: ${message.guild ? message.guild.name : 'DMs'}`);
       await command.execute(message, args, client);
+      // logger.debug('After successful command execution'); // Debugging line
     } catch (error) {
-      logger.error(`${error.stack}`, 'prefix', {
+      // logger.debug(`Error caught in ${command.name} command`); // Debugging line
+      logger.error(`${error.message.replace('Error: ', '')}`, 'prefix', {
         context: message,
         args: [command.name, ...args],
         command: command.name,
@@ -142,7 +145,6 @@ module.exports = {
       // Reply to the user with a generic error message
       await message.reply({
         content: 'An error occurred with this command.',
-        allowedMentions: { repliedUser: false },
       }).catch(err => logger.error(`Reply error: ${err.message}`));
     }
   },
