@@ -74,7 +74,7 @@ module.exports = {
       try {
         await command.execute(interaction, client, commandCategory);
       } catch (error) {
-        logger.error(`Error executing slash command: ${error}\n${error.stack}`, 'slash', { interaction });
+        logger.error(`${error.message.replace('Error: ', '')}`, 'slash', { interaction, stack: error.stack });
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(err => logger.error(`Error editing reply: ${err}`));
         else await interaction.reply({ content: 'An error occurred with this command.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err}`));
       }

@@ -1,14 +1,17 @@
+const { readJSON5 } = require('./json5Parser.js');
+const { ownerId, notifyOnReady, reportErrors, guildId, errorChannels, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
+const logging = readJSON5('./config/logging.json5');
 const bot = require('../bot.js');
 const chalk = require('chalk');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-const logging = require('../config/logging.json');
 const moment = require('moment');
 const path = require('path');
-const { readJSON5 } = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors, guildId, errorChannels, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
+const tempDir = path.join(__dirname, '..', 'temp');
+let errorFileCounter = 0;
+const Queue = [];
 
 const levels = {
   INFO: 'INFO',
@@ -29,16 +32,16 @@ const levels = {
  * @author isahooman
  */
 function isLevelEnabled(level) {
-  if (!Object.prototype.hasOwnProperty.call(logging, level)) {
+  if (!Object.prototype.hasOwnProperty.call(logging.toggle, level)) {
     // If the level doesn't exist within the config, enable it by default
-    logging[level] = true;
+    logging.toggle[level] = true;
     try {
-      fs.writeFileSync(path.join(__dirname, '../config/logging.json'), JSON.stringify(logging, null, 2), 'utf8');
+      fs.writeFileSync(path.join(__dirname, '../config/logging.json5'), JSON.stringify(logging, null, 2), 'utf8');
     } catch (err) {
       process.stderr.write(`Error writing to logging config file: ${err}\n`);
     }
   }
-  return logging[level];
+  return logging.toggle[level];
 }
 
 /**
@@ -49,9 +52,9 @@ function isLevelEnabled(level) {
  */
 function setLevelEnabled(level, enabled) {
   if (Object.prototype.hasOwnProperty.call(levels, level)) {
-    logging[level] = enabled;
+    logging.toggle[level] = enabled;
     try {
-      fs.writeFileSync(path.join(__dirname, '../config/logging.json'), JSON.stringify(logging, null, 2), 'utf8');
+      fs.writeFileSync(path.join(__dirname, '../config/logging.json5'), JSON.stringify(logging, null, 2), 'utf8');
     } catch (err) {
       process.stderr.write(`Error writing to logging config file: ${err}\n`);
     }
@@ -68,70 +71,57 @@ function setLevelEnabled(level, enabled) {
  * @author isahooman
  */
 function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
+  // Ignore disabled log levels
   if (!isLevelEnabled(level)) return;
+  // Ensure message is a string
+  if (typeof message !== 'string') return;
+
+  // Get colors from logging config, default to white if invalid
+  const color = colorName => {
+    let hexCode = logging.colors[colorName] || '#FFFFFF';
+    // Check if the hex code is valid
+    if (!/^#?[0-9A-F]{6}$/i.test(hexCode)) {
+      process.stdout.write(chalk.yellow(`Invalid color code in logging.json5 for ${colorName}: ${hexCode}. Using fallback color.\n`));
+      hexCode = '#FFFFFF';
+    }
+    if (!hexCode.startsWith('#')) hexCode = `#${hexCode}`;
+    return chalk.hex(hexCode);
+  };
 
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
-  const logtime = chalk.cyan(`[${timestamp}]`);
-
-  const logLevelColor = {
-    INFO: chalk.grey,
-    WARN: chalk.yellow,
-    ERROR: chalk.red,
-    DEBUG: chalk.blue,
-    COMMAND: chalk.green,
-    START: chalk.green,
-    MESSAGE: chalk.hex('#FF69B4'),
-    INTERACTION: chalk.hex('#FF69B4'),
-    LOADING: chalk.hex('#17d5ad'),
-  }[level];
+  const logtime = color('TIMESTAMP')(`[${timestamp}]`);
+  const logLevelColor = color(level);
 
   // Format file log output
   const fileformat = inputMessage =>
     inputMessage.split(/(?<!\\),/).map(part => {
-      // Remove backslashes from the message
       part = part.replace(/\\,/g, ',');
       return part;
     }).join(',');
 
   // Format message for console output
-  const formattedMessage = (() => {
-    if (level === 'MESSAGE') {
-      // Replace commas in messages to be preceded by a backslash
-      let formatted = message.replace(/(?<!\\),/g, '\\,');
-      // Remove replaced backslashes from the message
-      formatted = formatted.replace(/\\(?=,)/g, '');
+  const formattedMessage = message
+    // Replace commas in 'MESSAGE' level logs to be preceded by a backslash (this prevents format splitting)
+    .split(level === 'MESSAGE' ? /(?<!\\),/g : /(?<!\\),(?![^[]*\])/)
+    .map(part => {
+      // Remove preceding backslashes from the message
+      part = part.replace(/\\,/g, ',');
       // Color text within brackets
-      formatted = formatted.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
+      part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${color('BRACKET')(p1)}]`);
       // Color text after colons
-      if (formatted.includes(':')) {
-        const [firstPart, ...rest] = formatted.split(':');
-        formatted = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
+      if (part.includes(':')) {
+        const [firstPart, ...rest] = part.split(':');
+        part = `${color('TEXT')(firstPart)}:${color('COLON')(rest.join(':'))}`;
       }
-      return formatted;
-    } else {
-      // Split message by commas but not if preceded by a backslash
-      return message.split(/(?<!\\),(?![^[]*\])/).map(part => {
-        // Remove preceding backslashes from the message
-        part = part.replace(/\\,/g, ',');
-        // Color text within brackets
-        part = part.replace(/\[(.*?)\]/g, (match, p1) => `[${chalk.hex('#ce987d')(p1)}]`);
-        // Color text after colons
-        if (part.includes(':')) {
-          const [firstPart, ...rest] = part.split(':');
-          part = `${chalk.white(firstPart)}:${chalk.hex('#bf00ff')(rest.join(':'))}`;
-        }
-        return part;
-      }).join(',');
-    }
-  })();
+      return part;
+    })
+    .join(',');
 
   // Console output
-  const consoleOutput = `${logtime} <${logLevelColor(level)}> ${formattedMessage}`;
-  process.stdout.write(`${consoleOutput}\n`);
+  process.stdout.write(`${logtime} <${logLevelColor(level)}> ${formattedMessage}\n`);
 
   // Log file output
-  const fileOutput = `<${timestamp}> <${level}> ${fileformat(message)}\n`;
-  fs.appendFileSync(logFile, fileOutput);
+  fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${fileformat(message)}\n`);
 
   if (level === levels.START && notifyOnReady) notifyReady(message);
   if (level === levels.ERROR && reportErrors) handleErrors(message, commandType, commandInfo);
@@ -144,9 +134,12 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
  * @param {commandInfo} commandInfo Command Info
  * @author isahooman
  */
-function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
-  let errorEmbed = new EmbedBuilder().setColor(0xFF0000);
+async function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
+  let errorEmbed = new EmbedBuilder().setColor('#FF0000');
   let errorTitle = 'Error';
+  let errorStack = '';
+  let errorMessage = '';
+  let errorFile = null;
 
   try {
     // Prepare error report for slash commands
@@ -154,6 +147,7 @@ function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
       const interaction = commandInfo.interaction;
       errorTitle = `Error in slash command: ${interaction.commandName}`;
       errorEmbed.setTitle(errorTitle);
+      errorMessage = messageText;
 
       const args = interaction.options.data.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
       errorEmbed.addFields(
@@ -168,6 +162,7 @@ function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
       const context = commandInfo.context;
       const commandName = commandInfo.args[0];
       errorTitle = `Error in prefix command: ${commandName}`;
+      errorMessage = messageText;
       errorEmbed.addFields(
         { name: 'Server', value: context.guild ? `${context.guild.name} | ${context.guild.id}` : 'N/A' },
         { name: 'User', value: `<@${context.author.id}> | ${context.author.username}` },
@@ -182,10 +177,32 @@ function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
     }
     errorEmbed.setTitle(errorTitle);
 
-    // Send the prepared error report
-    sendEmbed(errorEmbed, 'error');
+    // Get stack trace from passed commandInfo
+    if (commandInfo.error) errorStack = commandInfo.error.stack;
+    else if (commandInfo.stack) errorStack = commandInfo.stack;
+    else if (commandType === 'slash' && commandInfo.interaction) errorStack = commandInfo.interaction.stack;
+    else if (commandType === 'prefix' && commandInfo.context) errorStack = commandInfo.context.stack;
+
+    // Write an temporary error file for commands
+    if (commandType === 'slash' || commandType === 'prefix') {
+      errorFileCounter++;
+      errorFile = path.join(tempDir, `error-${errorFileCounter}.js`);
+      const content = `Error: ${errorMessage}\n\nStack Trace:\n${errorStack}`;
+      await fs.promises.writeFile(errorFile, content, 'utf-8');
+    }
+
+    await sendMessage(errorEmbed, 'error', errorFile);
   } catch (error) {
-    process.stderr.write(`Error sending error embed:\n${error}\n`);
+    process.stderr.write(`Error sending error report:\n${error}\n`);
+  } finally {
+    // Delete the temporary file after a delay
+    if (errorFile) setTimeout(() => {
+      try {
+        fs.unlinkSync(errorFile);
+      } catch (err) {
+        process.stderr.write(`Error deleting temporary error file: ${err}\n`);
+      }
+    }, 5000);
   }
 }
 
@@ -202,31 +219,39 @@ function notifyReady(message) {
     .setDescription(message);
 
   // Send the ready embed
-  sendEmbed(startEmbed, 'ready');
+  sendMessage(startEmbed, 'ready');
 }
 
 /**
- * Sends an embed to a specified target or list of targets.
- * @param {object} embed - The embed being sent
+ * Sends a message to specified targets.
+ * @param {object} messageContent - The message content.
  * @param {string} [targetType] - Message target type:
  *  - 'error': Sends to owner(s) and error users
  *  - 'ready': Sends to owner(s) and ready users
  *  - Otherwise, sends only to owner(s).
+ * @param {string} [filePath] - The path to the file to send (optional).
  * @author isahooman
  */
-function sendEmbed(embed, targetType = null) {
-  // Wait for the client to become available
-  const startTime = Date.now();
-  while (Date.now() - startTime < 3000 && !bot.client.user) {
-    // Do nothing, just wait
+async function sendMessage(messageContent, targetType = null, filePath = null) {
+  // Check if the client exists before attempting to send the message
+  if (!bot.client || !bot.client.isReady()) {
+    process.stderr.write('Client is not ready yet. Queueing message.\n');
+    Queue.push({ messageContent, targetType, filePath });
+    setTimeout(processQueue, 3000);
+    return;
   }
 
-  // Check if the client is available after the wait
-  if (!bot.client.user) {
-    process.stderr.write('Bot is not logged in, cannot send embed to user.\n');
-    return;
-  } else {
-    process.stdout.write('Bot is logged in, ready to send embed.\n');
+  /**
+   * Process the queue, attempt to send any queued messages if the client is ready.
+   * @author isahooman
+   */
+  function processQueue() {
+    Queue.forEach(({ messageContent: queuedMessage, targetType: queuedTargetType, filePath: queuedFilePath }, index) => {
+      if (bot.client.isReady()) {
+        sendMessage(queuedMessage, queuedTargetType, queuedFilePath);
+        Queue.splice(index, 1);
+      }
+    });
   }
 
   const { userId = null, channelId = null } = {};
@@ -239,83 +264,119 @@ function sendEmbed(embed, targetType = null) {
   // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
   if (userId && !recipients.includes(userId)) recipients.push(userId);
 
-  // Send embed to specific users
-  recipients.forEach(recipientId => {
-    sendEmbedToUser(embed, recipientId);
-  });
+  try {
+    // Send message to specific users
+    for (const recipientId of recipients) await sendToUser(messageContent, recipientId, filePath);
 
-  // Send embed to given channels
-  if (channelId) try {
-    sendEmbedToChannel(embed, [channelId]);
-  } catch (err) {
-    process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
+    // Send message to given channels
+    if (channelId) await sendToChannel(messageContent, [channelId], filePath);
+    else if (targetType === 'error') await sendToChannel(messageContent, errorChannels, filePath);
+    else if (targetType === 'ready') await sendToChannel(messageContent, readyChannels, filePath);
+  } catch (error) {
+    // If sending fails, add the message to the queue for retrying
+    process.stderr.write('Failed to send message, adding to queue:', `${error}\n`);
+    Queue.push({ messageContent, targetType, filePath });
   }
-  else
-    // Send to channel based on targetType
-    if (targetType === 'error') try {
-      sendEmbedToChannel(embed, errorChannels);
-    } catch (err) {
-      process.stderr.write(`Failed to send embed to error channel: ${err}\n`);
-    }
-    else if (targetType === 'ready') try {
-      sendEmbedToChannel(embed, readyChannels);
-    } catch (err) {
-      process.stderr.write(`Failed to send embed to ready channel: ${err}\n`);
-    }
 }
 
 /**
- * Sends an embed to target users specified by Id.
- * @param {object} embed - The embed being sent
+ * Sends a message (embed or file) to target users specified by Id.
+ * @param {object} messageContent - The message content (embed or file path).
  * @param {string} userId - Target user Ids
+ * @param {string} [filePath] - The path to the file to send (optional).
  * @author isahooman
  */
-function sendEmbedToUser(embed, userId) {
-  // Fetch user for given id
-  bot.client.users.fetch(userId)
-    .then(user => {
-      if (!user) {
-        process.stderr.write('Failed to find user for sending embed\n');
-        return;
-      }
-      // Send embed to found user
-      user.send({ embeds: [embed] })
-        .then(() => process.stdout.write(`Embed sent to user: ${user.username}\n`))
-        .catch(err => process.stderr.write(`Failed to send embed to user (ID: ${userId}): ${err}\n`));
-    })
-    .catch(err => process.stderr.write(`Failed to fetch user (ID: ${userId}): ${err}\n`));
+async function sendToUser(messageContent, userId, filePath = null) {
+  try {
+    const user = await bot.client.users.fetch(userId);
+    // If the user is not found do nothing.
+    if (!user) {
+      process.stderr.write('Failed to find user for sending message\n');
+      return;
+    }
+
+    // Store embeds and files in message options
+    const messageOptions = { embeds: [], files: [] };
+    // If an embed is included add it to the message options
+    if (typeof messageContent === 'object' && messageContent instanceof EmbedBuilder) messageOptions.embeds.push(messageContent);
+    // If a file path is provided, add it to the message
+    if (filePath) messageOptions.files.push(filePath);
+
+    // Send the message to the user
+    await user.send(messageOptions);
+    process.stdout.write(`Message sent to user: ${user.username}\n`);
+  } catch (err) {
+    process.stderr.write(`Failed to send message to user (ID: ${userId}): ${err}\n`);
+  }
 }
 
 /**
- * Sends an embed to target channels within the home guild specified by Id.
- * @param {object} embed - The embed being sent
+ * Sends a message to target channels within the home guild specified by Id.
+ * @param {object} messageContent - The message content
  * @param {string[]} channelIds - Array of target channel Ids
+ * @param {string} [filePath] - The path to the file to send (optional).
  * @author isahooman
  */
-function sendEmbedToChannel(embed, channelIds) {
-  // Try to fetch the home guild
+async function sendToChannel(messageContent, channelIds, filePath = null) {
   const guild = bot.client.guilds.cache.get(guildId);
+  // If the guild is not found, do nothing
   if (!guild) {
-    process.stderr.write('Failed to find guild for sending embed to channel\n');
+    process.stderr.write('Failed to find home server to send message\n');
     return;
   }
 
-  // Loop through each channel ID
-  if (channelIds && channelIds.length > 0) for (const channelId of channelIds) try {
-    // Try to fetch given channel from home guild
+  // Iterate through each channel ID
+  for (const channelId of channelIds || []) try {
     const channel = guild.channels.cache.get(channelId);
+    // If the channel is not found, continue to the next channel
     if (!channel) {
-      process.stderr.write(`Failed to find channel (ID: ${channelId}) for sending embed\n`);
+      process.stderr.write(`Failed to find channel (ID: ${channelId}) for sending message\n`);
       continue;
     }
 
-    // Send the embed to the found channel
-    channel.send({ embeds: [embed] });
-    process.stdout.write(`Embed sent to channel: ${channel.name}\n`);
+    // Store embeds and files in message options
+    const messageOptions = { embeds: [], files: [] };
+    // If an embed is included add it to the message options
+    if (typeof messageContent === 'object' && messageContent instanceof EmbedBuilder) messageOptions.embeds.push(messageContent);
+    // If a file path is provided, add it to the message
+    if (filePath) messageOptions.files.push(filePath);
+
+    // Send the message to the channel
+    await channel.send(messageOptions);
+    process.stdout.write(`Message sent to channel: ${channel.name}\n`);
   } catch (err) {
-    process.stderr.write(`Failed to send embed to channel (ID: ${channelId}): ${err}\n`);
+    process.stderr.write(`Failed to send message to channel (ID: ${channelId}): ${err}\n`);
   }
 }
+
+/**
+ * Clears error files from the temporary directory.
+ * @author isahooman
+ */
+const clearErrorFiles = () => {
+  // Read the contents of the temporary directory
+  fs.readdir(tempDir, (err, files) => {
+    if (err) {
+      process.stderr.write(`Error reading temp directory: ${err}\n`);
+      return;
+    }
+
+    // Iterate through each file in the directory
+    files.forEach(file => {
+      // Check if the file matching the error naming format
+      if (file.startsWith('error-') && file.endsWith('.js')) {
+        // Delete the error file
+        const filePath = path.join(tempDir, file);
+        fs.unlink(filePath, unlinkErr => {
+          if (unlinkErr) process.stderr.write(`Error deleting error file ${file}: ${unlinkErr}\n`);
+          else process.stdout.write(`Deleted error file: ${file}\n`);
+        });
+      }
+    });
+  });
+};
+
+clearErrorFiles();
 
 module.exports =
 {

@@ -140,8 +140,8 @@ module.exports = {
         context: message,
         args: [command.name, ...args],
         command: command.name,
+        stack: error.stack,
       });
-
       // Reply to the user with a generic error message
       await message.reply({
         content: 'An error occurred with this command.',

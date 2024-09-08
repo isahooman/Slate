@@ -1,0 +1,40 @@
+{
+  // Level toggles
+  toggle: {
+    // Base levels
+    INFO: true,
+    WARN: true,
+    ERROR: true,
+    DEBUG: false,
+    // Other levels
+    START: true,
+    LOADING: true,
+    COMMAND: true,
+    MESSAGE: true,
+    INTERACTION: true,
+  },
+
+  // Logger colors in a hex format
+  colors: {
+    // Log text base color
+    TEXT: "#FFFFFF",
+    // Timestamp color
+    TIMESTAMP: "#14a8cd",
+
+    // Base level title colors
+    INFO: "#808080",
+    WARN: "#FFFF00",
+    ERROR: "#FF0000",
+    DEBUG: "#0000FF",
+    // Other level title colors
+    COMMAND: "#0dbc79",
+    START: "#0dbc79",
+    MESSAGE: "#ff69b4",
+    INTERACTION: "#FF69B4",
+    LOADING: "#17d5ad",
+
+    // Formatting colors
+    BRACKET: "#ce987d", // Color for text in brackets
+    COLON: "#bf00ff", // Color for text after colons
+  },
+}
