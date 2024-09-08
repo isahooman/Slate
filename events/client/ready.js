@@ -1,5 +1,5 @@
 const statuses = require('../../config/status.json');
-const { logger } = require('../../components/loggerUtil.js');
+const logger = require('../../components/logger.js');
 const { ActivityType } = require('discord.js');
 const { cache } = require('../../bot.js');
 

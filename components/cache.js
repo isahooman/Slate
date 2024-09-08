@@ -1,5 +1,5 @@
 const { Guild, Channel, ThreadChannel, GuildMember, Snowflake } = require('discord.js');
-const { logger } = require('./loggerUtil.js');
+const logger = require('./logger.js');
 
 class CacheHandler {
   constructor() {

@@ -1,5 +1,5 @@
 const { togglePrefixCommand, toggleSlashCommand, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('../../../components/loader.js');
-const { logger } = require('../../../components/loggerUtil.js');
+const logger = require('../../../components/logger.js');
 
 module.exports = {
   name: 'commandtoggle',

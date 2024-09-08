@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const { logger } = require('../../../../components/loggerUtil.js');
+const logger = require('../../../../components/logger.js');
 const path = require('path');
 const { readFile, writeFile, deleteFile } = require('../../../../components/fileHandler.js');
 

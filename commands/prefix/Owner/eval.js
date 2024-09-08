@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { logger } = require('../../../components/loggerUtil.js');
+const logger = require('../../../components/logger.js');
 const Discord = require('discord.js');
 const { inspect } = require('node:util');
 const { client } = require('../../../bot.js');

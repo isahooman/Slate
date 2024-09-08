@@ -3,7 +3,7 @@ const { readJSON5 } = require('./json5Parser.js');
 const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
 const { readRecursive } = require('./fileHandler.js');
 const { REST, Routes } = require('discord.js');
-const { logger } = require('./loggerUtil.js');
+const logger = require('./logger.js');
 
 /**
  * Load commands and their data

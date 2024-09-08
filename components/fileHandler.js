@@ -1,5 +1,5 @@
 const { readJSON5, writeJSON5 } = require('./json5Parser.js');
-const { logger } = require('./loggerUtil.js');
+const logger = require('./logger.js');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');

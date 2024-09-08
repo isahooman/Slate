@@ -1,7 +1,7 @@
 const { Collection } = require('discord.js');
 const path = require('path');
 const ConfigFile = path.join(__dirname, '../config/commands.json5');
-const { logger } = require('./loggerUtil.js');
+const logger = require('./logger.js');
 const { readFile, writeFile, readRecursive } = require('./fileHandler.js');
 
 let commandsConfig;

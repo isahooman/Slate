@@ -1,4 +1,3 @@
-const { logger } = require('../../../components/loggerUtil');
 const moment = require('moment'); require('moment-duration-format');
 const { EmbedBuilder } = require('discord.js');
 const { client, cache } = require('../../../bot.js');

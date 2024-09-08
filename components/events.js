@@ -1,5 +1,5 @@
 const path = require('path');
-const { logger } = require('./loggerUtil.js');
+const logger = require('./logger.js');
 const { readFile, writeFile, readRecursive } = require('./fileHandler.js');
 
 const configPath = path.join(__dirname, '../config/events.json5');
