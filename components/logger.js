@@ -102,7 +102,8 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   // Format message for console output
   const formattedMessage = message
     // Replace commas in 'MESSAGE' level logs to be preceded by a backslash (this prevents format splitting)
-    .split(level === 'MESSAGE' ? /(?<!\\),/g : /(?<!\\),(?![^[]*\])/)
+    .replace(/(?<!\\),/g, '\\,')
+    .split(/(?<!\\),(?![^[]*\])/)
     .map(part => {
       // Remove preceding backslashes from the message
       part = part.replace(/\\,/g, ',');
