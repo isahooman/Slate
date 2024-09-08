@@ -77,8 +77,7 @@ module.exports = {
       // Log the end of the evaluation
       logger.debug(`[Eval Command] Ending evaluation. Evaluation took ${evaluationTime}ms.`);
     } catch (error) {
-      logger.error(`[Eval Command] Error while evaluating code: ${error}`);
-      await interaction.editReply({ content: `\`ERROR\`\n\`\`\`js\n${error}\`\`\`` });
+      throw new Error(`[Eval Command] Error while evaluating code: ${error}`);
     }
   },
 };

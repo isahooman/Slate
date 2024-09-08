@@ -29,12 +29,11 @@ module.exports = {
           message.channel.send({ embeds: [embed] }).then(() => {
             logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
           }).catch(error => {
-            logger.error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+            throw new Error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
           });
         })
         .catch(error => {
-          logger.error(`[Avatar Command] Error fetching replied-to message: ${error}`);
-          message.channel.send('[Avatar Command] Error fetching the replied-to message.');
+          throw new Error(`[Avatar Command] Error fetching replied-to message: ${error}`);
         });
     } else {
       // Retrieve the user from the arguments.
@@ -59,7 +58,7 @@ module.exports = {
       message.channel.send({ embeds: [embed] }).then(() => {
         logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
       }).catch(error => {
-        logger.error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+        throw new Error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
       });
     }
   },

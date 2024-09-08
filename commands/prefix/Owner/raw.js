@@ -28,8 +28,7 @@ module.exports = {
       await message.reply(`\`\`\`json\n${trimmedContent}\`\`\``);
       logger.debug('[Raw Command] Replied with raw information');
     } catch (error) {
-      logger.error(`[Raw Command] Error executing: ${error.message}`);
-      message.reply('Failed to retrieve the raw data of the message.');
+      throw new Error(`[Raw Command] Error executing: ${error.message}`);
     }
   },
 };

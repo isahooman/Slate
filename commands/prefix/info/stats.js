@@ -56,7 +56,7 @@ module.exports = {
       // Send the embed
       message.channel.send({ embeds: [embed] });
     } catch (error) {
-      logger.error(`[Stats Command] Error sending stats embed: ${error.message}`);
+      throw new Error(`[Stats Command] Error sending stats embed: ${error.message}`);
     }
   },
 };

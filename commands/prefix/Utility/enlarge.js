@@ -33,7 +33,7 @@ module.exports = {
         logger.debug(`[Enlarge Command] Emoji enlarged successfully in ${message.guild.name}`);
       })
       .catch(error => {
-        logger.error(`[Enlarge Command] Error sending enlarged emoji in ${message.guild.name}:\n${error}`);
+        throw new Error(`[Enlarge Command] Error sending enlarged emoji in ${message.guild.name}:\n${error}`);
       });
   },
 };

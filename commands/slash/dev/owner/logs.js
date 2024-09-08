@@ -37,7 +37,9 @@ module.exports = {
         const logFile = new AttachmentBuilder(tempFilePath, { name: 'logs.txt' });
         await interaction.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:`, files: [logFile], ephemeral: false })
           .then(() => deleteFile(tempFilePath))
-          .catch(error => logger.error(`[Logs Command] Error sending log file: ${error}`));
+          .catch(error => {
+            throw new Error(`[Logs Command] Error sending log file: ${error}`);
+          });
       } else {
         // If log data is within limit, send it as a message
         await interaction.reply({ content: `Last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``, ephemeral: false });
@@ -45,8 +47,7 @@ module.exports = {
 
       logger.debug('[Logs Command] Successfully replied with logs');
     } catch (error) {
-      logger.error(`[Logs Command] ${error}`);
-      await interaction.reply({ content: 'Error reading logs.', ephemeral: true });
+      throw new Error(`[Logs Command] ${error}`);
     }
   },
 };

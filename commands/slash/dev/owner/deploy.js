@@ -19,8 +19,7 @@ module.exports = {
       // Reply to the interaction
       await interaction.reply('Slash commands deployed successfully!');
     } catch (error) {
-      logger.error(`[Deploy Command] Error while deploying commands: ${error}`);
-      await interaction.reply('Failed to deploy slash commands.');
+      throw new Error(`[Deploy Command] Error while deploying commands: ${error}`);
     }
   },
 };

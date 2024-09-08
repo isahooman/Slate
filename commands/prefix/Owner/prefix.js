@@ -50,7 +50,7 @@ module.exports = {
       message.reply(`[Prefix Command] Prefix changed to ${newPrefix}`);
     } catch (error) {
       // Log an error message.
-      logger.error(`[Prefix Command] Error changing prefix: ${error.message}`);
+      throw new Error(`[Prefix Command] Error changing prefix: ${error.message}`);
     }
   },
 };

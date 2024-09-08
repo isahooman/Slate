@@ -37,15 +37,16 @@ module.exports = {
         const logFile = new AttachmentBuilder(tempFilePath, { name: 'logs.txt' });
         message.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:`, files: [logFile] })
           .then(() => deleteFile(tempFilePath))
-          .catch(error => logger.error(`[Logs Command] Error sending log file: ${error.message}`));
+          .catch(error => {
+            throw new Error(`[Logs Command] Error sending log file: ${error.message}`);
+          });
       } else {
         // If log data is within the limit, send it as a message
         message.reply(`Last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``);
       }
       logger.debug('[Logs Command] Successfully replied with logs');
     } catch (error) {
-      logger.error(`[Logs Command] An error occurred while reading logs: ${error.message}`);
-      message.reply('An error occurred while reading logs.');
+      throw new Error(`[Logs Command] An error occurred while reading logs: ${error.message}`);
     }
   },
 };

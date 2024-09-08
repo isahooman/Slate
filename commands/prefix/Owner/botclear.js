@@ -48,11 +48,12 @@ module.exports = {
       // Send a confirmation message and delete it after 3 seconds
       const confirmationMessage = await message.channel.send(`Cleared ${messagesToDelete.size} messages.`);
       setTimeout(() => {
-        confirmationMessage.delete().catch(e => logger.error(`[BotClear Command] Error deleting confirmation message: ${e.message}`));
+        confirmationMessage.delete().catch(e => {
+          throw Error(`Error deleting confirmation message: ${e.message}`);
+        });
       }, 3000);
     } catch (error) {
-      logger.error(`[BotClear Command] Error executing bc command: ${error.message}`);
-      await message.reply('An error occurred while deleting messages.');
+      throw Error(`Error executing bc command: ${error.message}`);
     }
   },
 };

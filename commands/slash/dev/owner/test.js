@@ -42,8 +42,7 @@ module.exports = {
         await interaction.reply(`Subcommand2 executed with option2: ${option2Value}`);
       }
     } catch (error) {
-      logger.error(`[Test Command] An error occurred while executing the test command: ${error.message}`);
-      await interaction.reply({ content: 'An error occurred while executing the command.', ephemeral: true });
+      throw new Error(`[Test Command] An error occurred while executing the test command: ${error.message}`);
     }
   },
 };
