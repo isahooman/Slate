@@ -1,5 +1,5 @@
 const { reloadAllEvents, reloadAllCommands, findNearestCommand, reloadCommand } = require('../../../components/loader');
-const { logger, reloadLogger } = require('../../../components/logger.js');
+const logger = require('../../../components/logger.js');
 const { cache } = require('../../../bot.js');
 
 module.exports = {
@@ -30,12 +30,6 @@ module.exports = {
 
       message.channel.send('Cache reloaded!');
       logger.debug('[Reload Command] Cache reloaded successfully.');
-    } else if (arg === 'logger') {
-      // Reload the logger
-      logger.info('[Reload Command] Reloading logger.');
-      await reloadLogger();
-      message.channel.send('Logger reloaded');
-      logger.debug('[Reload Command] Logger reloaded successfully.');
     } else if (arg === 'prefix' || arg === 'slash' || arg === 'events') {
       // Reload all prefix commands
       if (arg === 'prefix') {
@@ -87,9 +81,6 @@ module.exports = {
       // Reload events
       logger.info(`[Reload Command] Reloading all events.`);
       reloadAllEvents(message.client);
-      // Reload logger
-      logger.info('[Reload Command] Reloading logger.');
-      reloadLogger();
       // Refresh cache
       // Clear existing cache data
       cache.guilds.clear();

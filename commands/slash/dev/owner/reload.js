@@ -1,6 +1,6 @@
 const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../../components/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
-const { logger, reloadLogger } = require('../../../../components/logger.js');
+const logger = require('../../../../components/logger.js');
 const { cache } = require('../../../../bot.js');
 
 module.exports = {
@@ -38,11 +38,6 @@ module.exports = {
       await reloadAllCommands(interaction.client, 'prefix');
       await interaction.reply('All prefix commands were reloaded!');
       logger.info('[Reload Command] All prefix commands successfully reloaded.');
-    } else if (type === 'logger') {
-      logger.info('[Reload Command] Reloading logger.');
-      await reloadLogger();
-      logger.info('[Reload Command] Logger successfully reloaded.');
-      await interaction.reply('Logger was reloaded!');
     } else if (type === 'cache') {
       logger.info('[Reload Command] Reloading cache.');
       cache.guilds.clear();
@@ -95,9 +90,6 @@ module.exports = {
       // Reload events
       logger.info(`[Reload Command] Reloading all events.`);
       reloadAllEvents(interaction.client);
-      // Reload logger
-      logger.info('[Reload Command] Reloading logger.');
-      reloadLogger();
       // Refresh cache
       // Clear existing cache data
       cache.guilds.clear();
