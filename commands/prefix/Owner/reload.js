@@ -96,7 +96,7 @@ module.exports = {
       });
 
       logger.debug('[Reload Command] Everything has been reloaded.');
-      message.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n- Logger');
+      message.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n');
     }
   },
 };
