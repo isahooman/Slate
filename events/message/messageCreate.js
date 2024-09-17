@@ -12,13 +12,8 @@ module.exports = {
     let messageContent = message.content.split('\n').map(line => `│ ${line}`).join('\n');
 
     // Calculate the message width for border
-    const maxLength = Math.max(...message.content.split('\n').map(line => line.length));
+    let maxLength = Math.max(...message.content.split('\n').map(line => line.length));
     const indicatorWidth = 15;
-
-    // Build the border
-    const borderChar = '─';
-    const borderLength = Math.max(maxLength + 4, indicatorWidth + 0);
-    const border = borderChar.repeat(borderLength);
 
     // Check for attachments
     const hasAttachments = message.attachments.size > 0;
@@ -29,6 +24,14 @@ module.exports = {
     const hasEmbeds = message.embeds.length > 0;
     const isOnlyEmbed = hasEmbeds && message.content.trim() === '';
     if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
+
+    // Adjust maxLength for indicators
+    maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
+
+    // Build the border
+    const borderChar = '─';
+    const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
+    const border = borderChar.repeat(borderLength);
 
     logger.message(`Processing new message from: [${message.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
 

@@ -12,13 +12,8 @@ module.exports = {
     let messageContent = newMessage.content.split('\n').map(line => `│ ${line}`).join('\n');
 
     // Calculate the message width for border
-    const maxLength = Math.max(...newMessage.content.split('\n').map(line => line.length));
+    let maxLength = Math.max(...newMessage.content.split('\n').map(line => line.length));
     const indicatorWidth = 15;
-
-    // Build the border
-    const borderChar = '─';
-    const borderLength = Math.max(maxLength + 4, indicatorWidth + 0);
-    const border = borderChar.repeat(borderLength);
 
     // Check for attachments
     const hasAttachments = newMessage.attachments.size > 0;
@@ -30,7 +25,15 @@ module.exports = {
     const isOnlyEmbed = hasEmbeds && newMessage.content.trim() === '';
     if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
 
-    logger.message(`Processing new message from: [${newMessage.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+    // Adjust maxLength for indicators
+    maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
+
+    // Build the border
+    const borderChar = '─';
+    const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
+    const border = borderChar.repeat(borderLength);
+
+    logger.message(`Processing edited message from: [${newMessage.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
 
     // Check if the user is blacklisted
     if (blacklist.users.includes(newMessage.author.id)) {
