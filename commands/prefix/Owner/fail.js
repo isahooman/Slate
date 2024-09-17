@@ -11,6 +11,6 @@ module.exports = {
   },
   execute() {
     // Intentional failure
-    throw Error('This is a test error.');
+    throw new Error('This is a test error.');
   },
 };
