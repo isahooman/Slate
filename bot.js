@@ -93,5 +93,14 @@ process
     // Logout of Discord
     await this.client.destroy();
     logger.info('Bot successfully logged out.');
+    // Delete the temp directory
+    const fs = require('fs');
+    const tempDir = './temp';
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true });
+      logger.info('Deleted temp directory.');
+    }
+
     process.exit(0);
   });
+

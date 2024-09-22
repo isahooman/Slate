@@ -184,7 +184,7 @@ async function handleErrors(messageText, commandType = 'unknown', commandInfo = 
     else if (commandType === 'slash' && commandInfo.interaction) errorStack = commandInfo.interaction.stack;
     else if (commandType === 'prefix' && commandInfo.context) errorStack = commandInfo.context.stack;
 
-    // Write an temporary error file for commands
+    // Write an temporary file for command error stack
     if (commandType === 'slash' || commandType === 'prefix') {
       errorFileCounter++;
       errorFile = path.join(tempDir, `error-${errorFileCounter}.js`);
@@ -355,6 +355,12 @@ async function sendToChannel(messageContent, channelIds, filePath = null) {
  * @author isahooman
  */
 const clearErrorFiles = () => {
+  // Ensure the temp directory exists
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+    process.stdout.write(`Created temp directory: ${tempDir}\n`);
+  }
+
   // Read the contents of the temporary directory
   fs.readdir(tempDir, (err, files) => {
     if (err) {
