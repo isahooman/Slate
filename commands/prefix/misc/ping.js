@@ -22,8 +22,8 @@ module.exports = {
       .then(msg => {
         logger.debug(`[Ping Command] Initial message sent: 'Pinging...'`);
         let embedColor;
-        if (botPing < 75) embedColor = '#00ff37'; // Green for excellent connection
-        else if (botPing < 150) embedColor = '#FFC107'; // Yellow for ok connection
+        if (botPing < 60) embedColor = '#00ff37'; // Green for excellent connection
+        else if (botPing < 100) embedColor = '#FFC107'; // Yellow for ok connection
         else embedColor = '#F44336'; // Red for poor connection
 
         const embed = new EmbedBuilder()
