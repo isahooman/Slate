@@ -64,7 +64,7 @@ module.exports = {
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
     if (mention.test(message.content)) {
-      logger.message(`Bot mentioned by: ${message.author.tag}`);
+      logger.info(`Bot mentioned by: ${message.author.tag}`);
       return message.reply(`My prefix is \`${prefix}\``);
     }
 

@@ -65,7 +65,7 @@ module.exports = {
 
     // Respond to mentions without a command with the bot's prefix
     if (mention.test(newMessage.content)) {
-      logger.message(`Bot mentioned by ${newMessage.author.tag} in channel ${newMessage.channel.id}`);
+      logger.info(`Bot mentioned by ${newMessage.author.tag}`);
       return newMessage.reply(`My prefix is \`${prefix}\``);
     }
 
