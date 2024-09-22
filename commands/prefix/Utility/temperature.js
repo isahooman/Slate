@@ -53,7 +53,7 @@ module.exports = {
     }
 
     const embed = new EmbedBuilder()
-      .setColor(0x0099ff)
+      .setColor('#0099FF')
       .setTitle(`Temperature: ${temperature}°${scale.toUpperCase()}`)
       .addFields(
         { name: 'Celsius (°C)', value: `${celsius.toFixed(2)}`, inline: true },
