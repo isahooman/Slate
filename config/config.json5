@@ -1,33 +1,36 @@
 {
   // Your discord bot token
-  "token": "",
+  token: "",
   // Your discord application client id
-  "clientId": "",
+  clientId: "",
 
   // Your id along with any other owners
-  "ownerId": [""],
+  ownerId: [""],
   // Your home server id
-  "guildId": "",
+  guildId: "",
 
   // Message prefix that the bot will respond too
-  "prefix": "",
+  prefix: "",
 
   // whether or not slash commands will be redeployed when the bot starts
-  "deployOnStart": true,
+  deployOnStart: true,
   // whether or not slash commands will be cleared when the bot is stopped
-  "undeployOnExit" : false,
+  undeployOnExit: false,
 
   // whether or not the bot will send a message when it's online and ready
-  "notifyOnReady": true,
+  notifyOnReady: true,
   // (optional) Channel within the home server which will receive ready notification
-  "readyChannels": [],
+  readyChannels: [],
   // (optional) Users who will receive ready notifications
-  "readyUsers": [],
+  readyUsers: [],
 
   // whether or not the bot will attempt to send a report when an error occurs
-  "reportErrors": true,
+  reportErrors: true,
   // (optional) Channel within the home server which the bot will send error reports to
-  "errorChannels": [],
+  errorChannels: [],
   // (optional) Users who will receive error reports in dms
-  "errorUsers": [],
+  errorUsers: [],
+
+  // Channels within the home server in which bug reports are sent to
+  bugReportChannels: [],
 }
