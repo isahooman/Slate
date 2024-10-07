@@ -31,6 +31,7 @@
   // (optional) Users who will receive error reports in dms
   errorUsers: [],
 
-  // Channels within the home server in which bug reports are sent to
+  // Feedback channels
   bugReportChannels: [],
+  suggestChannels: [],
 }
