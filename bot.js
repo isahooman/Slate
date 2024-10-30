@@ -86,7 +86,7 @@ process
     logger.info('Received SIGINT. Shutting down...');
     // Undeploy commands if true in config
     if (undeployOnExit) try {
-      await undeploy(clientId, guildId, token);
+      await undeploy();
     } catch (error) {
       logger.error(`Error during undeploy: ${error}`);
     }
