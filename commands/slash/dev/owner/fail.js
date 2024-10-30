@@ -4,6 +4,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('fail')
     .setDescription('Intentionally fail for testing.'),
+  category: 'owner',
   cooldowns: {
     user: 3000,
     guild: 4000,
