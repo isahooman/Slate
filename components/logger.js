@@ -100,9 +100,9 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
     }).join(',');
 
   // Format message for console output
-  const formattedMessage = message
-    // Replace commas in 'MESSAGE' level logs to be preceded by a backslash (this prevents format splitting)
-    .replace(/(?<!\\),/g, '\\,')
+  let formattedMessage = message;
+
+  formattedMessage = formattedMessage
     .split(/(?<!\\),(?![^[]*\])/)
     .map(part => {
       // Remove preceding backslashes from the message
@@ -136,6 +136,11 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
  * @author isahooman
  */
 async function handleErrors(messageText, commandType = 'unknown', commandInfo = {}) {
+  if (messageText.startsWith('Shutdown because:')) {
+    process.stdout.write(`Shutdown detected, skipping error report\n`);
+    return;
+  }
+
   let errorEmbed = new EmbedBuilder().setColor('#FF0000');
   let errorTitle = 'Error';
   let errorStack = '';
