@@ -4,9 +4,13 @@ const { cache } = require('../../bot.js');
 module.exports = {
   name: 'guildDelete',
   execute(guild) {
-    logger.info(`Bot removed from a guild;
-      Guild Name: ${guild.name} | ${guild.id},
-      Owner: ${guild.owner.user.tag} | ${guild.owner.user.id},
+    // Retrieve cached information for the guild
+    const cachedGuild = cache.getGuild(guild.id);
+    const owner = cachedGuild ? cache.getMember(cachedGuild.ownerId) : null;
+
+    logger.info(`Bot removed from a cached guild;
+      Guild Name: ${cachedGuild ? cachedGuild.name : guild.name} | ${guild.id},
+      Owner: ${owner ? `${owner.user.tag} | ${owner.id}` : 'Owner not cached'},
       Removed At: ${new Date().toISOString()},
     `);
 
