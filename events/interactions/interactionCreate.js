@@ -28,6 +28,7 @@ module.exports = {
       return;
     }
 
+    // Handle interaction commands
     if (interaction.isCommand()) {
       logger.interaction(`Processing slash command: ${interaction.commandName}`);
       if (interaction.guild) logger.command(`Slash Command: ${interaction.commandName}, used by: ${interaction.user.username}, in: ${interaction.guild.name}`);
@@ -78,48 +79,24 @@ module.exports = {
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(err => logger.error(`Error editing reply: ${err}`));
         else await interaction.reply({ content: 'An error occurred with this command.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err}`));
       }
-    } else if (interaction.isButton()) {
-      logger.interaction(`Processing button interaction: ${interaction.customId}`);
-      const button = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!button) return logger.error(`Button interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'button', { interaction });
 
-      try {
-        await button.executeButton(interaction, client);
-      } catch (error) {
-        logger.error(`Error executing button interaction: ${error.interaction}`, 'button', { interaction });
-        if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this button.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`));
-        else await interaction.reply({ content: 'An error occurred with this button.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`));
-      } finally {
-        logger.interaction(`Button interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
-      }
-    } else if (interaction.isStringSelectMenu()) {
-      logger.interaction(`Processing string select menu interaction: ${interaction.customId}`);
-      const stringSelectMenu = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!stringSelectMenu) return logger.error(`String select menu interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'select', { interaction });
+    // todo: COMMENTS
+    } else if (interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) {
+      const interactionType = interaction.isButton() ? 'button' : interaction.isStringSelectMenu() ? 'stringSelectMenu' : 'modalSubmit';
+      const commandName = interaction.customId;
 
+      logger.interaction(`Processing ${interactionType}: ${commandName}`);
       try {
-        await stringSelectMenu.executeStringSelectMenu(interaction, client);
+        const handler = require(path.join(__dirname, '../../interactions', `${interactionType}s`, `${commandName}.js`));
+        if (typeof handler[interactionType] !== 'function') throw new Error(`Handler for ${commandName} does not have a ${interactionType} function`);
+        await handler[interactionType](interaction, client);
       } catch (error) {
-        logger.error(`Error executing select interaction: ${error.interaction}`, 'select', { interaction });
-        if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this select menu.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`));
-        else await interaction.reply({ content: 'An error occurred with this string select menu.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`));
-      } finally {
-        logger.interaction(`String select menu interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
+        logger.error(`Error executing ${interactionType} interaction: ${error.message}`, interactionType, { interaction });
+        const errorMessage = `An error occurred with this interaction.`;
+        interaction.reply({ content: errorMessage, ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.message}`));
       }
-    } else if (interaction.isModalSubmit()) {
-      logger.interaction(`Processing modal submit interaction: ${interaction.customId}`);
-      const modalSubmit = client.slashCommands.get(interaction.message.interaction.commandName);
-      if (!modalSubmit) return logger.error(`Modal submit interaction: ${interaction.customId}, was used by: ${interaction.user.username}, but the command was not found`, 'modal', { interaction });
-
-      try {
-        await modalSubmit.executeModalSubmit(interaction, client);
-      } catch (error) {
-        logger.error(`Error executing modal submit interaction: ${error.interaction}`, 'modal', { interaction });
-        if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this modal.' }).catch(err => logger.error(`Error editing reply: ${err.interaction}`));
-        else await interaction.reply({ content: 'An error occurred with this modal.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.interaction}`));
-      } finally {
-        logger.interaction(`Modal submit interaction: ${interaction.customId}, was used by: ${interaction.user.username}`);
-      }
+    } else {
+      logger.warn(`Unknown interaction type received: ${interaction.type}`);
     }
   },
 };
