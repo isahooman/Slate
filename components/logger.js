@@ -10,6 +10,7 @@ const path = require('path');
 
 const logFile = path.join(__dirname, '..', 'bot.log');
 const tempDir = path.join(__dirname, '..', 'temp');
+const errorDir = path.join(tempDir, 'error');
 let errorFileCounter = 0;
 const Queue = [];
 
@@ -192,7 +193,7 @@ async function handleErrors(messageText, commandType = 'unknown', commandInfo = 
     // Write an temporary file for command error stack
     if (commandType === 'slash' || commandType === 'prefix') {
       errorFileCounter++;
-      errorFile = path.join(tempDir, `error-${errorFileCounter}.js`);
+      errorFile = path.join(errorDir, `error-${errorFileCounter}.js`);
       const content = `Error: ${errorMessage}\n\nStack Trace:\n${errorStack}`;
       await fs.promises.writeFile(errorFile, content, 'utf-8');
     }
@@ -360,28 +361,28 @@ async function sendToChannel(messageContent, channelIds, filePath = null) {
  * @author isahooman
  */
 const clearErrorFiles = () => {
-  // Ensure the temp directory exists
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-    process.stdout.write(`Created temp directory: ${tempDir}\n`);
+  // Ensure the temp error directory exists
+  if (!fs.existsSync(errorDir)) {
+    fs.mkdirSync(errorDir, { recursive: true });
+    logMessage(levels.INFO, `Created temp error directory: [${errorDir}]`);
   }
 
-  // Read the contents of the temporary directory
-  fs.readdir(tempDir, (err, files) => {
+  // Read the contents of the error directory
+  fs.readdir(errorDir, (err, files) => {
     if (err) {
-      process.stderr.write(`Error reading temp directory: ${err}\n`);
+      logMessage(levels.ERROR, `Error reading error directory: ${err}`);
       return;
     }
 
     // Iterate through each file in the directory
     files.forEach(file => {
-      // Check if the file matching the error naming format
+      // Check if the file matches the error naming format
       if (file.startsWith('error-') && file.endsWith('.js')) {
         // Delete the error file
-        const filePath = path.join(tempDir, file);
+        const filePath = path.join(errorDir, file);
         fs.unlink(filePath, unlinkErr => {
-          if (unlinkErr) process.stderr.write(`Error deleting error file ${file}: ${unlinkErr}\n`);
-          else process.stdout.write(`Deleted error file: ${file}\n`);
+          if (unlinkErr) logMessage(levels.ERROR, `Error deleting error file ${file}: ${unlinkErr}`);
+          else logMessage(levels.INFO, `Deleted error file: [${file}]`);
         });
       }
     });
