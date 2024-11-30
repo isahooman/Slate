@@ -59,7 +59,7 @@ module.exports = {
       }
 
       // Guild Cooldown
-      if (cooldown.guild.enabled(command)) {
+      if (interaction.guild && cooldown.guild.enabled(command)) {
         logger.debug(`Guild Cooldown activated: ${command.data.name}, in ${interaction.guild.name}, by: ${interaction.user.username}`);
         if (!cooldown.guild.data.get(interaction.guild.id)) cooldown.guild.add(interaction.guild.id, command);
         else if (cooldown.guild.data.get(interaction.guild.id) && cooldown.guild.data.get(interaction.guild.id).cooldowns.find(x => x.name === command.data.name).time > Date.now()) return interaction.reply('The guild still has a cooldown on this command');

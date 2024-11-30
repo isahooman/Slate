@@ -6,9 +6,9 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('ping') // Command name
     .setDescription('Check the bot\'s response time.') // Brief description of what the command does
-    .setNSFW(false) // Age-Restrict this command allowing it to only be used in age-restricted channels
-    .setDMPermission(false),
-  category: 'misc',
+    .setNSFW(false), // Age-Restrict this command allowing it to only be used in age-restricted channels
+  category: 'misc', // Command category
+  userInstall: true, // If the command will be included in user-installed commands
   cooldowns: {
     user: 3000,
     guild: 4000,

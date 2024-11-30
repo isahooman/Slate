@@ -2,13 +2,13 @@ const path = require('path');
 const { readJSON5 } = require('./json5Parser.js');
 const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
 const { readRecursive } = require('./fileHandler.js');
-const { REST, Routes } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');
 
 /**
  * Load commands and their data
  * @param {directory} directory - File Directory
- * @returns {JSON} Loads command data in JSON
+ * @returns {Array} Array of command data.
  * @author isahooman
  */
 async function loadCommandFiles(directory) {
@@ -17,16 +17,31 @@ async function loadCommandFiles(directory) {
 
   return commandFiles.map(file => {
     const command = require(file);
-    return command.data.toJSON();
+    let commandData;
+
+    // Convert SlashCommandBuilder data to json if present, otherwise use raw data
+    if (command.data instanceof SlashCommandBuilder) commandData = command.data.toJSON();
+    else commandData = command.data;
+
+    // If the command has the 'userInstall' parameter add the necessary data
+    if (command.userInstall) {
+      // Ignore userInstall for dev commands
+      if (directory.includes('dev')) {
+        logger.warn(`Command ${command.data.name} in ${directory} uses the [userInstall] option. Dev commands do not support user installs.`);
+        return commandData;
+      }
+      commandData.integrationTypes = [0, 1];
+      commandData.contexts = [0, 1, 2];
+    }
+    return commandData;
   });
 }
 
 /**
  * Deploys slash commands
- * @param {client} client Discord Client
  * @author isahooman
  */
-async function deployCommands(client) {
+async function deployCommands() {
   const rest = new REST({ version: '10' }).setToken(token);
 
   try {
@@ -34,21 +49,21 @@ async function deployCommands(client) {
     const globalCommands = await loadCommandFiles('commands/slash/global');
     if (globalCommands.length) {
       await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
-      logger.info('Registered global slash commands!');
+      logger.info('Successfully registered global slash commands!');
     } else {
-      logger.debug('No global commands found to deploy.');
+      logger.debug('No global commands found.');
     }
 
-    // Load and deploy dev commands to a specific guild
+    // Load and deploy dev commands to the home guild
     const devCommands = await loadCommandFiles('commands/slash/dev');
     if (devCommands.length) {
       await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: devCommands });
-      logger.info(`Registered dev slash commands for: ${guildId}`);
+      logger.info(`Successfully registered dev slash commands for: ${guildId}`);
     } else {
       logger.debug(`No dev commands found for guild: ${guildId}`);
     }
   } catch (error) {
-    logger.error(`Error deploying commands: ${error.message}\n${error.stack}}`, client);
+    logger.error(`Error deploying commands: ${error.message}\n${error.stack}`);
   }
 }
 

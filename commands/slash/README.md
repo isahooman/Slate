@@ -22,6 +22,7 @@ module.exports = {
     .setNSFW(false) // Age-restricts the command.
     .setDMPermission(true), // Determines if the command can be used in DMs.
   category: 'misc', // Sets the command category.
+  userInstall: true, // Optional parameter to determine if the command will be included in user-installed commands
   cooldowns: { // Optional cooldown parameter for each command
     user: 3000, // Milliseconds until the user of the command can use this command again
     guild: 0, // Milliseconds until the guild that used the command can use this command again
@@ -61,6 +62,7 @@ module.exports = {
     .setNSFW(Boolean)
     .setDMPermission(Boolean),
   category: '',
+  userInstall: Boolean,
   cooldowns: {
     user: Number,
     guild: Number,
@@ -68,16 +70,6 @@ module.exports = {
   },
 
   execute(interaction, client) {
-
   },
-  executeButton(interaction, client) {
-
-  },
-  executeStringSelectMenu(interaction, client) {
-
-  },
-  executeModalSubmit(interaction, client) {
-
-  }
 };
 ```
