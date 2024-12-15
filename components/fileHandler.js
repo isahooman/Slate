@@ -12,7 +12,7 @@ const MAX_SIZE = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs li
 /**
  * Reads the contents of a file.
  * For .json5 files, it uses the `readJSON5` function.
- * For other files, it checks the file size and uses either `fs.readFile` or `readLargeFile` accordingly.
+ * For other files, it checks the file size and reads the file if it is within the `MAX_SIZE` limit
  * @param {string} filePath The path to the file to read.
  * @returns {Promise<string|object>} A promise that resolves to the file contents as a string or an object.
  * @author isahooman
