@@ -80,7 +80,8 @@ module.exports = {
     const content = isMention ?
       newMessage.content.replace(mentionWithCommand, '') :
       newMessage.content.slice(prefix.length);
-    const args = content.trim().split(/ +/);
+
+    const args = content.split(/ +/);
     const commandName = args.shift().toLowerCase();
 
     // Check if the command name is an alias

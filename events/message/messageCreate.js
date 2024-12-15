@@ -75,7 +75,8 @@ module.exports = {
     }
 
     const content = message.content.startsWith(prefix) ? message.content.slice(prefix.length) : message.content.replace(mentionWithCommand, '');
-    let args = content.trim().split(/ +/);
+    let args = content.split(/ +/);
+
     let commandName = args.shift().toLowerCase();
 
     // Check message for command or command alises
