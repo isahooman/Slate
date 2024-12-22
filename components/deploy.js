@@ -47,8 +47,11 @@ async function deployCommands() {
   try {
     // Load and deploy global commands
     const globalCommands = await loadCommandFiles('commands/slash/global');
-    if (globalCommands.length) {
-      await rest.put(Routes.applicationCommands(clientId), { body: globalCommands });
+    const uniqueGlobalCommands = Array.from(new Map(globalCommands.map(cmd => [cmd.name, cmd])).values());
+    if (uniqueGlobalCommands.length) {
+      uniqueGlobalCommands.forEach(command => logger.info(`Filtered duplicate global command: ${command.name}`));
+      uniqueGlobalCommands.forEach(command => logger.info(`Deploying global command: ${command.name}`));
+      await rest.put(Routes.applicationCommands(clientId), { body: uniqueGlobalCommands });
       logger.info('Successfully registered global slash commands!');
     } else {
       logger.debug('No global commands found.');
@@ -56,8 +59,11 @@ async function deployCommands() {
 
     // Load and deploy dev commands to the home guild
     const devCommands = await loadCommandFiles('commands/slash/dev');
-    if (devCommands.length) {
-      await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: devCommands });
+    const uniqueDevCommands = Array.from(new Map(devCommands.map(cmd => [cmd.name, cmd])).values());
+    if (uniqueDevCommands.length) {
+      uniqueDevCommands.forEach(command => logger.info(`Filtered duplicate dev command: ${command.name}`));
+      uniqueDevCommands.forEach(command => logger.info(`Deploying dev command: ${command.name}`));
+      await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: uniqueDevCommands });
       logger.info(`Successfully registered dev slash commands for: ${guildId}`);
     } else {
       logger.debug(`No dev commands found for guild: ${guildId}`);
