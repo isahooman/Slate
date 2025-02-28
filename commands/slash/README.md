@@ -12,7 +12,7 @@ If the command name is ping you can type `/ping`
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const { logger } = require('../../../components/loggerUtil.js');
+const logger = require('../../../components/loggerUtil.js');
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
@@ -53,15 +53,15 @@ module.exports = {
 ### Slash Command Boilerplate
 
 ```js
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('')
-    .setDescription('')
+    .setName("")
+    .setDescription("")
     .setNSFW(Boolean)
     .setDMPermission(Boolean),
-  category: '',
+  category: "",
   userInstall: Boolean,
   cooldowns: {
     user: Number,
@@ -69,7 +69,6 @@ module.exports = {
     global: Number,
   },
 
-  execute(interaction, client) {
-  },
+  execute(interaction, client) {},
 };
 ```

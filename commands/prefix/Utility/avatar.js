@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const logger = require('../../../components/logger.js');
+const search = new (require('../../../components/search.js'))();
 
 module.exports = {
   name: 'avatar',
@@ -8,58 +9,38 @@ module.exports = {
   aliases: ['av', 'pfp'],
   allowDM: false,
   description: 'Send the avatar of a user.',
-  execute(message, args) {
+  async execute(message, args) {
+    let user;
+
     // Check if the message is a reply
     if (message.reference) {
-      message.channel.messages.fetch(message.reference.messageId)
-        .then(repliedMessage => {
-          // Get the user who sent the replied-to message
-          const user = repliedMessage.author;
-
-          // Log the target user
-          logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
-
-          // Create an embed to display the avatar.
-          const embed = new EmbedBuilder()
-            .setTitle(`${user.displayName}'s Avatar`)
-            .setURL(user.displayAvatarURL({ dynamic: true, size: 4096 }))
-            .setImage(user.displayAvatarURL({ dynamic: true, size: 4096 }));
-
-          // Send the avatar embed.
-          message.channel.send({ embeds: [embed] }).then(() => {
-            logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
-          }).catch(error => {
-            throw new Error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
-          });
-        })
-        .catch(error => {
-          throw new Error(`[Avatar Command] Error fetching replied-to message: ${error}`);
-        });
-    } else {
-      // Retrieve the user from the arguments.
-      let user = message.mentions.users.first() || message.guild.members.cache.get(args[0])?.user;
-
-      // If no user is provided, use the author
-      if (!user) {
-        user = message.author;
-        logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
-      } else {
-        // Log the target user
-        logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
+      try {
+        const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
+        user = repliedMessage.author;
+      } catch {
+        return message.channel.send('[Avatar Command] Error fetching the replied-to message.');
       }
+    } else {
+      // Search for the user
+      const searchResults = await search.member(message, args.join(' '));
 
-      // Create an embed to display the avatar.
-      const embed = new EmbedBuilder()
-        .setTitle(`${user.displayName}'s Avatar`)
-        .setURL(user.displayAvatarURL({ dynamic: true, size: 4096 }))
-        .setImage(user.displayAvatarURL({ dynamic: true, size: 4096 }));
-
-      // Send the avatar embed.
-      message.channel.send({ embeds: [embed] }).then(() => {
-        logger.info(`[Avatar Command] Avatar sent successfully for user ${user.tag} in ${message.guild.name}`);
-      }).catch(error => {
-        throw new Error(`[Avatar Command] Error sending avatar for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
-      });
+      if (searchResults.length === 1) user = searchResults[0].user;
+      else if (searchResults.length === 0) user = args.length > 0 ? null : message.author;
+      else return message.channel.send('Multiple users found. Please be more specific.');
     }
+    // If no user is found
+    if (!user) return message.channel.send('No users found.');
+
+    logger.debug(`[Avatar Command] Retrieving avatar for user ${user.tag}`);
+
+    // Create and send the embed
+    const embed = new EmbedBuilder()
+      .setTitle(`${user.displayName}'s Avatar`)
+      .setURL(user.displayAvatarURL({ dynamic: true, size: 4096 }))
+      .setImage(user.displayAvatarURL({ dynamic: true, size: 4096 }));
+
+    message.channel.send({ embeds: [embed] })
+      .then(() => logger.info(`[Avatar Command] Avatar sent for ${user.tag}`))
+      .catch(error => logger.error(`[Avatar Command] Error sending avatar for ${user.tag}: ${error}`));
   },
 };
