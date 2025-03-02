@@ -8,6 +8,9 @@ const fs = require('fs');
 const moment = require('moment');
 const path = require('path');
 
+// Force chalk to use colors
+chalk.level = 3;
+
 const logFile = path.join(__dirname, '..', 'bot.log');
 const tempDir = path.join(__dirname, '..', 'temp');
 const errorDir = path.join(tempDir, 'error');
