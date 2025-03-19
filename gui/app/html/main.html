@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" layout="expanded">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slate GUI</title>
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+  <div class="titlebar">
+    <div class="menu-button" title="Toggle Layout">
+      <img src="../../assets/side_toggle.svg" alt="Menu">
+    </div>
+    <div class="title">Slate Bot</div>
+    <div class="window-controls">
+      <div class="pin-button"><img src="../../assets/pin.svg" alt="Pin"></div>
+      <div class="minimize-button"><img src="../../assets/minimize.svg" alt="Minimize"></div>
+      <div class="maximize-button"><img src="../../assets/maximize.svg" alt="Maximize"></div>
+      <div class="close-button"><img src="../../assets/close.svg" alt="Close"></div>
+    </div>
+  </div>
+  <div id="app">
+    <div class="sidebar">
+      <div class="bot-controls">
+        <div class="control-buttons">
+          <button id="startBtn" class="start-btn" disabled>
+            <span class="btn-text">Start</span>
+          </button>
+          <button id="stopBtn" class="stop-btn" style="display: none;">
+            <span class="btn-text">Stop</span>
+          </button>
+          <button id="restartBtn" class="restart-btn" disabled>
+            <img src="../../assets/restart.svg" alt="Restart">
+          </button>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="home-nav-btn active" data-section="home">
+          Home
+        </button>
+        <button class="logs-nav-btn" data-section="logs">
+          Logs
+        </button>
+        <button class="settings-nav-btn">
+          Settings
+        </button>
+      </nav>
+    </div>
+
+    <!-- Home Page -->
+    <section id="home" class="section active">
+      <div class="content">
+        <div class="monitor-container">
+          <!-- CPU Monitor -->
+          <div class="monitor-gauge">
+            <div class="gauge-title">CPU Usage</div>
+            <div class="gauge">
+              <div class="gauge-body">
+                <div class="gauge-fill"></div>
+                <div class="gauge-cover">0%</div>
+              </div>
+            </div>
+          </div>
+          <!-- Memory Monitor -->
+          <div class="monitor-gauge">
+            <div class="gauge-title">Memory Usage</div>
+            <div class="gauge">
+              <div class="gauge-body">
+                <div class="gauge-fill"></div>
+                <div class="gauge-cover">0 GB</div>
+              </div>
+            </div>
+          </div>
+          <!-- Ping Monitor -->
+          <div class="monitor-gauge">
+            <div class="gauge-title">Ping</div>
+            <div class="gauge">
+              <div class="gauge-body">
+                <div class="gauge-fill"></div>
+                <div class="gauge-cover">0 ms</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="output-container">
+          <pre id="main-output-box" class="output-box"></pre>
+        </div>
+    </section>
+
+    <!-- Logs Page -->
+    <section id="logs" class="section">
+      <div class="content logs-view">
+        <div class="controls">
+          <div class="search-container">
+            <button class="filter-btn">
+              <img src="../../assets/filter.svg" alt="Filter">
+            </button>
+            <div class="filter-dropdown">
+              <div class="filter-option">Other</div>
+              <div class="filter-option">Info</div>
+              <div class="filter-option">Warn</div>
+              <div class="filter-option">Error</div>
+              <div class="filter-option">Debug</div>
+              <div class="filter-option">Start</div>
+              <div class="filter-option">Loading</div>
+              <div class="filter-option">Command</div>
+              <div class="filter-option">Message</div>
+              <div class="filter-option">Interaction</div>
+            </div>
+            <input type="text" class="search-input" placeholder="Search logs...">
+          </div>
+          <button class="clear-logs-btn">
+            <img src="../../assets/trash.svg" alt="Clear Logs">
+          </button>
+        </div>
+        <div class="output-container">
+          <pre id="logs-output-box" class="output-box"></pre>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <script src="../js/renderer.js"></script>
+</body>
+</html>

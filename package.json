@@ -11,6 +11,7 @@
   "scripts": {
     "tree": "pwsh ./.vscode/scripts/Project_Tree.ps1",
     "start": "cross-os start-os",
+    "gui": "electron gui/main/main.js",
     "start-os": {
       "darwin": "sh start.sh",
       "linux": "sh start.sh",
@@ -34,8 +35,8 @@
   },
   "devDependencies": {
     "cross-os": "^1.5.0",
-    "electron": "28.2.2",
-    "eslint": "^8.56.0",
+    "electron": "^28.3.3",
+    "eslint": "^9.22.0",
     "eslint-plugin-jsdoc": "^48.0.6"
   },
   "optionalDependencies": {

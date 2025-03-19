@@ -1,6 +1,6 @@
 {
   "eslint.validate": ["javascript"],
-  "eslint.experimental.useFlatConfig": false,
+  "eslint.useFlatConfig": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",

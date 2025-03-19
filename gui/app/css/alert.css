@@ -1,0 +1,86 @@
+@import './central/theme.css';
+
+body {
+  background-color: transparent;
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  user-select: none;
+  box-sizing: border-box;
+  height: 100vh;
+  border-radius: 11px;
+  border: 2px solid red;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== Layout ========== */
+.alert-wrapper {
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.alert-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
+  margin-top: var(--titlebar-height);
+  background-color: var(--bg-primary);
+  border-radius: 0 0 8px 8px;
+}
+
+/* ========== Components ========== */
+#alert-message {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding: 0 20px;
+}
+
+#ok-button {
+  width: 100%;
+  margin-top: auto;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  padding: 15px;
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#ok-button:hover {
+  background-color: var(--button-hover);
+}
+
+/* ========== Titlebar ========== */
+.titlebar {
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--window-primary);
+  color: var(--text-color);
+  -webkit-app-region: drag;
+  position: fixed;
+  height: calc(var(--titlebar-height) + 15px);
+  z-index: 999;
+  border-radius: 8px 8px 0 0;
+  width: calc(100% - 4px);
+  box-sizing: border-box;
+}

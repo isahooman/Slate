@@ -24,7 +24,7 @@ module.exports = {
       logger.loading(`[LogTest Command] ${outputText}`);
 
       interaction.reply('Logged messages at different levels.');
-    } catch (error) {
+    } catch {
       await interaction.reply('Logged messages at different levels.');
     }
   },

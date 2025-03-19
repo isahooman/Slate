@@ -1,0 +1,118 @@
+@import './modules/output.css';
+@import './central/theme.css';
+@import './central/debug.css';
+@import './central/titlebar.css';
+@import './central/sidebar.css';
+@import './modules/monitor.css';
+
+:root[layout="expanded"] {
+  --content-padding: 20px;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== Layout ========== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--titlebar-height) + 5px);
+  padding: 5px;
+  box-sizing: border-box;
+  padding-top: calc(var(--titlebar-height) + 5px);
+  margin-top: 15px;
+}
+
+:root[layout="expanded"] #app {
+  margin-left: var(--sidebar-width);
+  width: calc(100vw - var(--sidebar-width));
+}
+
+:root[layout="compact"] #app {
+  width: 100vw;
+}
+
+.section {
+  display: none;
+  flex: 1;
+  margin: 0 5px;
+  box-sizing: border-box;
+  width: calc(100% - 10px);
+  min-height: 0;
+}
+
+.section.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.logs-view .controls {
+  margin-top: 4px;
+  margin-bottom: 0px;
+}
+
+/* Menu Button Styles */
+.menu-button {
+  -webkit-app-region: no-drag;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menu-button:hover {
+  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(180deg);
+}
+
+:root[layout="compact"] .menu-button img {
+  transform: rotate(180deg);
+}
+
+.edit-button img {
+  width: 18px;
+  height: 18px;
+}
+
+:root[theme="dark"] .edit-button img {
+  filter: invert(1);
+}
+
+.home-output {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--window-tertiary);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.home-output .output-box {
+  height: 100%;
+  padding: 10px;
+  margin: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.monitor-container {
+  flex: 0 0 auto;
+  margin-bottom: 5px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

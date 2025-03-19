@@ -13,7 +13,8 @@ const handleIntents = intents => {
   return totalIntentsBits;
 };
 
-exports.client = new Client({
+// Create the Discord client
+const client = new Client({
   intents: handleIntents(ConfigIntents),
   shards: 'auto',
 });
@@ -35,12 +36,13 @@ async function startBot(bot) {
   bot.login(token);
 }
 
-// Cooldowns globalized
+// Export modules
+exports.client = client;
 exports.cooldown = cooldownBuilder;
-// Cache globalized
 exports.cache = cache;
 
-startBot(this.client);
+// Start the bot
+startBot(client);
 
 // Process Events
 process
@@ -56,9 +58,9 @@ process
     const startTime = Date.now();
     logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
     // Attempt to reconnect if the client died.
-    if (!this.client.user) try {
+    if (!client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await this.client.login;
+      await client.login(token);
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
@@ -71,9 +73,9 @@ process
     const startTime = Date.now();
     logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
     // Attempt to reconnect if the client died.
-    if (!this.client.user) try {
+    if (!client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await this.client.login;
+      await client.login(token);
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
@@ -91,7 +93,7 @@ process
       logger.error(`Error during undeploy: ${error}`);
     }
     // Logout of Discord
-    await this.client.destroy();
+    await client.destroy();
     logger.info('Bot successfully logged out.');
     // Delete the temp directory
     const fs = require('fs');

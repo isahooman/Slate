@@ -1,0 +1,122 @@
+@import './central/debug.css';
+@import './central/theme.css';
+@import './central/titlebar.css';
+@import './central/sidebar.css';
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== Layout ========== */
+.settings-layout {
+  display: flex;
+  height: calc(100vh - var(--titlebar-height));
+  margin-top: var(--titlebar-height);
+  width: 100vw;
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+}
+
+.settings-content {
+  flex: 1;
+  padding: 24px 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin-left: var(--sidebar-width);
+}
+
+.settings-section {
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.settings-section.active {
+  display: block;
+}
+
+.settings-section h2 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.settings-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* ========== Form Elements ========== */
+.settings-group {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  min-height: 40px;
+  border-bottom: 1px solid var(--button-border);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-weight: 500;
+}
+
+.setting-item select,
+.setting-item input {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--button-border);
+  color: var(--text-color);
+  padding: 8px;
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.setting-item input[type="number"] {
+  background-color: #444;
+  border: 1px solid #555;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  width: 80px;
+}
+
+.setting-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #666;
+}
+
+.setting-item input[type="checkbox"]:checked {
+  accent-color: #4CAF50;
+}

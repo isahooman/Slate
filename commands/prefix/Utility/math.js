@@ -35,7 +35,7 @@ module.exports = {
 
       // Send the embed to the user
       message.channel.send({ embeds: [embed] });
-    } catch (error) {
+    } catch {
       logger.debug(`[Math Command] Equation at error: ${equation}`);
       message.channel.send('Invalid equation.');
     }

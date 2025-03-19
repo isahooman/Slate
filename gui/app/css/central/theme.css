@@ -1,0 +1,25 @@
+:root { --titlebar-height: 20px; }
+
+:root[layout="expanded"] {
+  --sidebar-width: 120px;
+}
+
+:root {
+  /* Generic Background Colors */
+  --bg-primary: #212121;
+  --bg-secondary: #2c2c2c;
+  --bg-tertiary: #333333;
+
+  /* Window/Navigation Elements */
+  --window-primary: #333333;
+  --window-secondary: #2c2c2c;
+  --window-tertiary: #787878;
+
+  /* Text Colors */
+  --text-color: white;
+
+  /* Generic Button States */
+  --button-bg: #424242;
+  --button-hover: #555555;
+  --button-border: #555555;
+}
