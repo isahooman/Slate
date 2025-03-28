@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../../components/logger.js');
+const logger = require('../../../../components/util/logger.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,7 +24,7 @@ module.exports = {
       logger.loading(`[LogTest Command] ${outputText}`);
 
       interaction.reply('Logged messages at different levels.');
-    } catch (error) {
+    } catch {
       await interaction.reply('Logged messages at different levels.');
     }
   },

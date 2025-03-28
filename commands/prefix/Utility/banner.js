@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const logger = require('../../../components/logger.js');
-const Search = require('../../../components/search.js');
+const logger = require('../../../components/util/logger.js');
+const Search = require('../../../components/util/search.js');
 const search = new Search();
 
 module.exports = {

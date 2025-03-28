@@ -9,5 +9,18 @@
     "source.fixAll": "explicit"
   },
   "eslint.debug": true,
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "hide-files.files": [
+    "node_modules",
+    ".github"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "node_modules": true,
+    ".github": true
+  }
 }

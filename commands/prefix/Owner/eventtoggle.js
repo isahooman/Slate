@@ -1,5 +1,5 @@
-const { setEventEnabled, isEventEnabled, reloadAllEvents } = require('../../../components/loader.js');
-const logger = require('../../../components/logger.js');
+const { setEventEnabled, isEventEnabled, reloadAllEvents } = require('../../../components/core/loader.js');
+const logger = require('../../../components/util/logger.js');
 
 module.exports = {
   name: 'eventtoggle',

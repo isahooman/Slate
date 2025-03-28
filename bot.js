@@ -1,11 +1,11 @@
-const { readJSON5 } = require('./components/json5Parser.js');
+const { readJSON5 } = require('./components/core/json5Parser.js');
 const { clientId, token, guildId, deployOnStart, undeployOnExit } = readJSON5('./config/config.json5');
 const ConfigIntents = require('./config/intents.json');
 const { Client, GatewayIntentBits } = require('discord.js');
-const { loadAll, deployCommands, undeploy } = require('./components/loader.js');
-const logger = require('./components/logger.js');
-let cooldownBuilder = require('./components/cooldown.js');
-let cache = new (require('./components/cache.js'));
+const { loadAll, deployCommands, undeploy } = require('./components/core/loader.js');
+const logger = require('./components/util/logger.js');
+let cooldownBuilder = require('./components/commands/cooldown.js');
+let cache = new (require('./components/util/cache'));
 
 const handleIntents = intents => {
   let totalIntentsBits = [];
@@ -40,7 +40,7 @@ exports.cooldown = cooldownBuilder;
 // Cache globalized
 exports.cache = cache;
 
-startBot(this.client);
+startBot(exports.client);
 
 // Process Events
 process
@@ -56,9 +56,9 @@ process
     const startTime = Date.now();
     logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
     // Attempt to reconnect if the client died.
-    if (!this.client.user) try {
+    if (!exports.client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await this.client.login;
+      await exports.client.login;
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
@@ -71,9 +71,9 @@ process
     const startTime = Date.now();
     logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
     // Attempt to reconnect if the client died.
-    if (!this.client.user) try {
+    if (!exports.client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await this.client.login;
+      await exports.client.login;
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
@@ -91,7 +91,7 @@ process
       logger.error(`Error during undeploy: ${error}`);
     }
     // Logout of Discord
-    await this.client.destroy();
+    await exports.client.destroy();
     logger.info('Bot successfully logged out.');
     // Delete the temp directory
     const fs = require('fs');
@@ -103,4 +103,3 @@ process
 
     process.exit(0);
   });
-

@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const path = require('path');
-const { readFile } = require('../../../components/fileHandler.js');
-const logger = require('../../../components/logger.js');
+const { readFile } = require('../../../components/core/fileHandler');
+const logger = require('../../../components/util/logger.js');
 
 module.exports = {
   name: 'bugreport',

@@ -1,6 +1,6 @@
-const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands, isPrefixCommandEnabled, isSlashCommandEnabled, findNearestCommand, reloadCommand } = require('./commands.js');
-const { loadEvents, reloadAllEvents, setEventEnabled, isEventEnabled, reloadEvent } = require('./events.js');
-const { deployCommands, undeploy } = require('./deploy.js');
+const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands, isPrefixCommandEnabled, isSlashCommandEnabled, findNearestCommand, reloadCommand } = require('../commands/commands.js');
+const { loadEvents, reloadAllEvents, setEventEnabled, isEventEnabled, reloadEvent } = require('../util/events.js');
+const { deployCommands, undeploy } = require('../util/deploy.js');
 
 /**
  * Load all events and commands

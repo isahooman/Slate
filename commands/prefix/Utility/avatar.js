@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
-const logger = require('../../../components/logger.js');
-const search = new (require('../../../components/search.js'))();
+const logger = require('../../../components/util/logger.js');
+const search = new (require('../../../components/util/search.js'))();
 
 module.exports = {
   name: 'avatar',

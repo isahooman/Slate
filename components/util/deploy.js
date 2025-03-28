@@ -1,7 +1,7 @@
 const path = require('path');
-const { readJSON5 } = require('./json5Parser.js');
-const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
-const { readRecursive } = require('./fileHandler.js');
+const { readJSON5 } = require('../core/json5Parser.js');
+const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
+const { readRecursive } = require('../core/fileHandler.js');
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');
 

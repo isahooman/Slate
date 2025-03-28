@@ -1,5 +1,5 @@
 const { AttachmentBuilder } = require('discord.js');
-const logger = require('../../../components/logger.js');
+const logger = require('../../../components/util/logger.js');
 const archive = require('archiver')('zip');
 const fetch = import('node-fetch');
 
