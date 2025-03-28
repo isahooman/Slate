@@ -12,7 +12,7 @@ If the prefix is `.` and the command name is `ping` then you can use the command
 
 ```js
 // exampleCategoryFolder/exampleCommand.js
-const logger = require("../../../components/loggerUtil.js");
+const logger = require("../../../components/logger.js");
 
 module.exports = {
   name: "example", // Command name
