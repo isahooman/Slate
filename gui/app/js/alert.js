@@ -29,7 +29,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-focus OK button
   if (okButton) okButton.focus();
 });
-
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 'd') document.body.classList.toggle('debug');
-});

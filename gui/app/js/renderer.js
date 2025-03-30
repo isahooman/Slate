@@ -18,13 +18,6 @@ window.api.onLayoutChanged(layout => {
   applyLayout(layout);
 });
 
-window.api.window.onStateChange((event, state) => {
-  if (state.type === 'pin') {
-    const pinButton = document.querySelector('.pin-button img');
-    if (pinButton) pinButton.src = state.iconPath;
-  }
-});
-
 // Output handling
 function syncOutput() {
   const outputBoxes = {
@@ -77,23 +70,6 @@ function createOutputEntry(outputBox, data) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-  // Window control handlers
-  document.querySelector('.minimize-button')?.addEventListener('click', () => {
-    window.api.window.minimize();
-  });
-
-  document.querySelector('.maximize-button')?.addEventListener('click', () => {
-    window.api.window.maximize();
-  });
-
-  document.querySelector('.close-button')?.addEventListener('click', () => {
-    window.api.window.close();
-  });
-
-  document.querySelector('.pin-button')?.addEventListener('click', () => {
-    window.api.window.pin();
-  });
-
   syncOutput();
 });
 
@@ -131,17 +107,4 @@ document.querySelector('.menu-button')?.addEventListener('click', () => {
   const currentLayout = document.documentElement.getAttribute('layout');
   const newLayout = currentLayout === 'expanded' ? 'compact' : 'expanded';
   window.api.updateLayout(newLayout);
-});
-
-// Debug mode toggle
-document.addEventListener('keydown', event => {
-  if (event.ctrlKey && event.key === 'd') {
-    event.preventDefault();
-    debugMode = !debugMode;
-
-    const currentView = document.body.className.split(' ')
-      .find(cls => cls.endsWith('-view')) || '';
-
-    document.body.className = `${currentView}${debugMode ? ' debug' : ''}`;
-  }
 });

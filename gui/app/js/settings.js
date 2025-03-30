@@ -1,40 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const pinButton = document.querySelector('.pin-button');
-  const pinIcon = pinButton?.querySelector('img');
-
-  // Window control handlers
-  document.querySelector('.minimize-button')?.addEventListener('click', () => {
-    window.api.window.minimize();
-  });
-
-  document.querySelector('.close-button')?.addEventListener('click', () => {
-    window.api.window.close();
-  });
-
-  // Pin button slop
-  if (pinButton && pinIcon) {
-    const updatePinState = isPinned => {
-      pinIcon.src = isPinned ? '../../assets/pin_off.svg' : '../../assets/pin.svg';
-      pinButton.classList.toggle('pinned', isPinned);
-    };
-
-    pinButton.addEventListener('click', () => {
-      window.api.window.pin().then(state => updatePinState(state.isPinned));
-    });
-
-    window.api.window.onStateChange((event, state) => {
-      if (state.type === 'pin') updatePinState(state.pinned);
-    });
-  }
-
-  // Debug mode toggle
-  document.addEventListener('keydown', event => {
-    if (event.ctrlKey && event.key === 'd') {
-      event.preventDefault();
-      document.body.classList.toggle('debug');
-    }
-  });
-
   const themeSelect = document.getElementById('theme-select');
   const layoutSelect = document.getElementById('layout-select');
 
