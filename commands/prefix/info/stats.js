@@ -8,8 +8,6 @@ module.exports = {
   name: 'stats',
   usage: 'stats',
   category: 'info',
-  aliases: [],
-  nsfw: false,
   allowDM: true,
   description: 'Displays bot process statistics',
   async execute(message) {

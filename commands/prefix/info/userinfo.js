@@ -35,7 +35,6 @@ module.exports = {
   usage: 'userinfo <user>',
   category: 'info',
   aliases: ['ui'],
-  nsfw: false,
   allowDM: true,
   description: 'Shows information the given user',
 

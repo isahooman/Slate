@@ -7,8 +7,6 @@ module.exports = {
   name: 'cache',
   usage: 'cache <clear/refresh/stats>',
   category: 'Owner',
-  aliases: [],
-  nsfw: false,
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {

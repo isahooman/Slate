@@ -6,7 +6,6 @@ module.exports = {
   usage: 'permissions',
   category: 'Owner',
   aliases: ['perms'],
-  nsfw: false,
   allowDM: false,
   description: `Check the bot's permissions`,
   async execute(message) {

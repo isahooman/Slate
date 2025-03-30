@@ -8,7 +8,6 @@ module.exports = {
   usage: 'suggest <suggestion>',
   category: 'Utility',
   aliases: ['suggestion'],
-  nsfw: false,
   allowDM: true,
   description: 'Make a suggestion',
   async execute(message, args) {

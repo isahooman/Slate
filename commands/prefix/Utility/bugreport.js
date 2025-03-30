@@ -8,7 +8,6 @@ module.exports = {
   usage: 'bugreport <message>',
   category: 'Utility',
   aliases: ['reportbug', 'bug'],
-  nsfw: false,
   allowDM: true,
   description: 'Report a bug',
   async execute(message, args) {
