@@ -3,9 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const layoutSelect = document.getElementById('layout-select');
 
   // Load initial settings
-  window.api.loadSettings();
+  window.api.settings.load();
 
-  window.api.onSettingsLoaded(settings => {
+  window.api.settings.onLoaded(settings => {
     themeSelect.value = settings.theme;
     layoutSelect.value = settings.layout || 'expanded';
     document.documentElement.setAttribute('theme', settings.theme);
@@ -14,16 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeSelect?.addEventListener('change', e => {
     const selectedTheme = e.target.value;
-    window.api.updateTheme(selectedTheme);
+    window.api.theme.update(selectedTheme);
     document.documentElement.setAttribute('theme', selectedTheme);
   });
 
   layoutSelect?.addEventListener('change', e => {
     const selectedLayout = e.target.value;
-    window.api.updateLayout(selectedLayout);
+    window.api.layout.update(selectedLayout);
   });
 
-  window.api.onLayoutUpdated(success => {
+  window.api.layout.onUpdated(success => {
     if (success) window.api.sendToMain('layout-change', layoutSelect.value);
   });
 

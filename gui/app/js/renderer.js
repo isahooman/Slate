@@ -4,17 +4,17 @@ function applyLayout(layout) {
   document.documentElement.setAttribute('layout', layout);
 }
 
-window.api.loadSettings();
-window.api.onSettingsLoaded(settings => {
+window.api.settings.load();
+window.api.settings.onLoaded(settings => {
   document.documentElement.setAttribute('theme', settings.theme);
   applyLayout(settings.layout);
 });
 
-window.api.onLayoutUpdated(success => {
-  if (success) window.api.loadSettings();
+window.api.layout.onUpdated(success => {
+  if (success) window.api.settings.load();
 });
 
-window.api.onLayoutChanged(layout => {
+window.api.layout.onChange(layout => {
   applyLayout(layout);
 });
 
@@ -27,12 +27,6 @@ function syncOutput() {
 
   Object.entries(outputBoxes).forEach(([outputId, outputBox]) => {
     if (!outputBox) return;
-
-    window.api.output.getBuffer().then(buffer => {
-      if (buffer && buffer.length > 0) buffer.forEach(data => {
-        createOutputEntry(outputBox, data);
-      });
-    });
 
     // Listen for new output
     window.api.output.onStateChange(outputId, state => {
@@ -99,12 +93,12 @@ sidebarButtons.forEach(button => {
 
 // Settings button
 document.querySelector('.settings-nav-btn')?.addEventListener('click', () => {
-  window.api.openSettings();
+  window.api.settings.open();
 });
 
 // Menu button
 document.querySelector('.menu-button')?.addEventListener('click', () => {
   const currentLayout = document.documentElement.getAttribute('layout');
   const newLayout = currentLayout === 'expanded' ? 'compact' : 'expanded';
-  window.api.updateLayout(newLayout);
+  window.api.layout.update(newLayout);
 });

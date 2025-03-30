@@ -20,10 +20,16 @@ function registerIpcHandlers() {
   ipcMain.on('open-settings', event => {
     windowManager.createWindow('settings', event.sender);
   });
+
+  // Theme handlers
   ipcMain.on('update-theme', handleUpdateTheme);
-  ipcMain.on('load-settings', handleLoadSettings);
+
+  // Layout handlers
   ipcMain.on('layout-change', handleLayoutChange);
   ipcMain.on('update-layout', handleUpdateLayout);
+
+  // Settings handlers
+  ipcMain.on('load-settings', handleLoadSettings);
 
   // Output handlers
   ipcMain.on('output-update-state', handleSyncOutput);

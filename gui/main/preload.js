@@ -1,39 +1,44 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// todo: split the api into separate objects
 contextBridge.exposeInMainWorld('api', {
-  // env
+  // General
   isDev: process.env.NODE_ENV === 'development',
-
-  // settings
-  openSettings: () => ipcRenderer.send('open-settings'),
-  loadSettings: () => ipcRenderer.send('load-settings'),
-  onSettingsLoaded: callback => {
-    ipcRenderer.removeAllListeners('settings-loaded');
-    ipcRenderer.on('settings-loaded', (_, settings) => callback(settings));
-  },
-  updateTheme: theme => ipcRenderer.send('update-theme', theme),
-  onThemeUpdated: callback => {
-    ipcRenderer.removeAllListeners('theme-updated');
-    ipcRenderer.on('theme-updated', callback);
-  },
-  updateLayout: layout => {
-    ipcRenderer.send('update-layout', layout);
-    ipcRenderer.send('layout-change', layout);
-  },
-  onLayoutUpdated: callback => {
-    ipcRenderer.removeAllListeners('layout-updated');
-    ipcRenderer.on('layout-updated', (_, success) => callback(success));
-  },
-
-  getInitialState: () => ipcRenderer.invoke('window:get-initial-state'),
   sendToMain: (channel, data) => ipcRenderer.send(channel, data),
-  onLayoutChanged: callback => {
-    ipcRenderer.removeAllListeners('layout-changed');
-    ipcRenderer.on('layout-changed', (_, layout) => callback(layout));
+
+  // Settings API
+  settings: {
+    open: () => ipcRenderer.send('open-settings'),
+    load: () => ipcRenderer.send('load-settings'),
+    onLoaded: callback => {
+      ipcRenderer.removeAllListeners('settings-loaded');
+      ipcRenderer.on('settings-loaded', (_, settings) => callback(settings));
+    },
   },
 
-  // try to separate
+  // Theme API
+  theme: {
+    update: theme => ipcRenderer.send('update-theme', theme),
+    onUpdated: callback => {
+      ipcRenderer.removeAllListeners('theme-updated');
+      ipcRenderer.on('theme-updated', (_, theme) => callback(theme));
+    },
+  },
+
+  // Layout API
+  layout: {
+    update: layout => {
+      ipcRenderer.send('update-layout', layout);
+      ipcRenderer.send('layout-change', layout);
+    },
+    onUpdated: callback => {
+      ipcRenderer.removeAllListeners('layout-updated');
+      ipcRenderer.on('layout-updated', (_, success) => callback(success));
+    },
+    onChange: callback => {
+      ipcRenderer.removeAllListeners('layout-changed');
+      ipcRenderer.on('layout-changed', (_, layout) => callback(layout));
+    },
+  },
 
   // Alert API
   alert: {
@@ -67,5 +72,6 @@ contextBridge.exposeInMainWorld('api', {
       ipcRenderer.removeAllListeners('window-state-changed');
       ipcRenderer.on('window-state-changed', callback);
     },
+    getInitialState: () => ipcRenderer.invoke('window:get-initial-state'),
   },
 });
