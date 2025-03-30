@@ -5,10 +5,16 @@ let alertWindow = null;
 const width = 300;
 const height = 200;
 
-function CenterWindow(parentWindow) {
+/**
+ * Centers a window relative to parent
+ * @param {BrowserWindow} parentWindow - Parent window to center against
+ * @returns {object} The x,y position coordinates
+ */
+function centerWindow(parentWindow) {
   let position;
+
   // Center to parent window if provided
-  if (parentWindow) {
+  if (parentWindow && !parentWindow.isDestroyed()) {
     const parentBounds = parentWindow.getBounds();
     const parentDisplay = screen.getDisplayMatching(parentBounds);
     const workArea = parentDisplay.workArea;
@@ -31,19 +37,26 @@ function CenterWindow(parentWindow) {
       y: Math.floor(workArea.y + (workArea.height - height) / 2),
     };
   }
+
   return position;
 }
 
-function createAlertWindow(parentWindow, message) {
-  // If alert window already exists focus on it and update the message
-  if (alertWindow) {
+/**
+ * Creates the alert window
+ * @param {BrowserWindow} parentWindow - Parent window reference
+ * @param {string} message - Message to display in alert
+ * @returns {BrowserWindow} The alert window instance
+ */
+function createAlertWindow(parentWindow, message, options = {}) {
+  // If alert window already exists, focus it and update message
+  if (alertWindow && !alertWindow.isDestroyed()) {
     alertWindow.focus();
     alertWindow.webContents.send('alert:message', message);
     return alertWindow;
   }
 
   // Calculate window position
-  const { x, y } = CenterWindow(parentWindow);
+  const { x, y } = centerWindow(parentWindow);
 
   // Create the alert window
   alertWindow = new BrowserWindow({
@@ -67,11 +80,13 @@ function createAlertWindow(parentWindow, message) {
       contextIsolation: true,
       preload: path.join(__dirname, '../preload.js'),
     },
+    ...options,
   });
 
+  // Load alert HTML
   alertWindow.loadFile(path.join(__dirname, '../../app/html/alert.html'));
 
-  // Once loaded, show window and prepare message
+  // Initialize window when loaded
   alertWindow.webContents.once('did-finish-load', () => {
     alertWindow.webContents.send('alert:message', message);
     alertWindow.show();

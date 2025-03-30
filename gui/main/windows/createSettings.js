@@ -5,10 +5,16 @@ let settingsWindow = null;
 const width = 500;
 const height = 500;
 
-function CenterWindow(parentWindow) {
+/**
+ * Centers a window relative to parent or on screen
+ * @param {BrowserWindow} parentWindow - Parent window to center against
+ * @returns {object} The x,y position coordinates
+ */
+function centerWindow(parentWindow) {
   let position;
+
   // Center to parent window if provided
-  if (parentWindow) {
+  if (parentWindow && !parentWindow.isDestroyed()) {
     const parentBounds = parentWindow.getBounds();
     const parentDisplay = screen.getDisplayMatching(parentBounds);
     const workArea = parentDisplay.workArea;
@@ -31,16 +37,35 @@ function CenterWindow(parentWindow) {
       y: Math.floor(workArea.y + (workArea.height - height) / 2),
     };
   }
+
   return position;
 }
 
-function createSettingsWindow() {
-  const mainWindow = BrowserWindow.fromId(1);
+/**
+ * Creates the settings window
+ * @param {BrowserWindow} parentWindow - Parent window reference
+ * @param {object} options - Additional window options
+ * @returns {BrowserWindow} The settings window instance
+ */
+function createSettingsWindow(parentWindow, options = {}) {
+  // Return existing window if it's already created
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    if (settingsWindow.isMinimized()) settingsWindow.restore();
+    settingsWindow.focus();
+    return settingsWindow;
+  }
 
-  // calc window position
-  const { x, y } = CenterWindow(mainWindow);
+  // Default to main window if no parent provided
+  const mainWindow = parentWindow || BrowserWindow.fromId(1);
 
-  // create setting window
+  // Check if parent window is pinned
+  const isMainWindowPinned = mainWindow && !mainWindow.isDestroyed() ?
+    mainWindow.isAlwaysOnTop() : false;
+
+  // Calculate window position
+  const { x, y } = centerWindow(mainWindow);
+
+  // Create settings window
   settingsWindow = new BrowserWindow({
     width: width,
     height: height,
@@ -49,15 +74,30 @@ function createSettingsWindow() {
     frame: false,
     resizable: false,
     show: false,
+    parent: mainWindow || undefined,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, '../preload.js'),
     },
+    ...options,
   });
 
+  // Mirror pin state of main window
+  if (isMainWindowPinned) settingsWindow.setAlwaysOnTop(true, 'pop-up-menu', 1);
+
+  // Load settings HTML
   settingsWindow.loadFile(path.join(__dirname, '../../app/html/settings.html'));
+
+  // Initialize window when loaded
   settingsWindow.webContents.once('did-finish-load', () => {
+    // Send pin state to the settings window
+    settingsWindow.webContents.send('window-state-changed', {
+      type: 'pin',
+      pinned: isMainWindowPinned,
+      iconPath: isMainWindowPinned ? '../../assets/pin_off.svg' : '../../assets/pin.svg',
+    });
+
     settingsWindow.show();
   });
 
