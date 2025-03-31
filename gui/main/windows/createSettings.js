@@ -74,7 +74,6 @@ function createSettingsWindow(parentWindow, options = {}) {
     frame: false,
     resizable: false,
     show: false,
-    parent: mainWindow || undefined,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
