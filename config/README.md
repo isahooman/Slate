@@ -3,22 +3,22 @@
 Table of Contents
 
 - [Example Configurations](#example-configurations)
-  - [blacklist.json](#blacklistjson)
+  - [blacklist.json5](#blacklistjson5)
   - [config.json5](#configjson5)
-  - [events.json](#eventsjson)
-  - [logging.json](#loggingjson)
-  - [status.json](#statusjson)
+  - [events.json5](#eventsjson5)
+  - [logging.json5](#loggingjson5)
+  - [status.json5](#statusjson5)
 
-## blacklist.json
+## blacklist.json5
 
 [Back to top](#example-configurations)
 
-```json
+```json5
 {
-  "users": ["496360025099337727"],
-  "servers": {
-    "leave": ["496360025099337727"],
-    "ignore": ["496360025099337727"]
+  users: ["496360025099337727"],
+  servers: {
+    leave: ["496360025099337727"],
+    ignore: ["496360025099337727"]
   }
 }
 ```
@@ -114,115 +114,115 @@ Table of Contents
   - Array of Strings: `["496360025099337728"]`
   - This refers to the users who will receive error reports in dms
 
-## events.json
+## events.json5
 
 [Back to top](#example-configurations)
 
-```json
+```json5
 {
-  "interactionCreate": true,
-  "messageCreate": true,
-  "messageUpdate": true,
-  "ready": true,
-  "warn": false,
-  "error": false,
+  interactionCreate: true,
+  messageCreate: true,
+  messageUpdate: true,
+  ready: true,
+  warn: false,
+  error: false,
 
-  "debug": false,
+  debug: false,
 
-  "applicationCommandCreate": false,
-  "applicationCommandDelete": false,
-  "applicationCommandUpdate": false,
+  applicationCommandCreate: false,
+  applicationCommandDelete: false,
+  applicationCommandUpdate: false,
 
-  "channelCreate": false,
-  "channelDelete": false,
-  "channelPinsUpdate": false,
-  "channelUpdate": false,
+  channelCreate: true,
+  channelDelete: true,
+  channelUpdate: true,
+  channelPinsUpdate: false,
 
-  "emojiCreate": false,
-  "emojiDelete": false,
-  "emojiUpdate": false,
+  emojiCreate: false,
+  emojiDelete: false,
+  emojiUpdate: false,
 
-  "guildBanAdd": false,
-  "guildBanRemove": false,
-  "guildCreate": false,
-  "guildDelete": false,
-  "guildIntegrationsUpdate": false,
-  "guildUnavailable": false,
-  "guildUpdate": false,
-  "guildAuditLogEntryCreate": false,
-  "guildAvailable": false,
+  guildCreate: true,
+  guildDelete: true,
+  guildUpdate: true,
+  guildAvailable: true,
+  guildUnavailable: true,
+  guildBanAdd: false,
+  guildBanRemove: false,
+  guildIntegrationsUpdate: false,
+  guildAuditLogEntryCreate: false,
 
-  "guildScheduledEventCreate": false,
-  "guildScheduledEventDelete": false,
-  "guildScheduledEventUpdate": false,
-  "guildScheduledEventUserAdd": false,
-  "guildScheduledEventUserRemove": false,
+  guildScheduledEventCreate: false,
+  guildScheduledEventDelete: false,
+  guildScheduledEventUpdate: false,
+  guildScheduledEventUserAdd: false,
+  guildScheduledEventUserRemove: false,
 
-  "guildMemberAdd": false,
-  "guildMemberAvailable": false,
-  "guildMemberRemove": false,
-  "guildMembersChunk": false,
-  "guildMemberUpdate": false,
+  guildMemberAdd: true,
+  guildMemberRemove: true,
+  guildMemberUpdate: true,
+  guildMemberAvailable: true,
+  guildMembersChunk: false,
 
-  "inviteCreate": false,
-  "inviteDelete": false,
+  inviteCreate: false,
+  inviteDelete: false,
 
-  "messageDelete": false,
-  "messageDeleteBulk": false,
-  "messageReactionAdd": false,
-  "messageReactionRemove": false,
-  "messageReactionRemoveAll": false,
-  "messageReactionRemoveEmoji": false,
+  messageDelete: false,
+  messageDeleteBulk: false,
+  messageReactionAdd: false,
+  messageReactionRemove: false,
+  messageReactionRemoveAll: false,
+  messageReactionRemoveEmoji: false,
 
-  "presenceUpdate": false,
+  presenceUpdate: false,
 
-  "roleCreate": false,
-  "roleDelete": false,
-  "roleUpdate": false,
+  roleCreate: false,
+  roleDelete: false,
+  roleUpdate: false,
 
-  "shardDisconnect": true,
-  "shardError": true,
-  "shardReady": true,
-  "shardReconnecting": true,
-  "shardResume": true,
+  shardDisconnect: true,
+  shardError: true,
+  shardReady: true,
+  shardReconnecting: true,
+  shardResume: true,
 
-  "stageInstanceCreate": false,
-  "stageInstanceDelete": false,
-  "stageInstanceUpdate": false,
+  stageInstanceCreate: false,
+  stageInstanceDelete: false,
+  stageInstanceUpdate: false,
 
-  "stickerCreate": false,
-  "stickerDelete": false,
-  "stickerUpdate": false,
+  stickerCreate: false,
+  stickerDelete: false,
+  stickerUpdate: false,
 
-  "threadCreate": false,
-  "threadDelete": false,
-  "threadListSync": false,
-  "threadMembersUpdate": false,
-  "threadMemberUpdate": false,
-  "threadUpdate": false,
+  threadCreate: true,
+  threadDelete: true,
+  threadUpdate: true,
+  threadListSync: false,
+  threadMembersUpdate: false,
+  threadMemberUpdate: false,
 
-  "autoModerationActionExecution": false,
-  "autoModerationRuleCreate": false,
-  "autoModerationRuleDelete": false,
-  "autoModerationRuleUpdate": false,
+  autoModerationActionExecution: false,
+  autoModerationRuleCreate: false,
+  autoModerationRuleDelete: false,
+  autoModerationRuleUpdate: false,
 
-  "cacheSweep": false,
+  cacheSweep: false,
 
-  "webhookUpdate": false,
+  webhookUpdate: false,
 
-  "rateLimit": false,
+  rateLimit: false,
 
-  "typingStart": false,
+  typingStart: false,
 
-  "userUpdate": false,
+  userUpdate: false,
 
-  "voiceStateUpdate": false,
+  voiceStateUpdate: false,
 
-  "invalidated": false,
+  invalidated: false,
 
-  "invalidRequestWarning": false,
+  invalidRequestWarning: false,
 
-  "applicationCommandPermissionsUpdate": false
+  applicationCommandPermissionsUpdate: false,
 }
 ```
 
@@ -461,34 +461,35 @@ Table of Contents
   - Boolean: `true` or `false`
   - If true, the bot will listen for the `applicationCommandPermissionsUpdate` event.
 
-## intents.json
+## intents.json5
 
 [Back to top](#example-configurations)
 
-```json
+```json5
 {
-  "Guilds": true,
-  "GuildMembers": true,
-  "GuildModeration": true,
-  "GuildEmojisAndStickers": false,
-  "GuildIntegrations": false,
-  "GuildWebhooks": false,
-  "GuildInvites": false,
-  "GuildVoiceStates": false,
-  "GuildPresences": false,
-  "GuildMessages": true,
-  "GuildMessageReactions": false,
-  "GuildMessageTyping": false,
+  Guilds: true,
+  GuildMembers: true,
+  GuildMessages: true,
 
-  "DirectMessages": false,
-  "DirectMessageReactions": false,
-  "DirectMessageTyping": false,
+  GuildModeration: false,
+  GuildEmojisAndStickers: false,
+  GuildIntegrations: false,
+  GuildWebhooks: false,
+  GuildInvites: false,
+  GuildVoiceStates: false,
+  GuildPresences: false,
+  GuildMessageReactions: false,
+  GuildMessageTyping: false,
 
-  "MessageContent": true,
+  DirectMessages: true,
+  DirectMessageReactions: false,
+  DirectMessageTyping: false,
 
-  "GuildScheduledEvents": false,
-  "AutoModerationConfiguration": false,
-  "AutoModerationExecution": false
+  MessageContent: true,
+
+  GuildScheduledEvents: false,
+  AutoModerationConfiguration: false,
+  AutoModerationExecution: false,
 }
 ```
 
@@ -550,24 +551,24 @@ Table of Contents
   - Boolean: `true` or `false`
   - If true, the bot will interact with guild auto-moderation execution.
 
-## logging.json
+## logging.json5
 
 [Back to top](#example-configurations)
 
-```json
+```json5
 {
-  "INFO": true,
-  "WARN": true,
-  "ERROR": true,
+  INFO: true,
+  WARN: true,
+  ERROR: true,
 
-  "DEBUG": true,
+  DEBUG: true,
 
-  "START": true,
-  "LOADING": true,
+  START: true,
+  LOADING: true,
 
-  "COMMAND": true,
-  "MESSAGE": true,
-  "INTERACTION": true
+  COMMAND: true,
+  MESSAGE: true,
+  INTERACTION: true
 }
 ```
 
@@ -599,17 +600,17 @@ Table of Contents
   - Boolean: `true` or `false`
   - If true, the bot will log interaction events.
 
-## status.json
+## status.json5
 
-```json
+```json5
 {
-  "playing": ["with your friends", "with fire"],
+  playing: ["with your friends", "with fire"],
 
-  "streaming": ["PUBG", "Minecraft"],
+  streaming: ["PUBG", "Minecraft"],
 
-  "listening": ["music", "keyboard tapping"],
+  listening: ["music", "keyboard tapping"],
 
-  "watching": ["out for you", "Youtube"]
+  watching: ["out for you", "Youtube"]
 }
 ```
 

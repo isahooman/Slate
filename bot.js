@@ -1,6 +1,6 @@
 const { readJSON5 } = require('./components/json5Parser.js');
 const { clientId, token, guildId, deployOnStart, undeployOnExit } = readJSON5('./config/config.json5');
-const ConfigIntents = require('./config/intents.json');
+const ConfigIntents = readJSON5('./config/intents.json5');
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll, deployCommands, undeploy } = require('./components/loader.js');
 const logger = require('./components/logger.js');

@@ -1,4 +1,6 @@
-const statuses = require('../../config/status.json');
+const { readJSON5 } = require('../../components/json5Parser.js');
+const path = require('path');
+const statuses = readJSON5(path.join(__dirname, '../../config/status.json5'));
 const logger = require('../../components/logger.js');
 const { ActivityType } = require('discord.js');
 const { cache } = require('../../bot.js');

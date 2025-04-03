@@ -1,0 +1,8 @@
+{
+  users: [],
+  servers: {
+    leave: [],
+
+    ignore: [],
+  },
+}

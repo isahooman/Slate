@@ -1,8 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron');
+const { readJSON5 } = require('../../components/json5Parser.js');
+const settingsJSON = readJSON5(path.join(__dirname, '../../config/settings.json5'));
 
-const settingsPath = path.join(app.getPath('userData'), 'Data', 'settings.json');
+const settingsPath = path.join(app.getPath('userData'), 'Data', 'settings.json5');
 const defaultSettings = {
   theme: 'dark',
   layout: 'expanded',
