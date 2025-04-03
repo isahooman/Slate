@@ -1,7 +1,7 @@
 const { app, ipcMain } = require('electron');
 const { handleWindowControls, handleWindowPin, handleGetState } = require('./ipc/handlers/window');
-const { handleUpdateTheme, handleLoadSettings, handleUpdateLayout } = require('./ipc/handlers/settings');
-const { handleLayoutChange } = require('./ipc/handlers/layout');
+const { handleUpdateTheme, handleLoadSettings } = require('./ipc/handlers/settings');
+const { handleLayoutUpdate } = require('./ipc/handlers/layout');
 const windowManager = new (require('./windows/windowManager'))();
 const { handleSyncOutput, handleOutputClear } = require('./ipc/handlers/outputBox');
 const { handleAlertShow, handleAlertClose } = require('./ipc/handlers/alert');
@@ -25,8 +25,7 @@ function registerIpcHandlers() {
   ipcMain.on('update-theme', handleUpdateTheme);
 
   // Layout handlers
-  ipcMain.on('layout-change', handleLayoutChange);
-  ipcMain.on('update-layout', handleUpdateLayout);
+  ipcMain.on('layout:update', handleLayoutUpdate);
 
   // Settings handlers
   ipcMain.on('load-settings', handleLoadSettings);

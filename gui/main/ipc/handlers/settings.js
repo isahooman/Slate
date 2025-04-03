@@ -64,12 +64,6 @@ const handleUpdateLayout = (event, layout) => {
   settings.layout = layout;
   const success = saveSettings(settings);
 
-  // Send layout update to all windows
-  const { BrowserWindow } = require('electron');
-  BrowserWindow.getAllWindows().forEach(win => {
-    win.webContents.send('layout-changed', layout);
-  });
-
   event.reply('layout-updated', success);
 };
 

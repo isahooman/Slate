@@ -26,17 +26,10 @@ contextBridge.exposeInMainWorld('api', {
 
   // Layout API
   layout: {
-    update: layout => {
-      ipcRenderer.send('update-layout', layout);
-      ipcRenderer.send('layout-change', layout);
-    },
+    update: layout => ipcRenderer.send('layout:update', layout),
     onUpdated: callback => {
       ipcRenderer.removeAllListeners('layout-updated');
       ipcRenderer.on('layout-updated', (_, success) => callback(success));
-    },
-    onChange: callback => {
-      ipcRenderer.removeAllListeners('layout-changed');
-      ipcRenderer.on('layout-changed', (_, layout) => callback(layout));
     },
   },
 

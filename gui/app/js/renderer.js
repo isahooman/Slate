@@ -10,11 +10,7 @@ window.api.settings.onLoaded(settings => {
   applyLayout(settings.layout);
 });
 
-window.api.layout.onUpdated(success => {
-  if (success) window.api.settings.load();
-});
-
-window.api.layout.onChange(layout => {
+window.api.layout.onUpdated(layout => {
   applyLayout(layout);
 });
 
@@ -67,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
   syncOutput();
 });
 
-// Section navigation
+// Sidebar navigation
 const sidebarButtons = document.querySelectorAll('.sidebar-nav button[data-section]');
 
 sidebarButtons.forEach(button => {

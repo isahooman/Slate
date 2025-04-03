@@ -23,10 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.api.layout.update(selectedLayout);
   });
 
-  window.api.layout.onUpdated(success => {
-    if (success) window.api.sendToMain('layout-change', layoutSelect.value);
-  });
-
   const navButtons = document.querySelectorAll('.sidebar-nav button');
   const sections = document.querySelectorAll('.settings-section');
 
