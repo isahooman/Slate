@@ -16,16 +16,9 @@ window.api.layout.onUpdated(layout => {
 
 // Output handling
 function syncOutput() {
-  const outputBoxes = {
-    'logs-output-box': document.getElementById('logs-output-box'),
-    'main-output-box': document.getElementById('main-output-box'),
-  };
-
-  Object.entries(outputBoxes).forEach(([outputId, outputBox]) => {
-    if (!outputBox) return;
-
-    // Listen for new output
+  ['logs-output-box', 'main-output-box'].forEach(outputId => {
     window.api.output.onStateChange(outputId, state => {
+      const outputBox = document.getElementById(outputId);
       if (!outputBox) return;
 
       if (state.clear) outputBox.innerHTML = '';
