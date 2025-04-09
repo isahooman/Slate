@@ -9,6 +9,7 @@ const height = 200;
  * Centers a window relative to parent
  * @param {BrowserWindow} parentWindow - Parent window to center against
  * @returns {object} The x,y position coordinates
+ * @author isahooman
  */
 function centerWindow(parentWindow) {
   let position;
@@ -46,6 +47,7 @@ function centerWindow(parentWindow) {
  * @param {BrowserWindow} parentWindow - Parent window reference
  * @param {string} message - Message to display in alert
  * @returns {BrowserWindow} The alert window instance
+ * @author isahooman
  */
 function createAlertWindow(parentWindow, message, options = {}) {
   // If alert window already exists, focus it and update message

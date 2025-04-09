@@ -17,18 +17,14 @@ function registerIpcHandlers() {
   ipcMain.on('alert:close', event => handleAlertClose(event));
 
   // Settings handlers
+  ipcMain.on('load-settings', handleLoadSettings);
   ipcMain.on('open-settings', event => {
     windowManager.createWindow('settings', event.sender);
   });
 
-  // Theme handlers
+  // UI handlers
   ipcMain.on('update-theme', handleUpdateTheme);
-
-  // Layout handlers
   ipcMain.on('layout:update', handleLayoutUpdate);
-
-  // Settings handlers
-  ipcMain.on('load-settings', handleLoadSettings);
 
   // Output handlers
   ipcMain.on('output-update-state', handleSyncOutput);

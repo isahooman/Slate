@@ -109,7 +109,6 @@ module.exports = [
       'template-tag-spacing': 'warn',
       'unicode-bom': 'error',
 
-      // JSDoc rules - more selective approach
       'jsdoc/check-access': 'warn',
       'jsdoc/check-alignment': 'warn',
       'jsdoc/check-param-names': 'warn',

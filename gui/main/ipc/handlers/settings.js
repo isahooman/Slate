@@ -2,10 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow } = require('electron');
 
-/**
- * Manages gui settings saving and loading
- * @class SettingsManager
- */
 class SettingsManager {
   constructor() {
     this.settingsPath = path.join(app.getPath('userData'), 'Data', 'settings.json');
@@ -118,6 +114,7 @@ class SettingsManager {
   /**
    * Loads settings and sends back to the renderer process
    * @param {Electron.IpcMainEvent} event - The IPC event
+   * @author isahooman
    */
   handleLoadSettings(event) {
     const settings = this.loadSettings();

@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  /* Remove fixed height calculation */
-  min-height: 0; /* Add this to allow proper flexing */
+  min-height: 0;
   margin: 10px 0;
   background: var(--bg-secondary);
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
   overflow: hidden;
+  margin-right: 10px;
 }
 
 .divider {
@@ -42,7 +42,7 @@
 .output-divider {
   border: 0;
   border-top: 1px solid #444444;
-  margin: 5px 0; /* Changed from 8px */
+  margin: 5px 0;
 }
 
 .search-container {
@@ -135,6 +135,7 @@
   border-radius: 4px;
   background: #cf4141;
   cursor: pointer;
+  margin-right: 10px;
 }
 
 .clear-logs-btn:hover {

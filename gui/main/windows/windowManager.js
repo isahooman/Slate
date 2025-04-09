@@ -2,10 +2,6 @@ const { BrowserWindow } = require('electron');
 const { createMainWindow } = require('./createMain');
 const { createSettingsWindow } = require('./createSettings');
 const { createAlertWindow } = require('./createAlert');
-
-/**
- * Manages windows
- */
 class WindowManager {
   constructor() {
     // Store window instance with IDs
@@ -16,6 +12,7 @@ class WindowManager {
    * Retrieve window instance
    * @param {string} windowId - window id
    * @returns {BrowserWindow|undefined} the window instance
+   * @author isahooman
    */
   getWindow(windowId) {
     return this.windows.get(windowId);
@@ -25,6 +22,7 @@ class WindowManager {
    * Checks if a window exists
    * @param {string} windowId - window id
    * @returns {boolean} true if the window exists
+   * @author isahooman
    */
   windowExists(windowId) {
     const window = this.getWindow(windowId);
@@ -35,6 +33,7 @@ class WindowManager {
    * Focuses a window and restores it if minimized
    * @param {string} windowId - window id
    * @returns {boolean} true if focused
+   * @author isahooman
    */
   focusWindow(windowId) {
     const window = this.getWindow(windowId);
@@ -52,6 +51,7 @@ class WindowManager {
    * @param {BrowserWindow|null} parentWebContents - parent window
    * @param {object} options - additional options
    * @returns {BrowserWindow} the window instance
+   * @author isahooman
    */
   createWindow(type, parentWebContents = null, options = {}) {
     if (this.windowExists(type)) return this.focusWindow(type);
@@ -91,6 +91,7 @@ class WindowManager {
    * Set up window event handlers
    * @param {string} windowId - window ID
    * @param {BrowserWindow} window - window instance
+   * @author isahooman
    */
   setupWindow(windowId, window = false) {
     this.windows.set(windowId, window);
@@ -113,10 +114,11 @@ class WindowManager {
   /**
    * Closes a specific window
    * @param {string} windowId - ID of target window
+   * @author isahooman
    */
   closeWindow(windowId) {
     const window = this.getWindow(windowId);
-    if (this.windowExists(windowId)) {
+    if (window && !window.isDestroyed()) {
       if (windowId === 'main') this.closeAllWindows();
 
       window.close();
@@ -126,6 +128,7 @@ class WindowManager {
 
   /**
    * Closes all windows
+   * @author isahooman
    */
   closeAllWindows() {
     for (const [windowId] of this.windows) this.closeWindow(windowId);
@@ -135,6 +138,7 @@ class WindowManager {
    * Gets the current state of a window
    * @param {string} windowId - Window ID
    * @returns {object|null} Window state
+   * @author isahooman
    */
   getWindowState(windowId) {
     const window = this.windows.get(windowId);

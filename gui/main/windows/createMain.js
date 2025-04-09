@@ -7,6 +7,7 @@ let mainWindow = null;
  * Creates the main application window
  * @param {object} options - Additional window options
  * @returns {BrowserWindow} The main window instance
+ * @author isahooman
  */
 function createMainWindow(options = {}) {
   // Return existing window if it's already created

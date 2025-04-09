@@ -1,7 +1,4 @@
 const WindowControls = {
-  /**
-   * Initialize all window controls
-   */
   init() {
     this.setupMinimizeButton();
     this.setupMaximizeButton();
@@ -11,7 +8,9 @@ const WindowControls = {
   },
 
   /**
-   * minimize button
+   * Sets up the minimize button click handler
+   * @returns {void}
+   * @author isahooman
    */
   setupMinimizeButton() {
     document.querySelector('.minimize-button')?.addEventListener('click', () => {
@@ -20,7 +19,9 @@ const WindowControls = {
   },
 
   /**
-   * Maximize/restore button
+   * Sets up the maximize/restore button click handler
+   * @returns {void}
+   * @author isahooman
    */
   setupMaximizeButton() {
     document.querySelector('.maximize-button')?.addEventListener('click', () => {
@@ -29,7 +30,9 @@ const WindowControls = {
   },
 
   /**
-   * Close button
+   * Sets up the close button click handler
+   * @returns {void}
+   * @author isahooman
    */
   setupCloseButton() {
     document.querySelector('.close-button')?.addEventListener('click', () => {
@@ -38,7 +41,9 @@ const WindowControls = {
   },
 
   /**
-   * Pin button
+   * Sets up the pin button click handler and state change listener
+   * @returns {void}
+   * @author isahooman
    */
   setupPinButton() {
     const pinButton = document.querySelector('.pin-button');
@@ -58,8 +63,10 @@ const WindowControls = {
   },
 
   /**
-   * Update pin button state
-   * @param {boolean} isPinned - Whether window is pinned
+   * Updates the pin button's appearance based on the current pin state
+   * @param {boolean} isPinned - Whether window is currently pinned
+   * @returns {void}
+   * @author isahooman
    */
   updatePinState(isPinned) {
     const pinIcon = document.querySelector('.pin-button img');
@@ -70,7 +77,9 @@ const WindowControls = {
   },
 
   /**
-   * Debug mode toggle (Ctrl+D)
+   * Sets up the debug mode shortcut (Ctrl+D)
+   * @returns {void}
+   * @author isahooman
    */
   setupDebugToggle() {
     document.addEventListener('keydown', event => {
@@ -93,7 +102,7 @@ const WindowControls = {
   },
 };
 
-// Self-initialize when ready
+// Initialize when ready
 document.addEventListener('DOMContentLoaded', () => {
   WindowControls.init();
 });

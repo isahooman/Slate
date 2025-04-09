@@ -11,6 +11,12 @@ class WindowControlsManager {
     this.windowManager = new WindowManager();
   }
 
+  /**
+   * Handle window control commands
+   * @param {Electron.IpcMainEvent} event - The IPC event
+   * @param {string} command - The command to execute
+   * @author isahooman
+   */
   handleControl(event, command) {
     const window = BrowserWindow.fromWebContents(event.sender);
     const actions = {
@@ -22,12 +28,24 @@ class WindowControlsManager {
     if (actions[command]) actions[command]();
   }
 
+  /**
+   * Toggle window maximize state
+   * @param {Electron.BrowserWindow} window - The target window
+   * @returns {object} Object containing operation and resulting state
+   * @author isahooman
+   */
   handleMaximize(window) {
     const isMaximized = window.isMaximized();
     if (isMaximized) window.unmaximize(); else window.maximize();
     return { type: 'maximize', state: isMaximized ? 'unmaximized' : 'maximized' };
   }
 
+  /**
+   * Toggle window pin state (always on top)
+   * @param {Electron.IpcMainEvent} event - The IPC event
+   * @returns {object} Object containing pin state and icon path
+   * @author isahooman
+   */
   handlePin(event) {
     const activeWindow = BrowserWindow.fromWebContents(event.sender);
     const newPinState = !activeWindow.isAlwaysOnTop();
@@ -47,6 +65,12 @@ class WindowControlsManager {
     };
   }
 
+  /**
+   * Get current window state
+   * @param {Electron.IpcMainEvent} event - The IPC event
+   * @returns {object} Object containing pin state and icon path
+   * @author isahooman
+   */
   handleGetState(event) {
     const window = BrowserWindow.fromWebContents(event.sender);
     return {
@@ -61,5 +85,5 @@ const windowManager = new WindowControlsManager();
 module.exports = {
   handleWindowControls: (event, command) => windowManager.handleControl(event, command),
   handleWindowPin: event => windowManager.handlePin(event),
-  handleGetState: event => windowManager.getState(event),
+  handleGetState: event => windowManager.handleGetState(event),
 };

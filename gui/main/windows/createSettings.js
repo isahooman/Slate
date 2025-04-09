@@ -9,6 +9,7 @@ const height = 500;
  * Centers a window relative to parent or on screen
  * @param {BrowserWindow} parentWindow - Parent window to center against
  * @returns {object} The x,y position coordinates
+ * @author isahooman
  */
 function centerWindow(parentWindow) {
   let position;
@@ -46,6 +47,7 @@ function centerWindow(parentWindow) {
  * @param {BrowserWindow} parentWindow - Parent window reference
  * @param {object} options - Additional window options
  * @returns {BrowserWindow} The settings window instance
+ * @author isahooman
  */
 function createSettingsWindow(parentWindow, options = {}) {
   // Return existing window if it's already created

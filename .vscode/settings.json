@@ -11,5 +11,13 @@
     "ol-prefix": false
   },
   "eslint.debug": true,
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "hide-files.files": []
 }
