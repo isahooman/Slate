@@ -11,7 +11,7 @@
   padding: 15px 0;
   z-index: 100;
   transition: left 0.1s ease-in-out;
-  height: calc(100vh - var(--titlebar-height) - 40px);
+  height: calc(100vh - var(--titlebar-height) - 30px);
 }
 
 :root[layout="expanded"] .sidebar {
@@ -52,15 +52,43 @@
   font-weight: 500;
 }
 
+/* Config Navigation */
+.sidebar-nav .nav-divider {
+  height: 1px;
+  background-color: var(--window-tertiary);
+  margin: 10px 0px;
+  width: var(--sidebar-width);
+  margin-top: 5px;
+}
+
+.sidebar-nav .nav-section-title {
+  padding: 8px 10px 4px;
+  font-size: 12px;
+  color: #8dbcff;
+  font-weight: 500;
+}
+
+.sidebar-nav .config-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav .config-buttons button {
+  font-size: 13px;
+  padding: 6px 16px;
+}
+
 .sidebar-nav .settings-nav-btn {
   margin-top: auto;
+  border-top: 1px solid var(--window-tertiary);
+  padding-top: 6px;
 }
 
 /* Bot Controls */
 .bot-controls {
   padding: 0 12px 10px;
   border-bottom: 1px solid var(--window-tertiary);
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .control-buttons {

@@ -35,12 +35,29 @@
         </div>
       </div>
       <nav class="sidebar-nav">
+        <!-- Main nav -->
+        <div class="nav-section-title nav-section-title-sm">Dashboard</div>
         <button class="home-nav-btn active" data-section="home">
           Home
         </button>
         <button class="logs-nav-btn" data-section="logs">
           Logs
         </button>
+
+        <!-- Config nav -->
+        <div class="nav-divider"></div>
+        <div class="nav-section-title">Config</div>
+        <div class="config-buttons">
+          <button class="config-nav-btn" data-section="config-general">General</button>
+          <button class="config-nav-btn" data-section="config-status">Status</button>
+          <button class="config-nav-btn" data-section="config-logging">Logging</button>
+          <button class="config-nav-btn" data-section="config-blacklist">Blacklist</button>
+          <button class="config-nav-btn" data-section="config-commands">Commands</button>
+          <button class="config-nav-btn" data-section="config-events">Events</button>
+          <button class="config-nav-btn" data-section="config-intents">Intents</button>
+        </div>
+
+        <!-- Settings nav button-->
         <button class="settings-nav-btn">
           Settings
         </button>
@@ -121,8 +138,170 @@
       </div>
     </section>
 
+    <!-- Config General Page -->
+    <section id="config-general" class="section">
+      <div class="content">
+        <div class="config-container">
+          <!-- Core Settings -->
+          <div class="config-group" id="core">
+            <h3 class="group-title">Core Settings</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-token">Bot Token</label>
+                <div class="help-icon" data-help="Your Discord bot token. Keep this secret!">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="password" id="config-token" class="config-input input-string" placeholder="Enter your Discord bot token">
+                <button class="toggle-visibility" data-target="config-token">
+                  <img src="../../assets/show.svg" alt="Toggle Visibility">
+                </button>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-clientId">Client ID</label>
+                <div class="help-icon" data-help="Your Discord application client ID">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-clientId" class="config-input input-string" placeholder="Enter your application client ID">
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-prefix">Command Prefix</label>
+                <div class="help-icon" data-help="The prefix for text commands (e.g. !)">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-prefix" class="config-input input-string" placeholder="Enter command prefix (e.g. !)">
+            </div>
+          </div>
+
+          <!-- Ownership Settings -->
+          <div class="config-group" id="ownership">
+            <h3 class="group-title">Ownership</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-ownerId">Owner IDs</label>
+                <div class="help-icon" data-help="User IDs who will have owner permissions">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-ownerId" class="config-input input-array" placeholder="Enter owner IDs separated by commas">
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-guildId">Guild ID</label>
+                <div class="help-icon" data-help="Your home/development server ID">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-guildId" class="config-input input-string" placeholder="Enter your home server ID">
+            </div>
+          </div>
+
+          <!-- Slash Commands Settings -->
+          <div class="config-group" id="slashCommands">
+            <h3 class="group-title">Slash Commands</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-deployOnStart">Deploy on Start</label>
+                <div class="help-icon" data-help="Whether slash commands should be deployed when the bot starts">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-boolean-wrapper">
+                <input type="checkbox" id="config-deployOnStart" class="config-input input-boolean">
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-undeployOnExit">Undeploy on Exit</label>
+                <div class="help-icon" data-help="Whether slash commands should be undeployed when the bot shuts down">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-boolean-wrapper">
+                <input type="checkbox" id="config-undeployOnExit" class="config-input input-boolean">
+              </div>
+            </div>
+          </div>
+
+          <!-- Ready Notifications Settings -->
+          <div class="config-group" id="readyNotifications">
+            <h3 class="group-title">Ready Notifications</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-notifyOnReady">Notify on Ready</label>
+                <div class="help-icon" data-help="Whether to send a message when the bot comes online">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-boolean-wrapper">
+                <input type="checkbox" id="config-notifyOnReady" class="config-input input-boolean">
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-readyChannels">Ready Channels</label>
+                <div class="help-icon" data-help="Channel IDs to notify when the bot is ready">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-readyChannels" class="config-input input-array" placeholder="Enter channel IDs separated by commas">
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-readyUsers">Ready Users</label>
+                <div class="help-icon" data-help="User IDs to notify when the bot is ready">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-readyUsers" class="config-input input-array" placeholder="Enter user IDs separated by commas">
+            </div>
+          </div>
+
+          <!-- Error Notifications Settings -->
+          <div class="config-group" id="errorNotifications">
+            <h3 class="group-title">Error Notifications</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-reportErrors">Report Errors</label>
+                <div class="help-icon" data-help="Whether to send reports when errors occur">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-boolean-wrapper">
+                <input type="checkbox" id="config-reportErrors" class="config-input input-boolean">
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-errorChannels">Error Channels</label>
+                <div class="help-icon" data-help="Channel IDs to send error reports to">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-errorChannels" class="config-input input-array" placeholder="Enter channel IDs separated by commas">
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-errorUsers">Error Users</label>
+                <div class="help-icon" data-help="User IDs to send error reports to">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <input type="text" id="config-errorUsers" class="config-input input-array" placeholder="Enter user IDs separated by commas">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
   <script src="../js/modules/windowControls.js"></script>
   <script src="../js/renderer.js"></script>
+  <script src="../js/modules/config.js"></script>
 </body>
 </html>

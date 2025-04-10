@@ -4,6 +4,7 @@
 @import './central/titlebar.css';
 @import './central/sidebar.css';
 @import './modules/monitor.css';
+@import './modules/config.css';
 
 :root[layout="expanded"] {
   --content-padding: 20px;
@@ -49,6 +50,7 @@ body {
 .section.active {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .logs-view .controls {
@@ -107,6 +109,7 @@ body {
 .monitor-container {
   flex: 0 0 auto;
   margin-bottom: 5px;
+  margin-right: 10px;
 }
 
 .content {
