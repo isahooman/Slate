@@ -10,7 +10,7 @@
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
   overflow: hidden;
-  width: 95%;
+  width: calc(100% - 15px);
 }
 
 .group-title {
