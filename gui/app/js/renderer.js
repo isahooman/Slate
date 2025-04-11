@@ -114,7 +114,7 @@ sidebarButtons.forEach(button => {
       if (section.id === targetSection) section.classList.add('active');
     });
 
-    document.body.className = `${targetSection}-view${debugMode ? ' debug' : ''}`;
+    document.body.className = `${targetSection}-view${window.slateDebugMode ? ' debug' : ''}`;
   });
 });
 
