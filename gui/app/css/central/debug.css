@@ -38,26 +38,3 @@
 .debug .gauge-fill { outline: 1px solid #ffaa00; }
 .debug .gauge-cover { outline: 1px solid #aa00ff; }
 .debug .gauge { outline: 1px solid red; }
-
-/* hover info */
-.debug *:hover::after {
-  content: attr(class);
-  position: absolute;
-  background-color: #000;
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 12px;
-  z-index: 9999;
-  white-space: nowrap;
-  pointer-events: none;
-  transform: translateY(-100%);
-}
-
-.debug *[id]:hover::after {
-  content: attr(id);
-}
-
-.debug *[class][id]:hover::after {
-  content: attr(class) ' #' attr(id);
-}
