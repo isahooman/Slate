@@ -6,20 +6,25 @@
 
 :root {
   /* Generic Background Colors */
-  --bg-primary: #212121;
-  --bg-secondary: #2c2c2c;
-  --bg-tertiary: #333333;
+  --bg-primary: #161616;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #252525;
 
   /* Window/Navigation Elements */
-  --window-primary: #333333;
-  --window-secondary: #2c2c2c;
-  --window-tertiary: #787878;
-
+  --window-primary: #252525;
+  --window-secondary: #1e1e1e;
+  --window-tertiary: #666666;
+  
+  /* Config Elements */
+  --config-primary: #2a2a2a;
+  --config-secondary: #303030;
+  --config-tertiary: #535353;
+  
   /* Text Colors */
   --text-color: white;
-
+  
   /* Generic Button States */
-  --button-bg: #424242;
-  --button-hover: #555555;
-  --button-border: #555555;
+  --button-bg: #363636;
+  --button-hover: #474747;
+  --button-border: #474747;
 }

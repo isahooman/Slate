@@ -148,7 +148,7 @@
             <div class="setting-item">
               <div class="help-label">
                 <label for="config-token">Bot Token</label>
-                <div class="help-icon" data-help="Your Discord bot token. Keep this secret!">
+                <div class="help-icon" data-help="Your Discord bot token.">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
@@ -166,7 +166,12 @@
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
-              <input type="text" id="config-clientId" class="config-input input-string" placeholder="Enter your application client ID">
+              <div class="input-wrapper">
+                <input type="password" id="config-clientId" class="config-input input-string" placeholder="Enter your application client ID">
+                <button class="toggle-visibility" data-target="config-clientId">
+                  <img src="../../assets/show.svg" alt="Toggle Visibility">
+                </button>
+              </div>
             </div>
             <div class="setting-item">
               <div class="help-label">
@@ -205,26 +210,32 @@
           <!-- Slash Commands Settings -->
           <div class="config-group" id="slashCommands">
             <h3 class="group-title">Slash Commands</h3>
-            <div class="setting-item">
+            <div class="setting-item setting-item-boolean">
               <div class="help-label">
                 <label for="config-deployOnStart">Deploy on Start</label>
                 <div class="help-icon" data-help="Whether slash commands should be deployed when the bot starts">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
-              </div>
+              </div>  
               <div class="input-boolean-wrapper">
-                <input type="checkbox" id="config-deployOnStart" class="config-input input-boolean">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="config-deployOnStart" class="config-input input-boolean">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
-            <div class="setting-item">
+            <div class="setting-item setting-item-boolean">
               <div class="help-label">
                 <label for="config-undeployOnExit">Undeploy on Exit</label>
-                <div class="help-icon" data-help="Whether slash commands should be undeployed when the bot shuts down">
+                <div class="help-icon" data-help="(Not Recommended!) Whether slash commands should be cleared when the bot shuts down.">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
               <div class="input-boolean-wrapper">
-                <input type="checkbox" id="config-undeployOnExit" class="config-input input-boolean">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="config-undeployOnExit" class="config-input input-boolean">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
           </div>
@@ -232,7 +243,7 @@
           <!-- Ready Notifications Settings -->
           <div class="config-group" id="readyNotifications">
             <h3 class="group-title">Ready Notifications</h3>
-            <div class="setting-item">
+            <div class="setting-item setting-item-boolean">
               <div class="help-label">
                 <label for="config-notifyOnReady">Notify on Ready</label>
                 <div class="help-icon" data-help="Whether to send a message when the bot comes online">
@@ -240,13 +251,16 @@
                 </div>
               </div>
               <div class="input-boolean-wrapper">
-                <input type="checkbox" id="config-notifyOnReady" class="config-input input-boolean">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="config-notifyOnReady" class="config-input input-boolean">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
             <div class="setting-item">
               <div class="help-label">
                 <label for="config-readyChannels">Ready Channels</label>
-                <div class="help-icon" data-help="Channel IDs to notify when the bot is ready">
+                <div class="help-icon" data-help="Channel IDs within the dev server to notify when the bot is ready">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
@@ -266,7 +280,7 @@
           <!-- Error Notifications Settings -->
           <div class="config-group" id="errorNotifications">
             <h3 class="group-title">Error Notifications</h3>
-            <div class="setting-item">
+            <div class="setting-item setting-item-boolean">
               <div class="help-label">
                 <label for="config-reportErrors">Report Errors</label>
                 <div class="help-icon" data-help="Whether to send reports when errors occur">
@@ -274,13 +288,16 @@
                 </div>
               </div>
               <div class="input-boolean-wrapper">
-                <input type="checkbox" id="config-reportErrors" class="config-input input-boolean">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="config-reportErrors" class="config-input input-boolean">
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
             <div class="setting-item">
               <div class="help-label">
                 <label for="config-errorChannels">Error Channels</label>
-                <div class="help-icon" data-help="Channel IDs to send error reports to">
+                <div class="help-icon" data-help="Channel IDs within the dev server to send error reports to">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
