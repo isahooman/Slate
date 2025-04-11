@@ -23,7 +23,7 @@
     <div class="sidebar">
       <div class="bot-controls">
         <div class="control-buttons">
-          <button id="startBtn" class="start-btn" disabled>
+          <button id="startBtn" class="start-btn">
             <span class="btn-text">Start</span>
           </button>
           <button id="stopBtn" class="stop-btn" style="display: none;">
@@ -189,21 +189,29 @@
             <h3 class="group-title">Ownership</h3>
             <div class="setting-item">
               <div class="help-label">
-                <label for="config-ownerId">Owner IDs</label>
-                <div class="help-icon" data-help="User IDs who will have owner permissions">
-                  <img src="../../assets/help.svg" alt="Help">
-                </div>
-              </div>
-              <input type="text" id="config-ownerId" class="config-input input-array" placeholder="Enter owner IDs separated by commas">
-            </div>
-            <div class="setting-item">
-              <div class="help-label">
                 <label for="config-guildId">Guild ID</label>
                 <div class="help-icon" data-help="Your home/development server ID">
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
               <input type="text" id="config-guildId" class="config-input input-string" placeholder="Enter your home server ID">
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-ownerId">Owner IDs</label>
+                <div class="help-icon" data-help="User IDs who will have owner permissions">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-ownerId" class="config-input input-array" placeholder="Add Owner User ID">
+                <button class="toggle-array-container" data-target="config-ownerId-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-ownerId-container" class="array-container">
+                <!-- Array display -->
+              </div>
             </div>
           </div>
 
@@ -264,7 +272,15 @@
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
-              <input type="text" id="config-readyChannels" class="config-input input-array" placeholder="Enter channel IDs separated by commas">
+              <div class="input-wrapper">
+                <input type="text" id="config-readyChannels" class="config-input input-array" placeholder="Add channel ID">
+                <button class="toggle-array-container" data-target="config-readyChannels-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-readyChannels-container" class="array-container">
+                <!-- Array display -->
+              </div>
             </div>
             <div class="setting-item">
               <div class="help-label">
@@ -273,7 +289,15 @@
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
-              <input type="text" id="config-readyUsers" class="config-input input-array" placeholder="Enter user IDs separated by commas">
+              <div class="input-wrapper">
+                <input type="text" id="config-readyUsers" class="config-input input-array" placeholder="Add user ID">
+                <button class="toggle-array-container" data-target="config-readyUsers-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-readyUsers-container" class="array-container">
+                <!-- Array display -->
+              </div>
             </div>
           </div>
 
@@ -301,7 +325,15 @@
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
-              <input type="text" id="config-errorChannels" class="config-input input-array" placeholder="Enter channel IDs separated by commas">
+              <div class="input-wrapper">
+                <input type="text" id="config-errorChannels" class="config-input input-array" placeholder="Add channel ID">
+                <button class="toggle-array-container" data-target="config-errorChannels-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-errorChannels-container" class="array-container">
+                <!-- Array display -->
+              </div>
             </div>
             <div class="setting-item">
               <div class="help-label">
@@ -310,7 +342,15 @@
                   <img src="../../assets/help.svg" alt="Help">
                 </div>
               </div>
-              <input type="text" id="config-errorUsers" class="config-input input-array" placeholder="Enter user IDs separated by commas">
+              <div class="input-wrapper">
+                <input type="text" id="config-errorUsers" class="config-input input-array" placeholder="Add user ID">
+                <button class="toggle-array-container" data-target="config-errorUsers-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-errorUsers-container" class="array-container">
+                <!-- Array display -->
+              </div>
             </div>
           </div>
         </div>
