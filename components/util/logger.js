@@ -28,21 +28,36 @@ const levels = {
 };
 
 /**
- * Checks to see if logging levels are enabled
- * @param {number} level Logging Level
- * @returns {boolean} Active or not
+ * Checks to see if logging levels exist and are enabled.
+ * @param {string} level Logging Level name (e.g., 'INFO', 'WARN')
+ * @returns {boolean} True if the level is enabled, false otherwise.
  * @author isahooman
  */
 function isLevelEnabled(level) {
+  let configUpdated = false;
+
+  // Check if the toggle setting exists, default to true if not
   if (!Object.prototype.hasOwnProperty.call(logging.toggle, level)) {
-    // If the level doesn't exist within the config, enable it by default
     logging.toggle[level] = true;
-    try {
-      fs.writeFileSync(path.join(__dirname, '../config/logging.json5'), JSON.stringify(logging, null, 2), 'utf8');
-    } catch (err) {
-      process.stderr.write(`Error writing to logging config file: ${err}\n`);
-    }
+    configUpdated = true;
+    process.stdout.write(chalk.yellow(`Log level [${level}] toggle missing from logging.json5, defaulting to enabled.\n`));
   }
+
+  // Check if the color setting exists, default to white if not
+  if (!Object.prototype.hasOwnProperty.call(logging.colors, level)) {
+    logging.colors[level] = '#FFFFFF';
+    configUpdated = true;
+    process.stdout.write(chalk.yellow(`Log level [${level}] color missing from logging.json5, defaulting to #FFFFFF.\n`));
+  }
+
+  // If any defaults were added, update the config file.
+  if (configUpdated) try {
+    writeJSON5(path.join(__dirname, '../config/logging.json5'), logging);
+  } catch {
+    process.stderr.write(`Failed to update logging.json5 with default settings for level [${level}].\n`);
+  }
+
+  // Return the toggle status (which is now guaranteed to exist)
   return logging.toggle[level];
 }
 
