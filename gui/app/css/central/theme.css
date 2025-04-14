@@ -28,3 +28,14 @@
   --button-hover: #474747;
   --button-border: #474747;
 }
+
+@font-face {
+  font-family: "Roboto Bold";
+  src: url("../../../assets/font/Roboto-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+body {
+  font-family: "Roboto Bold", Arial, sans-serif;
+}

@@ -1,23 +1,25 @@
+/* ========== LAyout ========== */
 .monitor-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px;
   height: 100px;
-  margin: 10px 0;
-  background: var(--bg-secondary);
+  padding: 30px;
+  margin-bottom: 5px;
+  overflow: hidden;
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
-  overflow: hidden;
+  background: var(--bg-secondary);
 }
 
+/* ========== Guages ========== */
 .monitor-gauge {
   display: flex;
+  flex: 0 1 140px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  flex: 0 1 140px;
   min-width: 100px;
   max-width: 180px;
   height: 100%;
@@ -25,12 +27,12 @@
 }
 
 .gauge-title {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  text-align: center;
   width: 100%;
   margin: 0;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
 }
 
 .gauge {
@@ -46,9 +48,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   background: #414141;
   border: min(12px, 6%) solid var(--window-tertiary);
+  border-radius: 50%;
 }
 
 .gauge-fill {
@@ -65,14 +67,14 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 70%;
   height: 70%;
   background: var(--window-primary);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--text-primary);
   font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: bold;
-  color: var(--text-primary);
 }

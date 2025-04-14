@@ -356,6 +356,163 @@
         </div>
       </div>
     </section>
+
+    <!-- Status Config Page -->
+    <section id="config-status" class="section">
+      <div class="content">
+        <div class="config-container">
+          <!-- Status Settings -->
+          <div class="config-group" id="botStatus">
+            <h3 class="group-title">Bot Activity Status</h3>
+            
+            <!-- Playing Status -->
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-status-playing">Playing Status</label>
+                <div class="help-icon" data-help="Status shown as 'Playing'">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-status-playing" class="config-input input-array" placeholder="Add playing status">
+                <button class="toggle-array-container" data-target="config-status-playing-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-status-playing-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+            
+            <!-- Streaming Status -->
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-status-streaming">Streaming Status</label>
+                <div class="help-icon" data-help="Status shown as 'Streaming'">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-status-streaming" class="config-input input-array" placeholder="Add streaming status">
+                <button class="toggle-array-container" data-target="config-status-streaming-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-status-streaming-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+            
+            <!-- Listening Status -->
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-status-listening">Listening Status</label>
+                <div class="help-icon" data-help="Status shown as 'Listening to'">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-status-listening" class="config-input input-array" placeholder="Add listening status">
+                <button class="toggle-array-container" data-target="config-status-listening-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-status-listening-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+            
+            <!-- Watching Status -->
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-status-watching">Watching Status</label>
+                <div class="help-icon" data-help="Status shown as 'Watching...'">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-status-watching" class="config-input input-array" placeholder="Add watching status">
+                <button class="toggle-array-container" data-target="config-status-watching-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-status-watching-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blacklist Config Page -->
+    <section id="config-blacklist" class="section">
+      <div class="content">
+        <div class="config-container">
+          <!-- Blacklisted Users -->
+          <div class="config-group" id="blacklist-users">
+            <h3 class="group-title">Blacklisted Users</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-blacklist-users">Users</label>
+                <div class="help-icon" data-help="Users the bot will ignore.">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-blacklist-users" class="config-input input-array" placeholder="Add User ID to blacklist">
+                <button class="toggle-array-container" data-target="config-blacklist-users-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-blacklist-users-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Blacklisted Servers -->
+          <div class="config-group" id="blacklist-servers">
+            <h3 class="group-title">Blacklisted Servers</h3>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-blacklist-servers-leave">Servers to leave</label>
+                <div class="help-icon" data-help="Servers the bot will automatically leave.">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-blacklist-servers-leave" class="config-input input-array" placeholder="Add Server ID to leave list">
+                <button class="toggle-array-container" data-target="config-blacklist-servers-leave-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-blacklist-servers-leave-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="help-label">
+                <label for="config-blacklist-servers-ignore">Servers to ignore</label>
+                <div class="help-icon" data-help="Servers the bot will ignore all inputs from.">
+                  <img src="../../assets/help.svg" alt="Help">
+                </div>
+              </div>
+              <div class="input-wrapper">
+                <input type="text" id="config-blacklist-servers-ignore" class="config-input input-array" placeholder="Add Server ID to ignore list">
+                <button class="toggle-array-container" data-target="config-blacklist-servers-ignore-container">
+                  <img src="../../assets/up.svg" alt="Collapse">
+                </button>
+              </div>
+              <div id="config-blacklist-servers-ignore-container" class="array-container">
+                <!-- Array display -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
   <script src="../js/modules/windowControls.js"></script>
   <script src="../js/renderer.js"></script>

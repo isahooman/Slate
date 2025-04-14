@@ -92,26 +92,6 @@ class SettingsManager {
   }
 
   /**
-   * Updates the layout and notifies all windows
-   * @param {Electron.IpcMainEvent} event - The IPC event
-   * @param {string} layout - The new layout
-   * @returns {boolean} Whether or not the update was successful
-   * @author isahooman
-   */
-  handleUpdateLayout(event, layout) {
-    const settings = this.loadSettings();
-    settings.layout = layout;
-    const success = this.saveSettings(settings);
-
-    // Notify all windows about the layout change
-    BrowserWindow.getAllWindows().forEach(win => {
-      win.webContents.send('layout-updated', layout);
-    });
-
-    return success;
-  }
-
-  /**
    * Loads settings and sends back to the renderer process
    * @param {Electron.IpcMainEvent} event - The IPC event
    * @author isahooman

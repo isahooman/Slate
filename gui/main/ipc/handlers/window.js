@@ -3,7 +3,6 @@ const WindowManager = require('../../windows/windowManager');
 
 class WindowControlsManager {
   constructor() {
-    this.windowState = new Map();
     this.pinIconPath = {
       pinned: '../../assets/pin_off.svg',
       unpinned: '../../assets/pin.svg',

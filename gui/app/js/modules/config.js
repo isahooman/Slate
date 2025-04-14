@@ -142,6 +142,8 @@ const Config = {
           placeholderText = 'No channels have been added';
         } else if (labelText.includes('User')) {
           placeholderText = 'No users have been added';
+        } else if (labelText.includes('Server')) {
+          placeholderText = 'No servers have been added';
         } else if (labelText.includes('Role')) {
           placeholderText = 'No roles have been added';
         } else if (labelText.includes('Command')) {
@@ -150,6 +152,8 @@ const Config = {
           placeholderText = 'No prefixes have been added';
         } else if (labelText.includes('Event')) {
           placeholderText = 'No events have been added';
+        } else if (labelText.includes('Status')) {
+          placeholderText = 'No status has been added';
         } else {
           const type = labelText.toLowerCase().replace(/s\s*$/, '');
           placeholderText = `No ${type}s have been added`;
@@ -189,7 +193,7 @@ const Config = {
    */
   setupTooltips() {
     const tooltip = document.createElement('div');
-    tooltip.className = 'custom-tooltip';
+    tooltip.className = 'tooltip';
     document.body.appendChild(tooltip);
 
     // Hover event

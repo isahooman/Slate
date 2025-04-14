@@ -95,6 +95,10 @@ const WindowControls = {
    */
   toggleDebugMode() {
     this.debugActive = !this.debugActive;
+
+    // Store debug state
+    window.slateDebugMode = this.debugActive;
+
     document.body.classList.toggle('debug', this.debugActive);
 
     // Preserve current view class
@@ -122,7 +126,7 @@ const WindowControls = {
     this.debugOverlay.className = 'debug-overlay';
     this.debugOverlay.style = `
       position: fixed;
-      top: 10px;
+      top: calc(var(--titlebar-height) + 25px);
       right: 10px;
       background-color: rgba(0, 0, 0, 0.85);
       color: #fff;
@@ -133,7 +137,7 @@ const WindowControls = {
       max-width: 400px;
       overflow: auto;
       font-size: 12px;
-      font-family: monospace;
+      font-family: "Roboto Bold", Arial, sans-serif;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       pointer-events: none;
     `;

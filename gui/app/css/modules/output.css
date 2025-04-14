@@ -1,22 +1,29 @@
+/* ========== Layout ========== */
 .output-container {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
-  margin: 10px 0;
-  background: var(--bg-secondary);
+  margin-top: 10px;
+  overflow: hidden;
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
-  overflow: hidden;
-  margin-right: 10px;
+  background: var(--bg-secondary);
 }
 
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ========== Output ========== */
 .divider {
   height: 1px;
-  background: var(--button-border);
   margin: 5px 0;
   border: none;
   border-radius: 50%;
+  background: var(--button-border);
 }
 
 .output-group {
@@ -27,12 +34,11 @@
   padding: 4px 8px;
   margin: 2px 0;
   color: var(--text-color);
-  font-family: monospace;
 }
 
 .output-timestamp {
-  color: #888888;
   margin-right: 8px;
+  color: #888888;
 }
 
 .output-error {
@@ -40,48 +46,49 @@
 }
 
 .output-divider {
+  margin: 5px 0;
   border: 0;
   border-top: 1px solid #444444;
-  margin: 5px 0;
 }
 
+/* ========== Search ========== */
 .search-container {
   position: relative;
   display: flex;
   flex: 1;
-  gap: 5px;
   align-items: center;
 }
 
 .search-input {
   flex: 1;
+  width: 100%;
   height: 32px;
   padding: 0 10px 0 42px;
   border: 1px solid var(--window-tertiary);
   border-radius: 4px;
   background: var(--bg-tertiary);
   color: var(--text-color);
-  font-size: 13px;
-  width: 100%;
+  font-size: 15px;
 }
 
+/* ========== Filter ========== */
 .filter-btn {
   position: absolute;
+  left: 5px;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 5px;
   width: 32px;
   height: 32px;
   border: none;
   background: transparent;
   cursor: pointer;
-  z-index: 1;
 }
 
 .filter-btn:hover {
-  background: var(--bg-tertiary);
   border-radius: 4px;
+  background: var(--bg-tertiary);
 }
 
 .filter-btn img {
@@ -95,11 +102,11 @@
   position: absolute;
   top: calc(100% + 5px);
   left: 0;
+  z-index: 1000;
   min-width: 180px;
-  background: var(--bg-secondary);
   border: 1px solid var(--window-tertiary);
   border-radius: 4px;
-  z-index: 1000;
+  background: var(--bg-secondary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -109,21 +116,15 @@
 
 .filter-option {
   padding: 8px 16px;
-  cursor: pointer;
   color: var(--text-color);
+  cursor: pointer;
 }
 
 .filter-option:hover {
   background: var(--bg-tertiary);
 }
 
-.controls {
-  display: flex;
-  gap: 5px;
-  padding: 5px 0;
-  align-items: center;
-}
-
+/* ========== Clear button ========== */
 .clear-logs-btn {
   display: flex;
   align-items: center;
@@ -135,7 +136,6 @@
   border-radius: 4px;
   background: #cf4141;
   cursor: pointer;
-  margin-right: 10px;
 }
 
 .clear-logs-btn:hover {

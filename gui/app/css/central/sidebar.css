@@ -1,3 +1,4 @@
+/* ========== Layout ========== */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -5,23 +6,24 @@
   left: -120px;
   top: calc(var(--titlebar-height) + 15px);
   bottom: 0;
-  width: var(--sidebar-width);
-  background-color: var(--window-primary);
-  border-right: 1px solid var(--window-tertiary);
-  padding: 15px 0;
   z-index: 100;
-  transition: left 0.1s ease-in-out;
+  width: var(--sidebar-width);
   height: calc(100vh - var(--titlebar-height) - 30px);
+  padding: 15px 0;
+  border-right: 1px solid var(--window-tertiary);
+  background-color: var(--window-primary);
+  transition: left 0.1s ease-in-out;
 }
 
 :root[layout="expanded"] .sidebar {
   left: 0;
 }
 
+/* ========== Navigation ========== */
 .sidebar-nav {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   gap: 0;
 }
 
@@ -29,16 +31,16 @@
   display: block;
   width: 100%;
   height: auto;
-  margin: 0;
   padding: 8px 16px;
-  background: none;
+  margin: 0;
   border: none;
   border-left: 2px solid transparent;
   border-radius: 0;
-  cursor: pointer;
+  background: none;
   color: var(--text-color);
   font: 14px/20px sans-serif;
   text-align: left;
+  cursor: pointer;
   user-select: none;
 }
 
@@ -52,19 +54,19 @@
   font-weight: 500;
 }
 
-/* Config Navigation */
+/* ========== Nav groups ========== */
 .sidebar-nav .nav-divider {
-  height: 1px;
-  background-color: var(--window-tertiary);
-  margin: 10px 0px;
   width: var(--sidebar-width);
+  height: 1px;
+  margin: 10px 0px;
   margin-top: 5px;
+  background-color: var(--window-tertiary);
 }
 
 .sidebar-nav .nav-section-title {
   padding: 8px 10px 4px;
-  font-size: 12px;
   color: #8dbcff;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -74,37 +76,42 @@
 }
 
 .sidebar-nav .config-buttons button {
-  font-size: 13px;
   padding: 6px 16px;
+  font-size: 13px;
 }
 
 .sidebar-nav .settings-nav-btn {
   margin-top: auto;
-  border-top: 1px solid var(--window-tertiary);
   padding-top: 6px;
+  border-top: 1px solid var(--window-tertiary);
 }
 
-/* Bot Controls */
+/* ========== Bot Controls ========== */
 .bot-controls {
   padding: 0 12px 10px;
-  border-bottom: 1px solid var(--window-tertiary);
   margin-bottom: 5px;
+  border-bottom: 1px solid var(--window-tertiary);
 }
 
 .control-buttons {
   display: flex;
   width: 100%;
   height: 32px;
-  border-radius: 5px;
   overflow: hidden;
+  border-radius: 5px;
 }
 
 .restart-btn {
+  display: flex; /* Added from common styles */
+  align-items: center; /* Added from common styles */
+  justify-content: center; /* Added from common styles */
   width: 32px;
-  background: #e68a28;
+  padding: 0;
   border: none;
   border-radius: 0 5px 5px 0;
-  padding: 0;
+  background: #e68a28;
+  color: var(--text-color); /* Added from common styles */
+  cursor: pointer; /* Added from common styles */
 }
 
 .restart-btn:hover:not(:disabled) {
@@ -118,10 +125,15 @@
 
 .start-btn,
 .stop-btn {
+  display: flex; /* Added from common styles */
   flex: 1;
+  align-items: center; /* Added from common styles */
+  justify-content: center; /* Added from common styles */
+  padding: 0 12px;
   border: none;
   border-radius: 5px 0 0 5px;
-  padding: 0 12px;
+  color: var(--text-color); /* Added from common styles */
+  cursor: pointer; /* Added from common styles */
 }
 
 .start-btn {
@@ -140,12 +152,4 @@
   background: #b03737;
 }
 
-.restart-btn,
-.start-btn,
-.stop-btn {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-color);
-}
+/* Removed redundant common styles for .restart-btn, .start-btn, .stop-btn as they were moved up */
