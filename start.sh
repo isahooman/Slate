@@ -17,8 +17,16 @@ restart_time=0
 while true; do
   echo "Starting..."
   node bot.js
+  exit_code=$?
+  
+  if [ $exit_code -eq 0 ]; then
+    echo "Bot shut down gracefully."
+    echo "Bot shut down gracefully." >> ./bot.log
+    exit 0
+  fi
+
   echo
-  echo "Discord bot has stopped. Restarting..."
+  echo "Discord bot has stopped with exit code $exit_code. Restarting..."
   echo >> bot.log
   echo "====================================" >> ./bot.log
   echo "$(date) $(date +%T)" >> ./bot.log

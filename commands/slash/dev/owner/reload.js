@@ -1,7 +1,7 @@
-const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../../components/loader.js');
+const { reloadAllCommands, reloadAllEvents, findNearestCommand, reloadCommand } = require('../../../../components/core/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
-const logger = require('../../../../components/logger.js');
-const { cache } = require('../../../../bot.js');
+const logger = require('../../../../components/util/logger.js');
+const { cache } = require('../../../../bot');
 
 module.exports = {
   data: new SlashCommandBuilder()

@@ -1,7 +1,7 @@
 const path = require('path');
-const { readJSON5 } = require('./json5Parser.js');
-const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../config/config.json5'));
-const { readRecursive } = require('./fileHandler.js');
+const { readJSON5 } = require('../core/json5Parser.js');
+const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
+const { readRecursive } = require('../core/fileHandler.js');
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');
 
@@ -12,7 +12,7 @@ const logger = require('./logger.js');
  * @author isahooman
  */
 async function loadCommandFiles(directory) {
-  const fullPath = path.join(__dirname, '..', directory);
+  const fullPath = path.join(__dirname, '..', '..', directory);
   const commandFiles = (await readRecursive(fullPath)).filter(file => path.extname(file).toLowerCase() === '.js');
 
   return commandFiles.map(file => {

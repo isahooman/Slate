@@ -1,8 +1,8 @@
 const path = require('path');
 const logger = require('./logger.js');
-const { readFile, writeFile, readRecursive } = require('./fileHandler.js');
+const { readFile, writeFile, readRecursive } = require('../core/fileHandler.js');
 
-const configPath = path.join(__dirname, '../config/events.json5');
+const configPath = path.join(__dirname, '../../config/events.json5');
 
 /**
  * Load Events
@@ -10,7 +10,7 @@ const configPath = path.join(__dirname, '../config/events.json5');
  * @author isahooman
  */
 async function loadEvents(client) {
-  const eventsDirectory = path.join(__dirname, '../events');
+  const eventsDirectory = path.join(__dirname, '../../events');
 
   try {
     // Read all files in the events directory using readRecursive
@@ -52,7 +52,7 @@ async function loadEvents(client) {
  * @author isahoman
  */
 async function reloadAllEvents(client) {
-  const eventsDirectory = path.join(__dirname, '../events');
+  const eventsDirectory = path.join(__dirname, '../../events');
 
   try {
     // Read all files in the events directory using readRecursive
@@ -98,7 +98,7 @@ async function reloadAllEvents(client) {
  * @author isahooman
  */
 async function reloadEvent(client, eventName) {
-  const eventsDirectory = path.join(__dirname, '../events');
+  const eventsDirectory = path.join(__dirname, '../../events');
 
   try {
     // Read all files in the events directory using readRecursive

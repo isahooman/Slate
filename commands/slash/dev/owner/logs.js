@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const logger = require('../../../../components/logger.js');
+const logger = require('../../../../components/util/logger.js');
 const path = require('path');
-const { readFile, writeFile, deleteFile } = require('../../../../components/fileHandler.js');
+const { readFile, writeFile, deleteFile } = require('../../../../components/core/fileHandler.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -20,7 +20,7 @@ module.exports = {
       logger.debug(`[Logs Command] Requested number of lines: ${linesToRetrieve}`);
 
       // Read the log file
-      const logFilePath = path.join(__dirname, '../../../bot.log');
+      const logFilePath = path.join(__dirname, '../../../../bot.log');
       let logData = await readFile(logFilePath);
 
       // Get the specified number of lines
@@ -29,7 +29,7 @@ module.exports = {
       // Send logs
       if (logLines.length > 2000) {
         // If the log data exceeds 2000 characters, send it as a file
-        const tempFilePath = path.join(__dirname, '../../../tempLog.txt');
+        const tempFilePath = path.join(__dirname, '../../../../temp/sendLogs.txt');
 
         // Write the logLines to a temporary file
         await writeFile(tempFilePath, logLines);

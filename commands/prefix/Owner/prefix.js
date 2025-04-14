@@ -1,6 +1,6 @@
-const { readFile, writeFile } = require('../../../components/fileHandler.js');
-const { reloadEvent } = require('../../../components/loader');
-const logger = require('../../../components/logger.js');
+const { readFile, writeFile } = require('../../../components/core/fileHandler.js');
+const { reloadEvent } = require('../../../components/core/loader');
+const logger = require('../../../components/util/logger.js');
 const path = require('path');
 
 module.exports = {

@@ -1,14 +1,13 @@
 const { EmbedBuilder } = require('discord.js');
 const path = require('path');
-const { readFile } = require('../../../components/fileHandler.js');
-const logger = require('../../../components/logger.js');
+const { readFile } = require('../../../components/core/fileHandler.js');
+const logger = require('../../../components/util/logger.js');
 
 module.exports = {
   name: 'suggest',
   usage: 'suggest <suggestion>',
   category: 'Utility',
   aliases: ['suggestion'],
-  nsfw: false,
   allowDM: true,
   description: 'Make a suggestion',
   async execute(message, args) {

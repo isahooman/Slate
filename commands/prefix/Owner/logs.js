@@ -1,7 +1,7 @@
 const { AttachmentBuilder } = require('discord.js');
-const logger = require('../../../components/logger.js');
+const logger = require('../../../components/util/logger.js');
 const path = require('path');
-const { readFile, writeFile, deleteFile } = require('../../../components/fileHandler.js');
+const { readFile, writeFile, deleteFile } = require('../../../components/core/fileHandler');
 
 module.exports = {
   name: 'logs',

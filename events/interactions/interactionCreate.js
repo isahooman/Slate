@@ -1,8 +1,8 @@
-const logger = require('../../components/logger.js');
+const blacklist = require('../../config/blacklist.json');
+const logger = require('../../components/util/logger.js');
 const { cooldown } = require('../../bot');
 const path = require('path');
-const { readJSON5 } = require('../../components/json5Parser.js');
-const blacklist = readJSON5(path.join(__dirname, '../../config/blacklist.json5'));
+const { readJSON5 } = require('../../components/core/json5Parser.js');
 const { ownerId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
 const toggle = readJSON5(path.join(__dirname, '../../config/commands.json5'));
 
@@ -79,21 +79,22 @@ module.exports = {
         if (interaction.replied || interaction.deferred) await interaction.editReply({ content: 'An error occurred with this command.' }).catch(err => logger.error(`Error editing reply: ${err}`));
         else await interaction.reply({ content: 'An error occurred with this command.', ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err}`));
       }
-
-    // todo: COMMENTS
     } else if (interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) {
+      // Determine which type of interaction
       const interactionType = interaction.isButton() ? 'button' : interaction.isStringSelectMenu() ? 'stringSelectMenu' : 'modalSubmit';
       const commandName = interaction.customId;
 
       logger.interaction(`Processing ${interactionType}: ${commandName}`);
       try {
+        // Import the appropriate handler
         const handler = require(path.join(__dirname, '../../interactions', `${interactionType}s`, `${commandName}.js`));
+        // Verify that the handler exports the expected function
         if (typeof handler[interactionType] !== 'function') throw new Error(`Handler for ${commandName} does not have a ${interactionType} function`);
+        // Execute the handler with the interaction and client objects
         await handler[interactionType](interaction, client);
       } catch (error) {
         logger.error(`Error executing ${interactionType} interaction: ${error.message}`, interactionType, { interaction });
-        const errorMessage = `An error occurred with this interaction.`;
-        interaction.reply({ content: errorMessage, ephemeral: false }).catch(err => logger.error(`Error sending error interaction: ${err.message}`));
+        interaction.reply('An error has occured with this interaction.').catch(err => logger.error(`Error sending error interaction: ${err.message}`));
       }
     } else {
       logger.warn(`Unknown interaction type received: ${interaction.type}`);

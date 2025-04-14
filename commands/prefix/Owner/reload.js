@@ -1,5 +1,5 @@
-const { reloadAllEvents, reloadAllCommands, findNearestCommand, reloadCommand } = require('../../../components/loader');
-const logger = require('../../../components/logger.js');
+const { reloadAllEvents, reloadAllCommands, findNearestCommand, reloadCommand } = require('../../../components/core/loader');
+const logger = require('../../../components/util/logger.js');
 const { cache } = require('../../../bot.js');
 
 module.exports = {

@@ -1,6 +1,6 @@
-const logger = require('../../../components/logger');
+const logger = require('../../../components/util/logger');
 const { EmbedBuilder } = require('discord.js');
-const Search = require('../../../components/search');
+const Search = require('../../../components/util/search');
 
 const badges = {
   Staff: 'Discord Staff',
@@ -35,7 +35,6 @@ module.exports = {
   usage: 'userinfo <user>',
   category: 'info',
   aliases: ['ui'],
-  nsfw: false,
   allowDM: true,
   description: 'Shows information the given user',
 

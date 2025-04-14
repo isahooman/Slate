@@ -1,18 +1,16 @@
-const { readJSON5 } = require('./json5Parser.js');
-const { ownerId, notifyOnReady, reportErrors, guildId, errorChannels, errorUsers, readyUsers, readyChannels } = readJSON5('./config/config.json5');
-const logging = readJSON5('./config/logging.json5');
-const bot = require('../bot.js');
+const path = require('path');
+const { readJSON5 } = require('../core/json5Parser.js');
+const bot = require('../../bot.js');
 const chalk = require('chalk');
+const config = readJSON5('./config/config.json5');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
+
 const moment = require('moment');
-const path = require('path');
 
-// Force chalk to use colors
-chalk.level = 3;
-
-const logFile = path.join(__dirname, '..', 'bot.log');
-const tempDir = path.join(__dirname, '..', 'temp');
+const logging = readJSON5(path.join(__dirname, '../../config/logging.json5'));
+const logFile = path.join(__dirname, '..', '..', 'bot.log');
+const tempDir = path.join(__dirname, '..', '..', 'temp');
 const errorDir = path.join(tempDir, 'error');
 let errorFileCounter = 0;
 const Queue = [];
@@ -128,8 +126,8 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   // Log file output
   fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${fileformat(message)}\n`);
 
-  if (level === levels.START && notifyOnReady) notifyReady(message);
-  if (level === levels.ERROR && reportErrors) handleErrors(message, commandType, commandInfo);
+  if (level === levels.START && config.notifyOnReady) notifyReady(message);
+  if (level === levels.ERROR && config.reportErrors) handleErrors(message, commandType, commandInfo);
 }
 
 /**
@@ -267,9 +265,9 @@ async function sendMessage(messageContent, targetType = null, filePath = null) {
   const { userId = null, channelId = null } = {};
 
   // Determine recipient list based on targetType
-  let recipients = [...ownerId];
-  if (targetType === 'error' && errorUsers) recipients.push(...errorUsers);
-  if (targetType === 'ready' && readyUsers) recipients.push(...readyUsers);
+  let recipients = [...config.ownerId];
+  if (targetType === 'error' && config.errorUsers) recipients.push(...config.errorUsers);
+  if (targetType === 'ready' && config.readyUsers) recipients.push(...config.readyUsers);
 
   // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
   if (userId && !recipients.includes(userId)) recipients.push(userId);
@@ -280,8 +278,8 @@ async function sendMessage(messageContent, targetType = null, filePath = null) {
 
     // Send message to given channels
     if (channelId) await sendToChannel(messageContent, [channelId], filePath);
-    else if (targetType === 'error') await sendToChannel(messageContent, errorChannels, filePath);
-    else if (targetType === 'ready') await sendToChannel(messageContent, readyChannels, filePath);
+    else if (targetType === 'error') await sendToChannel(messageContent, config.errorChannels, filePath);
+    else if (targetType === 'ready') await sendToChannel(messageContent, config.readyChannels, filePath);
   } catch (error) {
     // If sending fails, add the message to the queue for retrying
     process.stderr.write('Failed to send message, adding to queue:', `${error}\n`);
@@ -328,7 +326,7 @@ async function sendToUser(messageContent, userId, filePath = null) {
  * @author isahooman
  */
 async function sendToChannel(messageContent, channelIds, filePath = null) {
-  const guild = bot.client.guilds.cache.get(guildId);
+  const guild = bot.client.guilds.cache.get(config.guildId);
   // If the guild is not found, do nothing
   if (!guild) {
     process.stderr.write('Failed to find home server to send message\n');

@@ -1,10 +1,11 @@
 const { cooldown } = require('../../bot.js');
-const logger = require('../../components/logger.js');
+const blacklist = require('../../config/blacklist.json');
+const logger = require('../../components/util/logger.js');
 const path = require('path');
-const { readJSON5 } = require('../../components/json5Parser.js');
-const blacklist = readJSON5(path.join(__dirname, '../../config/blacklist.json5'));
+const { readJSON5 } = require('../../components/core/json5Parser.js');
 const { prefix, ownerId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
 const commands = readJSON5(path.join(__dirname, '../../config/commands.json5'));
+const createDisclaimerProxy = require('../../components/commands/commandWrapper.js');
 
 module.exports = {
   name: 'messageCreate',
@@ -86,8 +87,15 @@ module.exports = {
       return;
     }
 
-    // Disabled check with owner exemption
-    if (!ownerId.includes(message.author.id) && (commands.prefix[commandName] === false)) return message.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
+    // Check if the command is disabled
+    if (commands.prefix[command.name.toLowerCase()] === false) {
+      // If not owner, do nothing
+      if (!ownerId.includes(message.author.id)) return;
+
+      // If owner, continue but add disclaimer
+      logger.info(`Owner ${message.author.tag} bypassing disabled command: ${command.name.toLowerCase()} with disclaimer`);
+      message = createDisclaimerProxy(message);
+    }
 
     // Owner-only commands
     if (command.category.toLowerCase() === 'owner' && !ownerId.includes(message.author.id)) {
@@ -134,12 +142,9 @@ module.exports = {
     }
 
     try {
-      // logger.debug('Before command execution'); // Debugging line
       logger.command(`Prefix Command: ${command.name}, used by: ${message.author.tag}, in: ${message.guild ? message.guild.name : 'DMs'}`);
       await command.execute(message, args, client);
-      // logger.debug('After successful command execution'); // Debugging line
     } catch (error) {
-      // logger.debug(`Error caught in ${command.name} command`); // Debugging line
       logger.error(`${error.message.replace('Error: ', '')}`, 'prefix', {
         context: message,
         args: [command.name, ...args],

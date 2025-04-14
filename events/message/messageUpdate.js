@@ -1,10 +1,11 @@
-const logger = require('../../components/logger.js');
+const blacklist = require('../../config/blacklist.json');
+const logger = require('../../components/util/logger.js');
 const { cooldown } = require('../../bot.js');
 const path = require('path');
-const { readJSON5 } = require('../../components/json5Parser.js');
-const blacklist = readJSON5(path.join(__dirname, '../../config/blacklist.json5'));
+const { readJSON5 } = require('../../components/core/json5Parser.js');
 const { prefix, ownerId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
 const commands = readJSON5(path.join(__dirname, '../../config/commands.json5'));
+const createDisclaimerProxy = require('../../components/commands/commandWrapper.js');
 
 module.exports = {
   name: 'messageUpdate',
@@ -99,8 +100,15 @@ module.exports = {
       return;
     }
 
-    // Check if command is disabled unless the user is an owner
-    if (!ownerId.includes(newMessage.author.id) && (commands.prefix[commandName] === false)) return newMessage.reply('This command has been disabled, possibly for maintenance.\nTry the slash variation if it exists.');
+    // Check if the command is disabled
+    if (commands.prefix[command.name.toLowerCase()] === false) {
+      // If not owner, do nothing
+      if (!ownerId.includes(newMessage.author.id)) return;
+
+      // If owner, continue but add disclaimer
+      logger.info(`Owner ${newMessage.author.tag} bypassing disabled command: ${command.name.toLowerCase()} with disclaimer`);
+      newMessage = createDisclaimerProxy(newMessage);
+    }
 
     // Check if the command is NSFW and if it was used within an NSFW channel
     if (command.nsfw && !newMessage.channel.nsfw) {
@@ -117,9 +125,10 @@ module.exports = {
 
     // User Cooldown
     if (cooldown.user.enabled(command)) {
-      logger.debug(`User Cooldown activated: ${commandName} by ${newMessage.author.tag}`);
+      logger.debug(`User Cooldown activated: ${commandName}, by: ${newMessage.author.tag}`);
       if (!cooldown.user.data.get(newMessage.author.id)) cooldown.user.add(newMessage.author.id, command);
       else if (cooldown.user.data.get(newMessage.author.id) && cooldown.user.data.get(newMessage.author.id).cooldowns.find(x =>
+        x.name === command.name) && cooldown.user.data.get(newMessage.author.id).cooldowns.find(x =>
         x.name === command.name).time > Date.now()) return newMessage.reply('You still have a cooldown on this command');
     }
 
@@ -140,16 +149,14 @@ module.exports = {
     }
 
     try {
-      // logger.debug('Before command execution'); // Debugging line
-      logger.command(`Prefix Command ${command.name} used by: ${newMessage.author.tag}, in ${newMessage.guild ? newMessage.guild.name : 'DMs'}`);
+      logger.command(`Prefix Command: ${command.name}, used by: ${newMessage.author.tag}, in: ${newMessage.guild ? newMessage.guild.name : 'DMs'}`);
       await command.execute(newMessage, args, client);
-      // logger.debug('After successful command execution'); // Debugging line
     } catch (error) {
-      // logger.debug(`Error caught in ${command.name} command`); // Debugging line
       logger.error(`${error.message.replace('Error: ', '')}`, 'prefix', {
         context: newMessage,
         args: [command.name, ...args],
         command: command.name,
+        stack: error.stack,
       });
 
       // Reply to the user with generic error message

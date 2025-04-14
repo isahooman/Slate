@@ -20,8 +20,16 @@ set restart_time=0
 :loop
 echo Starting...
 call node bot.js
+set exit_code=%ERRORLEVEL%
+
+if %exit_code% EQU 0 (
+    echo Bot shut down gracefully.
+    echo Bot shut down gracefully. >> bot.log
+    goto :eof
+)
+
 echo. 
-echo Discord bot has stopped. Restarting...
+echo Discord bot has stopped with exit code %exit_code%. Restarting...
 echo. >> bot.log
 echo ==================================== >> bot.log
 echo %date% %time% >> bot.log

@@ -1,4 +1,4 @@
-const logger = require('../../../components/logger.js');
+const logger = require('../../../components/util/logger.js');
 const { EmbedBuilder } = require('discord.js');
 const { inspect } = require('util');
 const { cache } = require('../../../bot.js');
@@ -7,8 +7,6 @@ module.exports = {
   name: 'cache',
   usage: 'cache <clear/refresh/stats>',
   category: 'Owner',
-  aliases: [],
-  nsfw: false,
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {

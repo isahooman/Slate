@@ -9,6 +9,7 @@ module.exports = {
     guild: 5000,
     global: 10000,
   },
+  aliases: ['f'],
   execute() {
     // Intentional failure
     throw new Error('This is a test error.');
