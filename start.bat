@@ -1,16 +1,16 @@
 @ECHO OFF
 setlocal enabledelayedexpansion
 
-echo ==================================== >> bot.log
-echo %date% %time% >> bot.log
-echo ==================================== >> bot.log
-echo. >> bot.log
+echo ==================================== >> output/bot.log
+echo %date% %time% >> output/bot.log
+echo ==================================== >> output/bot.log
+echo. >> output/bot.log
 
 echo Updating Node.js packages...
-echo Updating Node.js packages... >> bot.log
+echo Updating Node.js packages... >> output/bot.log
 call npm install > NUL 2>&1
 echo Node.js packages updated.
-echo Node.js packages updated. >> bot.log
+echo Node.js packages updated. >> output/bot.log
 
 title Slate Discord Bot
 
@@ -19,21 +19,21 @@ set restart_time=0
 
 :loop
 echo Starting...
-call node bot.js
+call node bot/bot.js
 set exit_code=%ERRORLEVEL%
 
 if %exit_code% EQU 0 (
     echo Bot shut down gracefully.
-    echo Bot shut down gracefully. >> bot.log
+    echo Bot shut down gracefully. >> output/bot.log
     goto :eof
 )
 
 echo. 
 echo Discord bot has stopped with exit code %exit_code%. Restarting...
-echo. >> bot.log
-echo ==================================== >> bot.log
-echo %date% %time% >> bot.log
-echo ==================================== >> bot.log
+echo. >> output/bot.log
+echo ==================================== >> output/bot.log
+echo %date% %time% >> output/bot.log
+echo ==================================== >> output/bot.log
 
 set /a restart_count+=1
 set /a current_time=%time:~0,2%*3600+%time:~3,2%*60+%time:~6,2%

@@ -15,7 +15,22 @@
     "**/.svn": true,
     "**/.hg": true,
     "**/.DS_Store": true,
-    "**/Thumbs.db": true
+    "**/Thumbs.db": true,
+    ".github": true,
+    "node_modules": true,
+    ".vscode": true,
+    "package.json": true,
+    "eslint.config.cjs": true,
+    "package-lock.json": true,
+    "LICENSE": true
   },
-  "hide-files.files": []
+  "hide-files.files": [
+    ".github",
+    "node_modules",
+    ".vscode",
+    "package.json",
+    "eslint.config.cjs",
+    "package-lock.json",
+    "LICENSE"
+  ]
 }

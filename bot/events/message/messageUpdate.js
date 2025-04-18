@@ -1,10 +1,6 @@
-const blacklist = require('../../config/blacklist.json');
 const logger = require('../../components/util/logger.js');
 const { cooldown } = require('../../bot.js');
-const path = require('path');
-const { readJSON5 } = require('../../components/core/json5Parser.js');
-const { prefix, ownerId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
-const commands = readJSON5(path.join(__dirname, '../../config/commands.json5'));
+const configManager = require('../../../components/configManager');
 const createDisclaimerProxy = require('../../components/commands/commandWrapper.js');
 
 module.exports = {
@@ -36,21 +32,26 @@ module.exports = {
 
     logger.message(`Processing edited message from: [${newMessage.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
 
+    // Load config
+    const blacklist = configManager.loadConfig('blacklist');
+    const prefix = configManager.getConfigValue('config', 'prefix', '!');
+    const ownerId = configManager.getConfigValue('config', 'ownerId', []);
+
     // Check if the user is blacklisted
-    if (blacklist.users.includes(newMessage.author.id)) {
+    if (blacklist.users && blacklist.users.includes(newMessage.author.id)) {
       logger.warn(`User ${newMessage.author.tag} (${newMessage.author.id}) is in the blacklist. Ignoring message.`);
       return;
     }
 
     // Check if server is blacklisted
-    if (newMessage.guild && blacklist.servers.leave.includes(newMessage.guild.id)) {
+    if (newMessage.guild && blacklist.servers && blacklist.servers.leave && blacklist.servers.leave.includes(newMessage.guild.id)) {
       logger.warn(`Server ${newMessage.guild.name} (${newMessage.guild.id}) is in the "leave" blacklist. Leaving server.`);
       await newMessage.guild.leave();
       return;
     }
 
     // Check if the server is ignored
-    if (newMessage.guild && blacklist.servers.ignore.includes(newMessage.guild.id)) {
+    if (newMessage.guild && blacklist.servers && blacklist.servers.ignore && blacklist.servers.ignore.includes(newMessage.guild.id)) {
       logger.warn(`Server ${newMessage.guild.name} (${newMessage.guild.id}) is in the "ignore" blacklist. Ignoring message.`);
       return;
     }
@@ -101,7 +102,8 @@ module.exports = {
     }
 
     // Check if the command is disabled
-    if (commands.prefix[command.name.toLowerCase()] === false) {
+    const isCommandDisabled = configManager.getConfigValue('commands', `prefix.${command.name.toLowerCase()}`, true) === false;
+    if (isCommandDisabled) {
       // If not owner, do nothing
       if (!ownerId.includes(newMessage.author.id)) return;
 

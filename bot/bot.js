@@ -1,21 +1,20 @@
-const { readJSON5 } = require('./components/core/json5Parser.js');
-const { clientId, token, guildId, deployOnStart, undeployOnExit } = readJSON5('./config/config.json5');
-const ConfigIntents = readJSON5('./config/intents.json5');
 const { Client, GatewayIntentBits } = require('discord.js');
-const { loadAll, deployCommands, undeploy } = require('./components/core/loader.js');
+const { loadAll, deployCommands, undeploy } = require('./components/core/loader');
 const logger = require('./components/util/logger.js');
+const configManager = require('../components/configManager');
 let cooldownBuilder = require('./components/commands/cooldown.js');
 let cache = new (require('./components/util/cache'));
 
-const handleIntents = intents => {
+const intents = configManager.loadConfig('intents');
+const handleIntents = intentConfig => {
   let totalIntentsBits = [];
-  for (const intent in intents) if (intents[intent]) totalIntentsBits.push(GatewayIntentBits[intent]);
+  for (const intent in intentConfig) if (intentConfig[intent]) totalIntentsBits.push(GatewayIntentBits[intent]);
   return totalIntentsBits;
 };
 
 // Create the Discord client
 const client = new Client({
-  intents: handleIntents(ConfigIntents),
+  intents: handleIntents(intents),
   shards: 'auto',
 });
 
@@ -28,6 +27,12 @@ async function startBot(bot) {
 
   // Load all events and commands
   await loadAll(bot);
+
+  // Get config values
+  const clientId = configManager.getConfigValue('config', 'clientId');
+  const token = configManager.getConfigValue('config', 'token');
+  const guildId = configManager.getConfigValue('config', 'guildId');
+  const deployOnStart = configManager.getConfigValue('config', 'deployOnStart', false);
 
   // Redeploy slash commands on startup
   if (deployOnStart) await deployCommands(bot, clientId, guildId, token);
@@ -85,6 +90,10 @@ process
 
   .on('SIGINT', async() => {
     logger.info('Received SIGINT. Shutting down...');
+
+    // Get undeployOnExit configuration
+    const undeployOnExit = configManager.getConfigValue('config', 'undeployOnExit', false);
+
     // Undeploy commands if true in config
     if (undeployOnExit) try {
       await undeploy();

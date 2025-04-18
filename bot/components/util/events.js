@@ -1,8 +1,7 @@
 const path = require('path');
 const logger = require('./logger.js');
-const { readFile, writeFile, readRecursive } = require('../core/fileHandler.js');
-
-const configPath = path.join(__dirname, '../../config/events.json5');
+const { readRecursive } = require('../core/fileHandler.js');
+const configManager = require('../../../components/configManager');
 
 /**
  * Load Events
@@ -17,16 +16,18 @@ async function loadEvents(client) {
     const eventFiles = await readRecursive(eventsDirectory);
 
     // Load event config
-    const eventConfig = await loadEventConfig();
+    const eventConfig = configManager.loadConfig('events');
+    let configUpdated = false;
 
     // Loop through each event file
     for (const file of eventFiles) {
       const eventName = path.basename(file, '.js');
 
-      // Check if the event exist in the config file
+      // Check if the event exists in the config file, default to true if not
       if (eventConfig[eventName] === undefined) {
         eventConfig[eventName] = true;
-        await saveEventConfig(eventConfig);
+        configUpdated = true;
+        logger.debug(`Event [${eventName}] missing from events config, defaulting to enabled.`);
       }
 
       // Check if the event is enabled and load it
@@ -37,8 +38,14 @@ async function loadEvents(client) {
         // Attach the event listener to the client
         if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
         else client.on(event.name, (...args) => event.execute(...args, client));
+      } else {
+        logger.debug(`Event [${eventName}] is disabled in config, skipping load.`);
       }
     }
+
+    // Save config if any defaults were added
+    if (configUpdated) configManager.saveConfig('events', eventConfig);
+
     logger.info('Events loaded.');
   } catch (error) {
     // If readRecursive throws an error, the directory doesn't exist
@@ -59,7 +66,7 @@ async function reloadAllEvents(client) {
     const eventFiles = await readRecursive(eventsDirectory);
 
     // Load event config
-    const eventConfig = await loadEventConfig();
+    const eventConfig = configManager.loadConfig('events');
 
     // Loop through each event file
     for (const file of eventFiles) {
@@ -82,6 +89,11 @@ async function reloadAllEvents(client) {
         else client.on(event.name, (...args) => event.execute(...args, client));
 
         logger.loading(`Reloaded event: ${event.name}`);
+      } else {
+        logger.debug(`Event [${eventName}] is disabled, skipping reload.`);
+        // Ensure disabled events have no listeners
+        const event = require(file);
+        client.removeAllListeners(event.name);
       }
     }
     logger.info('All events reloaded successfully.');
@@ -95,6 +107,7 @@ async function reloadAllEvents(client) {
  * Reload a specific event
  * @param {client} client - Discord Client
  * @param {string} eventName - The name of the event to reload
+ * @returns {boolean} - If reload was successful.
  * @author isahooman
  */
 async function reloadEvent(client, eventName) {
@@ -109,8 +122,11 @@ async function reloadEvent(client, eventName) {
 
     if (!eventFile) {
       logger.warn(`[Reload Event] Event file not found for event: ${eventName}.`);
-      return;
+      return false;
     }
+
+    // Load event config to check if enabled
+    const eventConfig = configManager.loadConfig('events');
 
     // Clear event cache
     delete require.cache[require.resolve(eventFile)];
@@ -118,30 +134,22 @@ async function reloadEvent(client, eventName) {
     // Reload event data
     const event = require(eventFile);
 
-    // Remove all listeners for the event
+    // Remove all listeners for the event first
     client.removeAllListeners(event.name);
 
-    // Register the new event listener
-    if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
-    else client.on(event.name, (...args) => event.execute(...args, client));
-
-    logger.loading(`Reloaded event: ${event.name}`);
+    // Register the new event listener only if enabled
+    if (eventConfig[eventName] === true) {
+      if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
+      else client.on(event.name, (...args) => event.execute(...args, client));
+      logger.loading(`Reloaded event: ${event.name}`);
+      return true;
+    } else {
+      logger.info(`Event [${eventName}] is disabled, listeners removed.`);
+      return true; // Still successful in the sense that the state is updated
+    }
   } catch (error) {
     logger.error(`[Reload Event] Error reloading event ${eventName}: ${error.message}`);
-  }
-}
-
-/**
- * Load Config Data
- * @returns {Promise<object|void>} - Event Config Data
- * @author isahooman
- */
-async function loadEventConfig() {
-  try {
-    return await readFile(configPath);
-  } catch (error) {
-    logger.error(`Error loading event config: ${error.message}`);
-    return {};
+    return false;
   }
 }
 
@@ -150,49 +158,38 @@ async function loadEventConfig() {
  * If 'enabled' is not provided, it toggles the current state.
  * @param {string} eventName - The name of the event.
  * @param {boolean} [enabled] - (Optional) The new enabled status of the event.
+ * @returns {boolean} The new status of the event.
  * @author isahooman
  */
-async function setEventEnabled(eventName, enabled) {
+function setEventEnabled(eventName, enabled) {
   // Load the current event config
-  const eventConfig = await loadEventConfig();
+  const eventConfig = configManager.loadConfig('events');
 
+  let newStatus;
   // If enabled is provided, set the enabled status of the event
   if (enabled !== undefined) {
-    eventConfig[eventName] = enabled;
-    logger.info(`Event '${eventName}' set to ${enabled ? 'enabled' : 'disabled'}.`);
+    newStatus = !!enabled; // Ensure boolean
+    eventConfig[eventName] = newStatus;
+    logger.info(`Event '${eventName}' set to ${newStatus ? 'enabled' : 'disabled'}.`);
   } else {
-    // If 'enabled' is not provided, toggle the current state
-    eventConfig[eventName] = !eventConfig[eventName];
-    logger.log(`Event '${eventName}' toggled ${eventConfig[eventName] ? 'on' : 'off'}.`);
+    // If 'enabled' is not provided, toggle the current state (default to true if undefined)
+    newStatus = eventConfig[eventName] === undefined ? true : !eventConfig[eventName];
+    eventConfig[eventName] = newStatus;
+    logger.info(`Event '${eventName}' toggled ${newStatus ? 'on' : 'off'}.`);
   }
-  await saveEventConfig(eventConfig);
-}
-
-/**
- * Saves the event configuration data.
- * @param {object} eventConfig - The config data to be saved.
- * @author isahooman
- */
-async function saveEventConfig(eventConfig) {
-  try {
-    await writeFile(configPath, eventConfig);
-  } catch (error) {
-    logger.error(`Error saving event config: ${error.message}`);
-  }
+  configManager.saveConfig('events', eventConfig);
+  return newStatus;
 }
 
 /**
  * Checks if a given event is enabled in event config.
  * @param {string} eventName - The name of the event to check.
- * @returns {Promise<boolean>} - Returns true if the event is enabled, otherwise false.
+ * @returns {boolean} - Returns true if the event is enabled, otherwise false.
  * @author isahooman
  */
-async function isEventEnabled(eventName) {
-  // Load config data
-  const eventConfig = await loadEventConfig();
-
-  // Check if the event is enabled in the configuration
-  return eventConfig[eventName] === true;
+function isEventEnabled(eventName) {
+  // Use getConfigValue with a default of true
+  return configManager.getConfigValue('events', eventName, true);
 }
 
 module.exports =

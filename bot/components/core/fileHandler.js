@@ -1,4 +1,4 @@
-const { readJSON5, writeJSON5 } = require('./json5Parser.js');
+const { readJSON5, writeJSON5 } = require('../../../components/json5Parser');
 const logger = require('../util/logger.js');
 const path = require('path');
 const fs = require('fs');

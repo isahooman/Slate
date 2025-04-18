@@ -1,9 +1,8 @@
 const path = require('path');
-const { readJSON5 } = require('../core/json5Parser.js');
-const { clientId, token, guildId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
 const { readRecursive } = require('../core/fileHandler.js');
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');
+const configManager = require('../../../components/configManager');
 
 /**
  * Load commands and their data
@@ -42,6 +41,17 @@ async function loadCommandFiles(directory) {
  * @author isahooman
  */
 async function deployCommands() {
+  // Get configuration values
+  const clientId = configManager.getConfigValue('config', 'clientId');
+  const token = configManager.getConfigValue('config', 'token');
+  const guildId = configManager.getConfigValue('config', 'guildId');
+
+  // Validate required configuration
+  if (!clientId || !token) {
+    logger.error('Missing required configuration: clientId or token');
+    return;
+  }
+
   const rest = new REST({ version: '10' }).setToken(token);
 
   try {
@@ -58,15 +68,19 @@ async function deployCommands() {
     }
 
     // Load and deploy dev commands to the home guild
-    const devCommands = await loadCommandFiles('commands/slash/dev');
-    const uniqueDevCommands = Array.from(new Map(devCommands.map(cmd => [cmd.name, cmd])).values());
-    if (uniqueDevCommands.length) {
-      uniqueDevCommands.forEach(command => logger.info(`Filtered duplicate dev command: ${command.name}`));
-      uniqueDevCommands.forEach(command => logger.info(`Deploying dev command: ${command.name}`));
-      await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: uniqueDevCommands });
-      logger.info(`Successfully registered dev slash commands for: ${guildId}`);
+    if (guildId) {
+      const devCommands = await loadCommandFiles('commands/slash/dev');
+      const uniqueDevCommands = Array.from(new Map(devCommands.map(cmd => [cmd.name, cmd])).values());
+      if (uniqueDevCommands.length) {
+        uniqueDevCommands.forEach(command => logger.info(`Filtered duplicate dev command: ${command.name}`));
+        uniqueDevCommands.forEach(command => logger.info(`Deploying dev command: ${command.name}`));
+        await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: uniqueDevCommands });
+        logger.info(`Successfully registered dev slash commands for: ${guildId}`);
+      } else {
+        logger.debug(`No dev commands found for guild: ${guildId}`);
+      }
     } else {
-      logger.debug(`No dev commands found for guild: ${guildId}`);
+      logger.warn('No guildId specified in config. Skipping dev commands deployment.');
     }
   } catch (error) {
     logger.error(`Error deploying commands: ${error.message}\n${error.stack}`);
@@ -78,6 +92,17 @@ async function deployCommands() {
  * @author isahooman
  */
 async function undeploy() {
+  // Get configuration values
+  const clientId = configManager.getConfigValue('config', 'clientId');
+  const token = configManager.getConfigValue('config', 'token');
+  const guildId = configManager.getConfigValue('config', 'guildId');
+
+  // Validate required configuration
+  if (!clientId || !token) {
+    logger.error('Missing required configuration: clientId or token');
+    return;
+  }
+
   const rest = new REST({ version: '10' }).setToken(token);
 
   try {
@@ -90,15 +115,19 @@ async function undeploy() {
     );
     logger.info('Successfully unregistered global commands.');
 
-    logger.info('Started unregistering guild application commands.');
+    if (guildId) {
+      logger.info('Started unregistering guild application commands.');
 
-    // Register an empty array for Guild Commands effectively deleting all registered slash commands
-    await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
-      { body: [] },
-    );
+      // Register an empty array for Guild Commands effectively deleting all registered slash commands
+      await rest.put(
+        Routes.applicationGuildCommands(clientId, guildId),
+        { body: [] },
+      );
 
-    logger.info('Successfully deleted all guild application commands.');
+      logger.info('Successfully deleted all guild application commands.');
+    } else {
+      logger.warn('No guildId specified in config. Skipping guild command undeployment.');
+    }
   } catch (error) {
     logger.error(`Error unregistering commands: ${error}`);
   }

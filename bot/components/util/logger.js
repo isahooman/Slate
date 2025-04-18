@@ -1,14 +1,12 @@
 const path = require('path');
-const { readJSON5 } = require('../core/json5Parser.js');
 const bot = require('../../bot.js');
 const chalk = require('chalk');
-const config = readJSON5('./config/config.json5');
+const configManager = require('../../../components/configManager');
 const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-
 const moment = require('moment');
 
-const logging = readJSON5(path.join(__dirname, '../../config/logging.json5'));
+const logging = configManager.loadConfig('logging');
 const logFile = path.join(__dirname, '..', '..', 'bot.log');
 const tempDir = path.join(__dirname, '..', '..', 'temp');
 const errorDir = path.join(tempDir, 'error');
@@ -36,25 +34,29 @@ const levels = {
 function isLevelEnabled(level) {
   let configUpdated = false;
 
+  // Initialize toggle and colors objects if they don't exist
+  if (!logging.toggle) logging.toggle = {};
+  if (!logging.colors) logging.colors = {};
+
   // Check if the toggle setting exists, default to true if not
   if (!Object.prototype.hasOwnProperty.call(logging.toggle, level)) {
     logging.toggle[level] = true;
     configUpdated = true;
-    process.stdout.write(chalk.yellow(`Log level [${level}] toggle missing from logging.json5, defaulting to enabled.\n`));
+    process.stdout.write(chalk.yellow(`Log level [${level}] toggle missing from logging config, defaulting to enabled.\n`));
   }
 
   // Check if the color setting exists, default to white if not
   if (!Object.prototype.hasOwnProperty.call(logging.colors, level)) {
     logging.colors[level] = '#FFFFFF';
     configUpdated = true;
-    process.stdout.write(chalk.yellow(`Log level [${level}] color missing from logging.json5, defaulting to #FFFFFF.\n`));
+    process.stdout.write(chalk.yellow(`Log level [${level}] color missing from logging config, defaulting to #FFFFFF.\n`));
   }
 
   // If any defaults were added, update the config file.
   if (configUpdated) try {
-    writeJSON5(path.join(__dirname, '../config/logging.json5'), logging);
-  } catch {
-    process.stderr.write(`Failed to update logging.json5 with default settings for level [${level}].\n`);
+    configManager.saveConfig('logging', logging);
+  } catch (err) {
+    process.stderr.write(`Failed to update logging config with default settings for level [${level}]: ${err}\n`);
   }
 
   // Return the toggle status (which is now guaranteed to exist)
@@ -71,7 +73,7 @@ function setLevelEnabled(level, enabled) {
   if (Object.prototype.hasOwnProperty.call(levels, level)) {
     logging.toggle[level] = enabled;
     try {
-      fs.writeFileSync(path.join(__dirname, '../config/logging.json5'), JSON.stringify(logging, null, 2), 'utf8');
+      configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
     } catch (err) {
       process.stderr.write(`Error writing to logging config file: ${err}\n`);
     }
@@ -98,7 +100,7 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
     let hexCode = logging.colors[colorName] || '#FFFFFF';
     // Check if the hex code is valid
     if (!/^#?[0-9A-F]{6}$/i.test(hexCode)) {
-      process.stdout.write(chalk.yellow(`Invalid color code in logging.json5 for ${colorName}: ${hexCode}. Using fallback color.\n`));
+      process.stdout.write(chalk.yellow(`Invalid color code in logging config for ${colorName}: ${hexCode}. Using fallback color.\n`));
       hexCode = '#FFFFFF';
     }
     if (!hexCode.startsWith('#')) hexCode = `#${hexCode}`;
@@ -141,8 +143,12 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   // Log file output
   fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${fileformat(message)}\n`);
 
-  if (level === levels.START && config.notifyOnReady) notifyReady(message);
-  if (level === levels.ERROR && config.reportErrors) handleErrors(message, commandType, commandInfo);
+  // Handle notifications
+  const notifyOnReady = configManager.getConfigValue('config', 'notifyOnReady', false);
+  const reportErrors = configManager.getConfigValue('config', 'reportErrors', false);
+
+  if (level === levels.START && notifyOnReady) notifyReady(message);
+  if (level === levels.ERROR && reportErrors) handleErrors(message, commandType, commandInfo);
 }
 
 /**
@@ -279,10 +285,17 @@ async function sendMessage(messageContent, targetType = null, filePath = null) {
 
   const { userId = null, channelId = null } = {};
 
+  // Get owner IDs and other user lists from config
+  const ownerId = configManager.getConfigValue('config', 'ownerId', []);
+  const errorUsers = configManager.getConfigValue('config', 'errorUsers', []);
+  const readyUsers = configManager.getConfigValue('config', 'readyUsers', []);
+  const errorChannels = configManager.getConfigValue('config', 'errorChannels', []);
+  const readyChannels = configManager.getConfigValue('config', 'readyChannels', []);
+
   // Determine recipient list based on targetType
-  let recipients = [...config.ownerId];
-  if (targetType === 'error' && config.errorUsers) recipients.push(...config.errorUsers);
-  if (targetType === 'ready' && config.readyUsers) recipients.push(...config.readyUsers);
+  let recipients = [...ownerId];
+  if (targetType === 'error' && errorUsers) recipients.push(...errorUsers);
+  if (targetType === 'ready' && readyUsers) recipients.push(...readyUsers);
 
   // Add target user if provided and not already included (prevent duplicated if id is stated multiple times)
   if (userId && !recipients.includes(userId)) recipients.push(userId);
@@ -293,8 +306,8 @@ async function sendMessage(messageContent, targetType = null, filePath = null) {
 
     // Send message to given channels
     if (channelId) await sendToChannel(messageContent, [channelId], filePath);
-    else if (targetType === 'error') await sendToChannel(messageContent, config.errorChannels, filePath);
-    else if (targetType === 'ready') await sendToChannel(messageContent, config.readyChannels, filePath);
+    else if (targetType === 'error') await sendToChannel(messageContent, errorChannels, filePath);
+    else if (targetType === 'ready') await sendToChannel(messageContent, readyChannels, filePath);
   } catch (error) {
     // If sending fails, add the message to the queue for retrying
     process.stderr.write('Failed to send message, adding to queue:', `${error}\n`);
@@ -341,7 +354,9 @@ async function sendToUser(messageContent, userId, filePath = null) {
  * @author isahooman
  */
 async function sendToChannel(messageContent, channelIds, filePath = null) {
-  const guild = bot.client.guilds.cache.get(config.guildId);
+  const guildId = configManager.getConfigValue('config', 'guildId', null);
+  const guild = bot.client.guilds.cache.get(guildId);
+
   // If the guild is not found, do nothing
   if (!guild) {
     process.stderr.write('Failed to find home server to send message\n');

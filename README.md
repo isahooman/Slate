@@ -110,6 +110,7 @@ Slate can be installed by using the following instructions.
 - openSUSE: `sudo zypper install git nodejs npm`
 
 3. **Clone the GitHub repository**
+
 ```bash
 git clone https://github.com/isahooman/Slate.git .
 cd Slate
@@ -117,13 +118,13 @@ cd Slate
 
 4. **Configuring Slate**
 
-Next you'll need to setup [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to setup [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```bash
 sudo nano ./config/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.
+You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.
 
 5. **You're now ready to run slate**
 
@@ -160,14 +161,14 @@ tar -xvf Slate.zip
 
 4. **Configuring Slate**
 
-Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to configure your bot in [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```sh
 # Opens the config file within the notepad text editor
 notepad ./config/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.<br>
 
 5. **You're now ready to run your bot!**
 
@@ -205,14 +206,14 @@ tar -xvf Slate-main.zip
 
 4. **Configuring Slate**
 
-Next you'll need to configure your bot in [config.json5](./config/config.json5) as well as the optional extra config files.
+Next you'll need to configure your bot in [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```sh
 # Opens the config file within the notepad text editor
 nano ./config/config.json5
 ```
 
-You can follow the [configuration example](./config/README.md#configjson) here if needed.<br>
+You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.<br>
 
 5. You're now ready to run your bot using the start.sh file!
 

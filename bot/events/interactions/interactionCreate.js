@@ -1,29 +1,31 @@
-const blacklist = require('../../config/blacklist.json');
 const logger = require('../../components/util/logger.js');
-const { cooldown } = require('../../bot');
+const { cooldown } = require('../../bot.js');
 const path = require('path');
-const { readJSON5 } = require('../../components/core/json5Parser.js');
-const { ownerId } = readJSON5(path.join(__dirname, '../../config/config.json5'));
-const toggle = readJSON5(path.join(__dirname, '../../config/commands.json5'));
+const configManager = require('../../../components/configManager');
 
 module.exports = {
   name: 'interactionCreate',
   execute: async(interaction, client) => {
     logger.interaction(`Received interaction: ${interaction.id}, from: [${interaction.user.username}]`);
 
+    const blacklist = configManager.loadConfig('blacklist');
+    const ownerId = configManager.getConfigValue('config', 'ownerId', []);
+
     // Check if the user is blacklisted
-    if (blacklist.users.includes(interaction.user.id)) {
+    if (blacklist.users && blacklist.users.includes(interaction.user.id)) {
       logger.warn(`User ${interaction.user.username} (${interaction.user.id}) is in the blacklist. Ignoring interaction.`);
       return;
     }
+
     // Check if the server is blacklisted
-    if (blacklist.servers.leave.includes(interaction.guildId)) {
+    if (interaction.guild && blacklist.servers && blacklist.servers.leave && blacklist.servers.leave.includes(interaction.guildId)) {
       logger.warn(`Server ${interaction.guild.name} (${interaction.guildId}) is in the "leave" blacklist. Leaving server.`);
       await interaction.guild.leave();
       return;
     }
+
     // Check if the server is ignored
-    if (blacklist.servers.ignore.includes(interaction.guildId)) {
+    if (interaction.guild && blacklist.servers && blacklist.servers.ignore && blacklist.servers.ignore.includes(interaction.guildId)) {
       logger.warn(`Server ${interaction.guild.name} (${interaction.guild.id}) is in the "ignore" blacklist. Ignoring interaction.`);
       return;
     }
@@ -41,7 +43,8 @@ module.exports = {
       const commandCategory = command.category || path.basename(path.dirname(command.filePath));
 
       // Disabled check
-      if (!ownerId.includes(interaction.user.id) && (!toggle.slash[interaction.commandName] || !toggle.slash[interaction.commandName])) return interaction.reply({
+      const isCommandEnabled = configManager.getConfigValue('commands', `slash.${interaction.commandName}`, true);
+      if (!ownerId.includes(interaction.user.id) && !isCommandEnabled) return interaction.reply({
         content: 'This command has been disabled, possibly for maintenance.\nTry the prefix variation if it exists.',
       });
 

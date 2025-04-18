@@ -1,7 +1,7 @@
-const statuses = require('../../config/status.json');
 const logger = require('../../components/util/logger.js');
 const { ActivityType } = require('discord.js');
 const { cache } = require('../../bot.js');
+const configManager = require('../../../components/configManager');
 
 module.exports = {
   name: 'ready',
@@ -20,8 +20,12 @@ module.exports = {
 
     // Set the bot status status
     const updateStatus = () => {
+      const statuses = configManager.loadConfig('status');
+
       // Exclude empty types
-      const nonEmptyTypes = Object.keys(statuses).filter(type => statuses[type].length > 0);
+      const nonEmptyTypes = Object.keys(statuses).filter(type =>
+        statuses[type] && Array.isArray(statuses[type]) && statuses[type].length > 0,
+      );
 
       // Check if any non-empty types are available
       if (nonEmptyTypes.length === 0) {
