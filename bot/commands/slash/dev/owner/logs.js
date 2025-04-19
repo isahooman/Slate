@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const logger = require('../../../../components/util/logger.js');
 const path = require('path');
-const { readFile, writeFile, deleteFile } = require('../../../../components/core/fileHandler.js');
+const { readFile } = require('../../../../components/core/fileHandler.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,11 +12,14 @@ module.exports = {
       .setRequired(true)),
   category: 'owner',
   async execute(interaction) {
+    // Defer reply for potentially long operations
+    await interaction.deferReply({ ephemeral: false });
     try {
       logger.debug('[Logs Command] Reading bot logs');
       // Get the number of lines from the command option
       const linesToRetrieve = interaction.options.getInteger('lines');
-      if (linesToRetrieve <= 0) return interaction.reply({ content: 'Please enter a valid number of lines.', ephemeral: false });
+      if (linesToRetrieve <= 0) return interaction.editReply({ content: 'Please enter a valid number of lines.', ephemeral: false });
+
       logger.debug(`[Logs Command] Requested number of lines: ${linesToRetrieve}`);
 
       // Read the log file
@@ -26,27 +29,15 @@ module.exports = {
       // Get the specified number of lines
       const logLines = logData.split('\n').slice(-linesToRetrieve).join('\n');
 
-      // Send logs
-      if (logLines.length > 2000) {
-        // If the log data exceeds 2000 characters, send it as a file
-        const tempFilePath = path.join(__dirname, '../../../../temp/sendLogs.txt');
+      // Always send as a file using a buffer
+      const logBuffer = Buffer.from(logLines, 'utf-8');
+      const logFile = new AttachmentBuilder(logBuffer, { name: 'logs.txt' });
 
-        // Write the logLines to a temporary file
-        await writeFile(tempFilePath, logLines);
-
-        const logFile = new AttachmentBuilder(tempFilePath, { name: 'logs.txt' });
-        await interaction.reply({ content: `Here are the last ${linesToRetrieve} lines of logs:`, files: [logFile], ephemeral: false })
-          .then(() => deleteFile(tempFilePath))
-          .catch(error => {
-            throw new Error(`[Logs Command] Error sending log file: ${error}`);
-          });
-      } else {
-        // If log data is within limit, send it as a message
-        await interaction.reply({ content: `Last ${linesToRetrieve} lines of logs:\n\`\`\`\n${logLines}\n\`\`\``, ephemeral: false });
-      }
+      await interaction.editReply({ content: `Here are the last ${linesToRetrieve} lines of logs:`, files: [logFile], ephemeral: false });
 
       logger.debug('[Logs Command] Successfully replied with logs');
     } catch (error) {
+      await interaction.editReply({ content: 'An error occurred while retrieving the logs. Please check the console.', ephemeral: true });
       throw new Error(`[Logs Command] ${error}`);
     }
   },

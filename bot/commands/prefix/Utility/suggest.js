@@ -1,7 +1,5 @@
-const { EmbedBuilder } = require('discord.js');
-const path = require('path');
-const { readFile } = require('../../../components/core/fileHandler.js');
 const logger = require('../../../components/util/logger.js');
+const { sendSuggestion } = require('../../../components/util/report.js');
 
 module.exports = {
   name: 'suggest',
@@ -16,48 +14,25 @@ module.exports = {
       return message.channel.send('Please provide a message for your suggestion.');
     }
 
-    // Combine the arguments into a single string.
+    // Get the suggestion from the arguments
     const suggestMessage = args.join(' ');
-    logger.debug(`[Suggest Command] Suggestion submitted by: ${message.author.username}, Message: ${suggestMessage}`);
 
-    // Create an embed for the suggestion.
-    const embed = new EmbedBuilder()
-      .setColor('#91c2af')
-      .setTitle('Suggestion')
-      .addFields(
-        { name: 'Server', value: message.guild ? `${message.guild.name} | ${message.guild.id}` : 'N/A' },
-        { name: 'User', value: `<@${message.author.id}> | ${message.author.username}` },
-        { name: 'Channel', value: `<#${message.channel.id}> | ID: ${message.channel.id}` },
-        { name: 'Suggestion', value: suggestMessage },
-      );
+    // Get context for the suggestion
+    const context = {
+      author: message.author,
+      guild: message.guild,
+      channel: message.channel,
+    };
 
-    try {
-      const { suggestChannels } = await readFile(path.join(__dirname, '../../../config/config.json5'));
+    // Send the suggestion
+    const success = await sendSuggestion(suggestMessage, context);
 
-      if (Array.isArray(suggestChannels)) {
-        // Send the suggestion to each channel and add reactions
-        for (const channelId of suggestChannels) {
-          const channel = message.client.channels.cache.get(channelId);
-          if (channel) {
-            logger.debug(`[Suggest Command] Sending suggestion to channel: ${channel.name} (${channel.id})`);
-            const sentMessage = await channel.send({ embeds: [embed] }); // Send the embed and store the message object
-            logger.info(`[Suggest Command] Suggestion sent to channel ${channel.name} (${channel.id})`);
-
-            await sentMessage.react('✅');
-            await sentMessage.react('❎');
-          } else {
-            throw new Error(`[Suggest Command] Invalid suggestion channel ID: ${channelId}`);
-          }
-        }
-
-        // Send the confirmation message after all suggestions are sent
-        logger.debug(`[Suggest Command] Suggestion submitted successfully`);
-        message.channel.send('Your suggestion has been submitted. Thank you for your feedback!');
-      } else {
-        throw new Error('[Suggest Command] suggestChannels is not defined');
-      }
-    } catch (error) {
-      throw new Error(`[Suggest Command] Error processing suggestion: ${error.message}`);
+    if (success) {
+      logger.debug(`[Suggest Command] Suggestion submitted successfully`);
+      return message.channel.send('Your suggestion has been submitted. Thank you for your feedback!');
+    } else {
+      logger.warn(`[Suggest Command] Failed to submit suggestion`);
+      return message.channel.send('There was an issue submitting your suggestion. Please try again later.');
     }
   },
 };

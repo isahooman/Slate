@@ -14,7 +14,7 @@ const MAX_SIZE = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs li
  * For .json5 files, it uses the `readJSON5` function.
  * For other files, it checks the file size and reads the file if it is within the `MAX_SIZE` limit
  * @param {string} filePath The path to the file to read.
- * @returns {Promise<string|object>} A promise that resolves to the file contents as a string or an object.
+ * @returns {string|object} File contents as a string or an object.
  * @author isahooman
  */
 async function readFile(filePath) {
@@ -54,7 +54,7 @@ async function readFile(filePath) {
  * For files larger than `MAX_SIZE` uses `writeLargeFile`
  * @param {string} filePath The path to the file to write to.
  * @param {string|object} data The data to write to the file.
- * @returns {Promise<void>} A promise that resolves when the data has been written to the file.
+ * @returns {void}
  * @author isahooman
  */
 async function writeFile(filePath, data) {
@@ -87,7 +87,7 @@ async function writeFile(filePath, data) {
  * Used for files larger than the `MAX_SIZE` limit.
  * @param {string} filePath The path to the file to write to.
  * @param {string|object} data The data to write to the file.
- * @returns {Promise<void>} A promise that resolves when the data has been written to the file.
+ * @returns {void}
  * @author isahooman
  */
 async function writeLargeFile(filePath, data) {
@@ -119,7 +119,7 @@ async function writeLargeFile(filePath, data) {
  * This function reads the contents of a directory without recursion.
  * It returns an array of file contents as strings
  * @param {string} directory The path to the directory to read.
- * @returns {Promise<Array<string|object>>} A promise that resolves to an array of file contents.
+ * @returns {Array<string|object>} Array of file contents.
  * @author isahooman
  */
 async function readDirectory(directory) {
@@ -158,7 +158,7 @@ async function readDirectory(directory) {
  * Recursively reads a directory and its subdirectories.
  * It returns an array of file paths as strings.
  * @param {string} directory The path to the directory to read.
- * @returns {Promise<Array<string>>} A promise that resolves to an array of file paths.
+ * @returns {Array<string>} An array of file paths.
  * @author isahooman
  */
 async function readRecursive(directory) {
@@ -198,7 +198,7 @@ async function readRecursive(directory) {
 /**
  * Deletes a file.
  * @param {string} filePath The path to the file.
- * @returns {Promise<void>} A promise that resolves when the file has been deleted.
+ * @returns {void}
  * @author isahooman
  */
 async function deleteFile(filePath) {
