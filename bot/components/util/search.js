@@ -11,7 +11,7 @@ class Search {
  * @param {import('discord.js').Message} message The Discord message object.
  * @param {string} nameOrPattern The search query.
  * @param {boolean} [global] Whether to search globally.
- * @returns {Promise<import('discord.js').GuildMember[]|import('discord.js').User[]|null>} An array of matching members or users, or null if no matches found.
+ * @returns {import('discord.js').GuildMember[]|import('discord.js').User[]|null} An array of matching members or users, or null if no matches found.
  * @author EthanLawr
  */
   async member(message, nameOrPattern, global = false) {
@@ -119,7 +119,7 @@ class Search {
    * Searches for a Discord image by URL, attachments, embeds, or author avatar.
    * @param {import('discord.js').Message} message The Discord message object.
    * @param {boolean} [bool] Whether to return the attachment object instead of the URL.
-   * @returns {Promise<string|import('discord.js').Attachment|object>} The image URL, attachment object, or author avatar URL.
+   * @returns {string|import('discord.js').Attachment|object} The image URL, attachment object, or author avatar URL.
    * @author EthanLawr
    */
   async image(message, bool = false) {

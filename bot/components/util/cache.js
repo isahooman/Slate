@@ -126,7 +126,7 @@ class CacheHandler {
   /**
    * Caches all members for a specific guild.
    * @param {Guild} guild The guild to cache members for.
-   * @returns {Promise<void>} A promise that resolves when the members have been cached.
+   * @returns {void}
    * @author isahooman
    */
   cacheMembers(guild) {

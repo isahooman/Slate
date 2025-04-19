@@ -5,7 +5,7 @@ module.exports = {
   name: 'enlarge',
   usage: 'enlarge <emoji>',
   category: 'Utility',
-  aliases: ['emoji'],
+  aliases: [],
   allowDM: true,
   description: 'Enlarges an emoji.',
   execute(message, args) {

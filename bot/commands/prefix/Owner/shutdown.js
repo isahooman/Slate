@@ -4,7 +4,7 @@ module.exports = {
   name: 'shutdown',
   usage: 'shutdown [true]',
   category: 'Owner',
-  aliases: ['kill', 'sd'],
+  aliases: ['sd'],
   allowDM: true,
   description: 'Terminates the bot.',
 
