@@ -5,6 +5,34 @@ const configManager = require('../components/configManager');
 let cooldownBuilder = require('./components/commands/cooldown.js');
 let cache = new (require('./components/util/cache'));
 
+/**
+ * Validates essential configuration values
+ * @returns {boolean} Whether all required configurations are valid
+ */
+function validateConfig() {
+  const requiredConfigs = [
+    { name: 'token', value: configManager.getConfigValue('config', 'token') },
+    { name: 'clientId', value: configManager.getConfigValue('config', 'clientId') },
+    { name: 'ownerId', value: configManager.getConfigValue('config', 'ownerId') },
+    { name: 'prefix', value: configManager.getConfigValue('config', 'prefix') },
+  ];
+
+  const missingConfigs = [];
+
+  for (const config of requiredConfigs) if (!config.value ||
+        (typeof config.value === 'string' && config.value.trim() === '') ||
+        (Array.isArray(config.value) && config.value.length === 0) ||
+        (config.name === 'ownerId' && Array.isArray(config.value) &&
+        (!config.value[0] || config.value[0].trim() === ''))) missingConfigs.push(config.name);
+
+  if (missingConfigs.length > 0) {
+    logger.warn(`Required config info is missing or empty: ${missingConfigs.join(', ')}`);
+    return false;
+  }
+
+  return true;
+}
+
 const intents = configManager.loadConfig('intents');
 const handleIntents = intentConfig => {
   let totalIntentsBits = [];
@@ -25,19 +53,22 @@ const client = new Client({
 async function startBot(bot) {
   logger.debug('Bot starting..');
 
+  // Check for required config data
+  if (!validateConfig()) {
+    logger.error('Bot startup aborted due to missing configuration. Please fill out the required fields in the config.json5 file.');
+    // Exit with 0 to avoid auto recovery
+    process.exit(0);
+  }
+
   // Load all events and commands
   await loadAll(bot);
 
-  // Get config values
-  const clientId = configManager.getConfigValue('config', 'clientId');
-  const token = configManager.getConfigValue('config', 'token');
-  const guildId = configManager.getConfigValue('config', 'guildId');
-  const deployOnStart = configManager.getConfigValue('config', 'deployOnStart', false);
-
   // Redeploy slash commands on startup
-  if (deployOnStart) await deployCommands(bot, clientId, guildId, token);
+  const deployOnStart = configManager.getConfigValue('config', 'deployOnStart', false);
+  if (deployOnStart) await deployCommands();
 
   // Login once preparations are done
+  const token = configManager.getConfigValue('config', 'token');
   bot.login(token);
 }
 
@@ -103,13 +134,6 @@ process
     // Logout of Discord
     await exports.client.destroy();
     logger.info('Bot successfully logged out.');
-    // Delete the temp directory
-    const fs = require('fs');
-    const tempDir = './temp';
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true });
-      logger.info('Deleted temp directory.');
-    }
 
     process.exit(0);
   });
