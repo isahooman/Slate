@@ -35,4 +35,4 @@ project_structure*
 /private
 *.bak
 changelog*
-config/config.json5
+/output
