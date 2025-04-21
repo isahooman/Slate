@@ -1,5 +1,3 @@
-let debugMode = false;
-
 // initial settings load
 window.api.settings.load();
 
@@ -89,44 +87,4 @@ function createOutputEntry(outputBox, data) {
 // Setup sync once loaded
 document.addEventListener('DOMContentLoaded', () => {
   syncOutput();
-});
-
-/**
- * Set up event handlers for sidebar navigation buttons
- * @author isahooman
- */
-const sidebarButtons = document.querySelectorAll('.sidebar-nav button[data-section]');
-
-sidebarButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const targetSection = button.dataset.section;
-
-    // Skip if clicking settings button or button has no target
-    if (!targetSection) return;
-
-    // Update active states
-    sidebarButtons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-
-    // Show/hide sections
-    document.querySelectorAll('.section').forEach(section => {
-      section.classList.remove('active');
-      if (section.id === targetSection) section.classList.add('active');
-    });
-
-    document.body.className = `${targetSection}-view${window.slateDebugMode ? ' debug' : ''}`;
-  });
-});
-
-// Separate handler for settings nav (opens new window instead of section)
-document.querySelector('.settings-nav-btn')?.addEventListener('click', () => {
-  window.api.settings.open();
-});
-
-// Menu button handler to toggle layouts
-document.querySelector('.menu-button')?.addEventListener('click', () => {
-  const currentLayout = document.documentElement.getAttribute('layout');
-  const newLayout = currentLayout === 'expanded' ? 'compact' : 'expanded';
-  // Update through api
-  window.api.layout.update(newLayout);
 });

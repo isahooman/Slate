@@ -28,25 +28,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedLayout = e.target.value;
     window.api.layout.update(selectedLayout);
   });
-
-  const navButtons = document.querySelectorAll('.sidebar-nav button');
-  const sections = document.querySelectorAll('.settings-section');
-
-  // Nav button click handlers
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Get the target section from the button's data
-      const targetSection = button.dataset.section;
-
-      // Update active state for navigation buttons
-      navButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-
-      // Show the selected section and hide others
-      sections.forEach(section => {
-        section.classList.remove('active');
-        if (section.id === targetSection) section.classList.add('active');
-      });
-    });
-  });
 });

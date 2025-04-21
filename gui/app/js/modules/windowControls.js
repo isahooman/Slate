@@ -5,6 +5,7 @@ const WindowControls = {
     this.setupCloseButton();
     this.setupPinButton();
     this.setupDebugToggle();
+    this.setupMenuButton();
     this.debugActive = false;
     this.debugOverlay = null;
     this.debugTreeView = null;
@@ -333,6 +334,19 @@ const WindowControls = {
 
     this.removeHighlight();
     this.currentDebugElement = null;
+  },
+
+  /**
+   * Sets up the menu button click handler
+   * @author isahooman
+   */
+  setupMenuButton() {
+    document.querySelector('.menu-button')?.addEventListener('click', () => {
+      const currentLayout = document.documentElement.getAttribute('layout');
+      const newLayout = currentLayout === 'expanded' ? 'compact' : 'expanded';
+      // Update through api
+      window.api.layout.update(newLayout);
+    });
   },
 };
 
