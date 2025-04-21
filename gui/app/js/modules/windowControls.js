@@ -344,7 +344,7 @@ const WindowControls = {
     document.querySelector('.menu-button')?.addEventListener('click', () => {
       const currentLayout = document.documentElement.getAttribute('layout');
       const newLayout = currentLayout === 'expanded' ? 'compact' : 'expanded';
-      // Update through api
+      // Update layout through api
       window.api.layout.update(newLayout);
     });
   },

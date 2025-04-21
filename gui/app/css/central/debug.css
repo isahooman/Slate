@@ -1,20 +1,20 @@
-/* General */
+/* ========== General ========== */
 .debug * { outline: 1px dashed rgba(255, 255, 255, 0.1); }
 .debug .content { outline: 1px solid #0000ff; }
 .debug button { outline: 1px solid #80ff00; }
 .debug input { outline: 1px solid #ff0080; }
 .debug #app { outline: 1px solid #ffff80; }
 
-/* Titlebar */
+/* ========== Titlebar ========== */
 .debug .window-controls { outline: 1px solid #ff0000; }
 .debug .titlebar { outline: 1px solid #00ff00; }
 .debug .menu-button { outline: 1px solid #ff0000; }
 .debug .title-container { outline: 1px solid #ff80ff; }
 
-/* Main */
+/* ========== Main ========== */
 .debug .section {  outline: 1px solid #ff00ff; }
 
-/* Settings */
+/* ========== Settings ========== */
 .debug .settings-layout { outline: 1px solid #ff00ff; }
 .debug .settings-nav { outline: 1px solid #ffff00; }
 .debug .settings-content { outline: 1px solid #00ffff; }
@@ -23,7 +23,7 @@
 .debug .setting-item { outline: 1px solid #80ff00; }
 .debug select { outline: 1px solid #8000ff; }
 
-/* Sidebar */
+/* ========== Sidebar ========== */
 .debug .sidebar { outline: 1px solid #ff00ff; } 
 .debug .control-buttons { outline: 2px solid #ff00ff; }
 .debug .sidebar-nav { outline: 1px solid #ffff00; }
@@ -31,7 +31,7 @@
 .debug .stop-btn { outline: 1px solid #0080ff; }
 .debug .restart-btn { outline: 1px solid #80ff00; }
 
-/* Monitor */
+/* ========== Monitor ========== */
 .debug .monitor-container { outline: 1px solid #ff00aa; }
 .debug .monitor-gauge { outline: 1px solid #00ffaa; }
 .debug .gauge-body { outline: 1px solid #00aaff; }

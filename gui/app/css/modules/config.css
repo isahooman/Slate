@@ -203,7 +203,7 @@ input.input-boolean {
 }
 
 .array-container {
-  min-height: 28px; /* Added */
+  min-height: 28px;
   max-height: 150px;
   margin-top: 0;
   padding: 8px;

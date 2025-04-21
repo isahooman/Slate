@@ -34,7 +34,7 @@ const Config = {
   },
 
   /**
-   * Set up array containers for add/remove functionality
+   * Set up array containers
    * @author isahooman
    */
   setupArrayContainers() {

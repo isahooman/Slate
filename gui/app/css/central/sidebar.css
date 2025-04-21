@@ -102,16 +102,16 @@
 }
 
 .restart-btn {
-  display: flex; /* Added from common styles */
-  align-items: center; /* Added from common styles */
-  justify-content: center; /* Added from common styles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   padding: 0;
   border: none;
   border-radius: 0 5px 5px 0;
   background: #e68a28;
-  color: var(--text-color); /* Added from common styles */
-  cursor: pointer; /* Added from common styles */
+  color: var(--text-color);
+  cursor: pointer;
 }
 
 .restart-btn:hover:not(:disabled) {
@@ -125,15 +125,15 @@
 
 .start-btn,
 .stop-btn {
-  display: flex; /* Added from common styles */
+  display: flex;
   flex: 1;
-  align-items: center; /* Added from common styles */
-  justify-content: center; /* Added from common styles */
+  align-items: center;
+  justify-content: center;
   padding: 0 12px;
   border: none;
   border-radius: 5px 0 0 5px;
-  color: var(--text-color); /* Added from common styles */
-  cursor: pointer; /* Added from common styles */
+  color: var(--text-color);
+  cursor: pointer;
 }
 
 .start-btn {
@@ -151,5 +151,3 @@
 .stop-btn:hover:not(:disabled) {
   background: #b03737;
 }
-
-/* Removed redundant common styles for .restart-btn, .start-btn, .stop-btn as they were moved up */

@@ -1,8 +1,8 @@
-/**
- * Navigation/Sidebar handler
- * @author isahooman
- */
 const NavBar = {
+  /**
+   * Initialize the nav handler
+   * @author isahooman
+   */
   init() {
     const isSettingsPage = document.title.toLowerCase().includes('settings');
 
@@ -22,6 +22,10 @@ const NavBar = {
     this.setupNavigation(options);
   },
 
+  /**
+   * Set up sidebar navigation
+   * @author isahooman
+   */
   setupNavigation({
     navSelector = '.sidebar-nav button[data-section]',
     sectionSelector = '.section',
