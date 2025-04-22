@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { app, BrowserWindow } = require('electron');
+const { BrowserWindow } = require('electron');
 
 class SettingsManager {
   constructor() {
-    this.settingsPath = path.join(app.getPath('userData'), 'Data', 'settings.json');
+    this.settingsPath = path.join(__dirname, '../../../../config/gui', 'settings.json');
     this.defaultSettings = {
       theme: 'dark',
       layout: 'expanded',
