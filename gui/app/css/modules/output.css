@@ -57,6 +57,7 @@
   display: flex;
   flex: 1;
   align-items: center;
+  user-select: none;
 }
 
 .search-input {
@@ -136,6 +137,7 @@
   border-radius: 4px;
   background: #cf4141;
   cursor: pointer;
+  user-select: none;
 }
 
 .clear-logs-btn:hover {

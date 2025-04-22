@@ -10,6 +10,7 @@
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
   background: var(--bg-secondary);
+  user-select: none;
 }
 
 /* ========== Guages ========== */

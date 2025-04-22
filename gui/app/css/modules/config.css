@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  user-select: none;
 }
 
 .config-group {
@@ -138,6 +139,7 @@
   line-height: 1.4;
   text-align: left;
   word-wrap: break-word;
+  user-select: none;
 }
 
 /* ========== Toggle switches ========== */

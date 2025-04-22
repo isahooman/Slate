@@ -13,6 +13,7 @@
   border-right: 1px solid var(--window-tertiary);
   background-color: var(--window-primary);
   transition: left 0.1s ease-in-out;
+  user-select: none;
 }
 
 :root[layout="expanded"] .sidebar {
