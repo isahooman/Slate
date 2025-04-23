@@ -23,9 +23,12 @@ module.exports = {
       }
 
       // Read the log file
-      const logFilePath = path.join(__dirname, '../../../bot.log');
+      const logFilePath = path.join(__dirname, '../../../../output/bot.log');
       let logData = await readFile(logFilePath);
-      const logLines = logData.split('\n').slice(-linesToRetrieve).join('\n');
+
+      // Retrieve the log lines
+      const allLogLines = logData.split('\n').filter(line => line.trim() !== '');
+      const logLines = allLogLines.slice(-linesToRetrieve).join('\n');
 
       // Always send as a file using a buffer
       const logBuffer = Buffer.from(logLines, 'utf-8');
