@@ -212,8 +212,7 @@ async function deleteFile(filePath) {
   }
 }
 
-module.exports =
-{
+module.exports = {
   readFile,
   writeFile,
   readDirectory,

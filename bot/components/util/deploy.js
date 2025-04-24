@@ -133,8 +133,7 @@ async function undeploy() {
   }
 }
 
-module.exports =
-{
+module.exports = {
   deployCommands,
   undeploy,
 };

@@ -210,8 +210,7 @@ class Global extends Cooldown {
   }
 }
 
-module.exports =
-{
+module.exports = {
   user: new User(),
   guild: new Guild(),
   global: new Global(),

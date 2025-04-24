@@ -192,8 +192,7 @@ function isEventEnabled(eventName) {
   return configManager.getConfigValue('events', eventName, true);
 }
 
-module.exports =
-{
+module.exports = {
   loadEvents,
   reloadAllEvents,
   setEventEnabled,

@@ -11,8 +11,7 @@ async function loadAll(client) {
   await loadEvents(client);
 }
 
-module.exports =
-{
+module.exports = {
   loadAll,
   reloadAllEvents,
   togglePrefixCommand,

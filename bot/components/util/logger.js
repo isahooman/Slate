@@ -168,8 +168,7 @@ const ensureDirectories = () => {
 
 ensureDirectories();
 
-module.exports =
-{
+module.exports = {
   info: (message, commandType, commandInfo) => logMessage(levels.INFO, message, commandType, commandInfo),
   warn: (message, commandType, commandInfo) => logMessage(levels.WARN, message, commandType, commandInfo),
   error: (message, commandType, commandInfo) => logMessage(levels.ERROR, message, commandType, commandInfo),
