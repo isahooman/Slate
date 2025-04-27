@@ -58,8 +58,7 @@ class WindowManager {
 
     let window;
     const parentWindow = parentWebContents instanceof BrowserWindow ?
-      parentWebContents :
-      parentWebContents ? BrowserWindow.fromWebContents(parentWebContents) : null;
+      parentWebContents : parentWebContents ? BrowserWindow.fromWebContents(parentWebContents) : null;
 
     const commonOptions = {
       parent: parentWindow,
