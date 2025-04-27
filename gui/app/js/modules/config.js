@@ -291,5 +291,3 @@ const Config = {
 document.addEventListener('DOMContentLoaded', () => {
   Config.init();
 });
-
-module.exports = Config;
