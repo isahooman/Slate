@@ -64,6 +64,10 @@ class SettingsManager {
         this.saveSettings(settings);
       }
 
+      // Validate existing layout
+      if (typeof settings.layout !== 'string' ||
+        (settings.layout !== 'compact' && settings.layout !== 'expanded')) settings.layout = 'expanded';
+
       return settings;
     } catch (error) {
       console.error('Error loading settings:', error.message);
