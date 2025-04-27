@@ -21,7 +21,7 @@ function createMainWindow(options = {}) {
   mainWindow = new BrowserWindow({
     width: 500,
     height: 600,
-    minWidth: 475,
+    minWidth: 500,
     minHeight: 500,
     frame: false,
     show: false,

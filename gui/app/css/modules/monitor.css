@@ -3,43 +3,46 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
-  padding: 30px;
-  margin-bottom: 5px;
-  overflow: hidden;
+  height: auto;
+  padding: 30px 30px 10px;
+  overflow: visible;
   border: 1px solid var(--window-tertiary);
   border-radius: 5px;
   background: var(--bg-secondary);
   user-select: none;
 }
 
-/* ========== Guages ========== */
+/* ========== Gauges ========== */
 .monitor-gauge {
   display: flex;
-  flex: 0 1 140px;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
   min-width: 100px;
-  max-width: 180px;
+  max-width: 160px;
   height: 100%;
-  padding: 0.5rem;
+  margin: 0 10px;
+  position: relative;
 }
 
 .gauge-title {
   width: 100%;
+  position: absolute;
+  top: -20px;
   margin: 0;
   color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 500;
   text-align: center;
+  z-index: 1;
 }
 
 .gauge {
   position: relative;
-  width: 85%;
-  padding-bottom: 85%;
+  width: 100%; /* Use full width */
+  height: 100%; /* Use full height */
+  aspect-ratio: 1/1;
   margin: 0 auto;
 }
 
@@ -50,8 +53,9 @@
   width: 100%;
   height: 100%;
   background: #414141;
-  border: min(12px, 6%) solid var(--window-tertiary);
+  border: min(5px, 3%) solid var(--window-tertiary); /* Slightly reduced border */
   border-radius: 50%;
+  box-sizing: border-box;
 }
 
 .gauge-fill {
@@ -76,6 +80,6 @@
   background: var(--window-primary);
   border-radius: 50%;
   color: var(--text-primary);
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
   font-weight: bold;
 }
