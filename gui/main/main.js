@@ -2,8 +2,8 @@ const { app, ipcMain } = require('electron');
 const { handleWindowControls, handleWindowPin, handleGetState } = require('./ipc/handlers/window');
 const { handleUpdateTheme, handleLoadSettings } = require('./ipc/handlers/settings');
 const { handleLayoutUpdate } = require('./ipc/handlers/layout');
+const terminalService = require('./ipc/handlers/terminal');
 const windowManager = new (require('./windows/windowManager'))();
-const { handleSyncOutput, handleOutputClear } = require('./ipc/handlers/outputBox');
 const { handleAlertShow, handleAlertClose } = require('./ipc/handlers/alert');
 
 function registerIpcHandlers() {
@@ -26,9 +26,16 @@ function registerIpcHandlers() {
   ipcMain.on('update-theme', handleUpdateTheme);
   ipcMain.on('layout:update', handleLayoutUpdate);
 
-  // Output handlers
-  ipcMain.on('output-update-state', handleSyncOutput);
-  ipcMain.on('output-clear', handleOutputClear);
+  // Terminal handlers
+  ipcMain.on('terminal:log', (event, message) => terminalService.logMessage(message));
+  ipcMain.on('terminal:clear', () => terminalService.clearBuffer());
+  ipcMain.handle('terminal:get-buffer', () => terminalService.getBuffer());
+
+  // Debug handlers
+  ipcMain.on('debug:open-devtools', (event) => {
+    const webContents = event.sender;
+    webContents.openDevTools({ mode: 'detach' });
+  });
 }
 
 // Create main window

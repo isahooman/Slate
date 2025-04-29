@@ -64,3 +64,46 @@
 .window-controls div:hover img {
   filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(180deg);
 }
+
+/* ========== Menu Button ========== */
+.menu-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  -webkit-app-region: no-drag;
+}
+
+.menu-button:hover {
+  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(180deg);
+}
+
+:root[layout="compact"] .menu-button img {
+  transform: rotate(180deg);
+}
+
+/* ========== Debug Button ========== */
+.debug-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  -webkit-app-region: no-drag;
+}
+
+.debug-button img {
+  height: 100%;
+  width: auto;
+}
+
+.debug-button:hover {
+  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(180deg);
+}

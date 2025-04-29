@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Slate GUI</title>
   <link rel="stylesheet" href="../css/main.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
 </head>
 <body>
   <div class="titlebar">
     <div class="menu-button" title="Toggle Layout">
       <img src="../../assets/side_toggle.svg" alt="Menu">
+    </div>
+    <div class="debug-button" title="Debug Menu">
+      <img src="../../assets/test.svg" alt="Debug">
     </div>
     <div class="title">Slate Bot</div>
     <div class="window-controls">
@@ -50,8 +54,8 @@
         <div class="config-buttons">
           <button class="config-nav-btn" data-section="config-general">General</button>
           <button class="config-nav-btn" data-section="config-status">Status</button>
-          <button class="config-nav-btn" data-section="config-logging">Logging</button>
           <button class="config-nav-btn" data-section="config-blacklist">Blacklist</button>
+          <button class="config-nav-btn" data-section="config-logging">Logging</button>
           <button class="config-nav-btn" data-section="config-commands">Commands</button>
           <button class="config-nav-btn" data-section="config-events">Events</button>
           <button class="config-nav-btn" data-section="config-intents">Intents</button>
@@ -102,7 +106,7 @@
 
         <!-- Console Output -->
         <div class="output-container">
-          <!-- Placeholder comment-->
+          <div id="home-terminal" class="terminal-container"></div>
         </div>
     </section>
 
@@ -133,7 +137,7 @@
           </button>
         </div>
         <div class="output-container">
-          <!-- Placeholder comment-->
+          <div id="logs-terminal" class="terminal-container"></div>
         </div>
       </div>
     </section>
@@ -514,9 +518,15 @@
     </section>
 
   </div>
+  <script src="../../../node_modules/xterm/lib/xterm.js"></script>
+  <script src="../../../node_modules/xterm-addon-fit/lib/xterm-addon-fit.js"></script>
+  <script src="../../../node_modules/xterm-addon-search/lib/xterm-addon-search.js"></script>
+  <script src="../js/modules/terminal.js"></script>
   <script src="../js/modules/windowControls.js"></script>
   <script src="../js/modules/navbar.js"></script>
   <script src="../js/renderer.js"></script>
   <script src="../js/modules/config.js"></script>
+  <script src="../js/modules/debugMenu.js"></script>
+  <script src="../js/modules/autoscroll.js"></script>
 </body>
 </html>

@@ -1,5 +1,30 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+const channelListeners = new Map();
+
+const createSafeListener = (channel, callback) => {
+  // Check if the channel exists
+  if (!channelListeners.has(channel)) channelListeners.set(channel, new Map());
+
+  // Check if the callback is already registered
+  const listeners = channelListeners.get(channel);
+  if (listeners.has(callback)) return listeners.get(callback).cleanup;
+
+  // Create handler and cleanup function
+  const handler = (_, ...args) => callback(...args);
+  const cleanup = () => {
+    ipcRenderer.removeListener(channel, handler);
+    listeners.delete(callback);
+    if (listeners.size === 0) channelListeners.delete(channel);
+  };
+
+  // Register the new listener
+  ipcRenderer.on(channel, handler);
+  listeners.set(callback, { handler, cleanup });
+
+  return cleanup;
+};
+
 contextBridge.exposeInMainWorld('api', {
   // General
   isDev: process.env.NODE_ENV === 'development',
@@ -9,50 +34,26 @@ contextBridge.exposeInMainWorld('api', {
   settings: {
     open: () => ipcRenderer.send('open-settings'),
     load: () => ipcRenderer.send('load-settings'),
-    onLoaded: callback => {
-      ipcRenderer.removeAllListeners('settings-loaded');
-      ipcRenderer.on('settings-loaded', (_, settings) => callback(settings));
-    },
+    onLoaded: callback => createSafeListener('settings-loaded', callback),
   },
 
   // Theme API
   theme: {
     update: theme => ipcRenderer.send('update-theme', theme),
-    onUpdated: callback => {
-      ipcRenderer.removeAllListeners('theme-updated');
-      ipcRenderer.on('theme-updated', (_, theme) => callback(theme));
-    },
+    onUpdated: callback => createSafeListener('theme-updated', callback),
   },
 
   // Layout API
   layout: {
     update: layout => ipcRenderer.send('layout:update', layout),
-    onUpdated: callback => {
-      ipcRenderer.removeAllListeners('layout-updated');
-      ipcRenderer.on('layout-updated', (_, success) => callback(success));
-    },
+    onUpdated: callback => createSafeListener('layout-updated', callback),
   },
 
   // Alert API
   alert: {
     show: message => ipcRenderer.send('alert:show', message),
     close: () => ipcRenderer.send('alert:close'),
-    onMessage: callback => {
-      ipcRenderer.removeAllListeners('alert:message');
-      ipcRenderer.on('alert:message', (_, message) => callback(message));
-    },
-  },
-
-  // Output Box API
-  output: {
-    clear: elementId =>
-      ipcRenderer.send('output-clear', elementId),
-    onStateChange: (elementId, callback) => {
-      ipcRenderer.removeAllListeners(`output-state-change-${elementId}`);
-      ipcRenderer.on(`output-state-change-${elementId}`, (_, state) => callback(state));
-    },
-    updateState: (elementId, state) =>
-      ipcRenderer.send('output-update-state', { elementId, state }),
+    onMessage: callback => createSafeListener('alert:message', callback),
   },
 
   // Window Controls API
@@ -61,10 +62,24 @@ contextBridge.exposeInMainWorld('api', {
     maximize: () => ipcRenderer.send('window:control', 'maximize'),
     close: () => ipcRenderer.send('window:control', 'close'),
     pin: () => ipcRenderer.invoke('window:pin'),
-    onStateChange: callback => {
-      ipcRenderer.removeAllListeners('window-state-changed');
-      ipcRenderer.on('window-state-changed', callback);
-    },
+    onStateChange: callback => createSafeListener('window-state-changed', callback),
     getInitialState: () => ipcRenderer.invoke('window:get-initial-state'),
+  },
+
+  // Terminal API
+  terminal: {
+    log: message => ipcRenderer.send('terminal:log', message),
+    start: () => ipcRenderer.send('terminal:start'),
+    clear: () => ipcRenderer.send('terminal:clear'),
+    getBuffer: () => ipcRenderer.invoke('terminal:get-buffer'),
+
+    onLog: callback => createSafeListener('terminal-log', callback),
+    onData: callback => createSafeListener('terminal-data', callback),
+    onClear: callback => createSafeListener('terminal-clear', callback),
+  },
+
+  // Debug API
+  debug: {
+    openDevTools: () => ipcRenderer.send('debug:open-devtools'),
   },
 });
