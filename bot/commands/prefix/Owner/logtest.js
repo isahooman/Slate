@@ -7,22 +7,17 @@ module.exports = {
   description: 'Test logger levels',
   allowDM: true,
   execute(message, args) {
-    // Get text input from command arguments
+    // Get test message from arguments
     const outputText = args.join(' ');
     if (!outputText) return message.reply('Please provide text to log.');
 
-    // Send log of every level with the input
-    logger.info(`[LogTest Command] ${outputText}`);
-    logger.warn(`[LogTest Command] ${outputText}`);
-    logger.error(`[LogTest Command] ${outputText}`);
-    logger.debug(`[LogTest Command] ${outputText}`);
-    logger.command(`[LogTest Command] ${outputText}`);
-    logger.start(`[LogTest Command] ${outputText}`);
-    logger.message(`[LogTest Command] ${outputText}`);
-    logger.interaction(`[LogTest Command] ${outputText}`);
-    logger.loading(`[LogTest Command] ${outputText}`);
+    // Test logging for each level
+    Object.keys(logger.levels).forEach(level => {
+      const logLevel = level.toLowerCase();
+      if (typeof logger[logLevel] === 'function') logger[logLevel](`[LogTest Command] ${outputText}`);
+    });
 
-    // Confirmation reply
+    // Confirmation
     message.reply('Logged messages at different levels.');
   },
 };

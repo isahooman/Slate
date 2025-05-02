@@ -10,22 +10,17 @@ module.exports = {
       .setRequired(true)),
   category: 'owner',
   async execute(interaction) {
-    try {
-      const outputText = interaction.options.getString('output');
-      // Send log of every level with the input
-      logger.info(`[LogTest Command] ${outputText}`);
-      logger.warn(`[LogTest Command] ${outputText}`);
-      logger.error(`[LogTest Command] ${outputText}`);
-      logger.debug(`[LogTest Command] ${outputText}`);
-      logger.command(`[LogTest Command] ${outputText}`);
-      logger.start(`[LogTest Command] ${outputText}`);
-      logger.message(`[LogTest Command] ${outputText}`);
-      logger.interaction(`[LogTest Command] ${outputText}`);
-      logger.loading(`[LogTest Command] ${outputText}`);
+    // Get test message from options
+    const outputText = interaction.options.getString('output');
+    if (!outputText) return interaction.reply('Please provide text to log.');
 
-      interaction.reply('Logged messages at different levels.');
-    } catch {
-      await interaction.reply('Logged messages at different levels.');
-    }
+    // Test logging for each level
+    Object.keys(logger.levels).forEach(level => {
+      const logLevel = level.toLowerCase();
+      if (typeof logger[logLevel] === 'function') logger[logLevel](`[LogTest Command] ${outputText}`);
+    });
+
+    // Confirmation
+    await interaction.reply('Logged messages at different levels.');
   },
 };
