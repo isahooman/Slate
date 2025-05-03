@@ -7,12 +7,12 @@ const { pipeline, Readable } = require('stream');
 const { createWriteStream, appendFile } = require('fs');
 const pipelineAsync = promisify(pipeline);
 
-const MAX_SIZE = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs limit
+const maxSize = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs limit
 
 /**
  * Reads the contents of a file.
  * For .json5 files, it uses the `readJSON5` function.
- * For other files, it checks the file size and reads the file if it is within the `MAX_SIZE` limit
+ * For other files, it checks the file size and reads the file if it is within the `maxSize` limit
  * @param {string} filePath The path to the file to read.
  * @returns {string|object} File contents as a string or an object.
  * @author isahooman
@@ -30,8 +30,8 @@ async function readFile(filePath) {
       try {
         const stats = await promisify(fs.stat)(filePath);
         logger.debug(`File size: ${stats.size}`);
-        if (stats.size > MAX_SIZE) {
-          // If the file size exceeds the `MAX_SIZE` limit, return a message
+        if (stats.size > maxSize) {
+          // If the file size exceeds the `maxSize` limit, return a message
           return `File is too large to read.`;
         } else {
           // If the file size is within the limit, use fs.readFile
@@ -51,7 +51,7 @@ async function readFile(filePath) {
 
 /**
  * Writes data to a file.
- * For files larger than `MAX_SIZE` uses `writeLargeFile`
+ * For files larger than `maxSize` uses `writeLargeFile`
  * @param {string} filePath The path to the file to write to.
  * @param {string|object} data The data to write to the file.
  * @returns {void}
@@ -62,8 +62,8 @@ async function writeFile(filePath, data) {
   try {
     const fileExtension = path.extname(filePath).toLowerCase();
     const stats = await promisify(fs.stat)(filePath);
-    // If the file size exceeds MAX_SIZE, use writeLargeFile
-    if (stats.size > MAX_SIZE) {
+    // If the file size exceeds maxSize, use writeLargeFile
+    if (stats.size > maxSize) {
       await writeLargeFile(filePath, data);
     } else
       // Check the file extension to determine the write method
@@ -84,7 +84,7 @@ async function writeFile(filePath, data) {
 
 /**
  * Writes data to a large file using a stream.
- * Used for files larger than the `MAX_SIZE` limit.
+ * Used for files larger than the `maxSize` limit.
  * @param {string} filePath The path to the file to write to.
  * @param {string|object} data The data to write to the file.
  * @returns {void}
