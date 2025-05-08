@@ -14,9 +14,12 @@ module.exports = {
       return message.channel.send('Please provide an emoji.');
     }
 
-    const emoji = args[0].replace(/<a?:(.*?):(\d+)>/g, '$2'); // Extract the emoji ID from the provided emoji string.
-    const url = `https://cdn.discordapp.com/emojis/${emoji}.png?size=256`; // Construct the URL to the enlarged emoji image.
-    const emojiName = message.content.match(/<a?:(.*?):(\d+)>/)[1]; // Get the emoji name from the message
+    // Extract the emoji ID from the provided emoji.
+    const emoji = args[0].replace(/<a?:(.*?):(\d+)>/g, '$2');
+    // Create emoji URL using the emoji ID.
+    const url = `https://cdn.discordapp.com/emojis/${emoji}.png?size=256`;
+    // Get the emoji name from the message content.
+    const emojiName = message.content.match(/<a?:(.*?):(\d+)>/)[1];
 
     logger.debug(`[Enlarge Command] Enlarging emoji ${emoji} in ${message.guild.name}`);
 

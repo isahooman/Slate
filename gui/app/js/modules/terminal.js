@@ -151,7 +151,7 @@ const TerminalModule = {
       // Apply fit addon
       fitAddon.fit();
 
-      // Fix specific terminal elements
+      // Resize the terminal to fit the container
       const xtermRows = terminal.element.querySelector('.xterm-rows');
       if (xtermRows) {
         xtermRows.style.cssText = 'width: 100% !important; height: 100% !important;';

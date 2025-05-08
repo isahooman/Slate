@@ -35,11 +35,10 @@ module.exports = {
       reloadEvent(message.client, 'messageUpdate');
       reloadEvent(message.client, 'messageCreate');
 
-      // Confirm completion
+      // Confirm the change to the user.
       logger.info(`[Prefix Command] Prefix changed to ${newPrefix} by user ${message.author.tag}`);
       message.reply(`Prefix changed to \`${newPrefix}\``);
     } catch (error) {
-      // Log an error message.
       throw new Error(`[Prefix Command] Error changing prefix: ${error.message}`);
     }
   },

@@ -24,6 +24,7 @@ module.exports = {
 
     /**
      * Leave the server
+     * @author isahooman
      */
     function leaveServer() {
       // confirmation reply
