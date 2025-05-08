@@ -30,7 +30,7 @@ module.exports = {
       const allLogLines = logData.split('\n').filter(line => line.trim() !== '');
       const logLines = allLogLines.slice(-linesToRetrieve).join('\n');
 
-      // Always send as a file using a buffer
+      // Send the log lines as an attachment
       const logBuffer = Buffer.from(logLines, 'utf-8');
       const logFile = new AttachmentBuilder(logBuffer, { name: 'logs.txt' });
 
