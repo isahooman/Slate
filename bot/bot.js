@@ -19,11 +19,20 @@ function validateConfig() {
 
   const missingConfigs = [];
 
-  for (const config of requiredConfigs) if (!config.value ||
+  for (const config of requiredConfigs) {
+    let isEmpty;
+
+    if (config.name === 'ownerId') isEmpty = !config.value.length || !config.value[0] || config.value[0].trim() === '';
+    else isEmpty =
+        // Check for undefined values
+        !config.value ||
+        // Check for empty strings
         (typeof config.value === 'string' && config.value.trim() === '') ||
-        (Array.isArray(config.value) && config.value.length === 0) ||
-        (config.name === 'ownerId' && Array.isArray(config.value) &&
-        (!config.value[0] || config.value[0].trim() === ''))) missingConfigs.push(config.name);
+        // Check for empty arrays
+        (Array.isArray(config.value) && config.value.length === 0);
+
+    if (isEmpty) missingConfigs.push(config.name);
+  }
 
   if (missingConfigs.length > 0) {
     logger.warn(`Required config info is missing or empty: ${missingConfigs.join(', ')}`);
