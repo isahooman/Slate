@@ -33,7 +33,7 @@ async function loadCommands(client) {
 
 /**
  * Load slash commands
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @param {string} directory - The commands directory
  * @param {object} commandsConfig - Commands configuration object
  * @author isahooman
@@ -53,7 +53,7 @@ async function loadSlashCommands(client, directory, commandsConfig) {
 
 /**
  * Load prefix commands.
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @param {string} directory - The commands directory.
  * @param {object} commandsConfig - Commands configuration object
  * @author isahooman
@@ -77,7 +77,7 @@ async function loadPrefixCommands(client, directory, commandsConfig) {
 /**
  * Toggle the enabled state of a slash command.
  * @param {string} input - The command to toggle.
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @returns {object | null} - The command name and its new status.
  * @author isahooman
  */
@@ -103,7 +103,7 @@ function toggleSlashCommand(input, client) {
 /**
  * Toggles the enabled state of a prefix command.
  * @param {string} input - The command to toggle.
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @returns {object | null} - The command name and its new status.
  * @author isahooman
  */
@@ -188,7 +188,7 @@ function findNearestCommand(input, commands, type) {
 
 /**
  * Reloads a specific command.
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @param {string} commandName - The name of the command to reload.
  * @param {string} commandType - The type of command to reload (slash or prefix).
  * @returns {boolean} - If reload was successful.
@@ -222,7 +222,7 @@ function reloadCommand(client, commandName, commandType) {
 
 /**
  * Reloads all commands of the given type.
- * @param {client} client - Discord client
+ * @param {client} client - Discord Client
  * @param {string} commandType - The type of commands to reload (slash or prefix).
  * @returns {boolean} - If reload was successful.
  * @author isahooman

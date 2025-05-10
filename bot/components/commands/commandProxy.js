@@ -21,7 +21,7 @@ const createMethodHandler = (target, methodName, disclaimerFn, shouldProxy = fal
 
 /**
  * Proxies Discord messages
- * @param {object} message - Discord message
+ * @param {object} message - Discord Message
  * @param {Function} disclaimerFn - disclaimer function
  * @returns {Proxy} Proxied message or original message
  */

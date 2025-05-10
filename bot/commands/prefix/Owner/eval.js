@@ -43,7 +43,7 @@ module.exports = {
 
   /**
    * Executes the Eval command
-   * @param {Discord.message} message - A Discord Message
+   * @param {Discord.message} message - Discord Message
    * @author EthanLawr
    */
   async execute(message) {

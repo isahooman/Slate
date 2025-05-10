@@ -56,7 +56,7 @@ async function loadEvents(client) {
 /**
  * Reload Events
  * @param {client} client - Discord Client
- * @author isahoman
+ * @author isahooman
  */
 async function reloadAllEvents(client) {
   const eventsDirectory = path.join(__dirname, '../../events');

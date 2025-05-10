@@ -90,7 +90,7 @@ class CacheHandler {
 
   /**
    * Caches all servers on startup.
-   * @param {client} client The Discord client.
+   * @param {client} client - Discord Client
    * @author isahooman
    */
   cacheServers(client) {
@@ -101,7 +101,7 @@ class CacheHandler {
 
   /**
    * Caches all channels on startup.
-   * @param {client} client The Discord client.
+   * @param {client} client - Discord Client
    * @author isahooman
    */
   cacheChannels(client) {
@@ -112,7 +112,7 @@ class CacheHandler {
 
   /**
    * Caches all threads on startup.
-   * @param {client} client The Discord client.
+   * @param {client} client - Discord Client
    * @author isahooman
    */
   cacheThreads(client) {
