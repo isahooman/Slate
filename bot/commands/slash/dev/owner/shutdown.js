@@ -4,11 +4,7 @@ const { SlashCommandBuilder } = require('discord.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('shutdown')
-    .setDescription('Terminates the bot process')
-    .addBooleanOption(option => option.setName('unregister')
-      .setDescription('Unregister all slash commands before shutting down')
-      .setRequired(false),
-    ),
+    .setDescription('Terminates the bot process'),
   category: 'owner',
   async execute(interaction) {
     try {
