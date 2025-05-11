@@ -2,7 +2,7 @@ const jsdocPlugin = require('eslint-plugin-jsdoc');
 
 module.exports = [
   {
-    ignores: ['/node_modules/**'],
+    ignores: ['node_modules/**', 'output/**'],
   },
   {
     languageOptions: {
