@@ -292,6 +292,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
     return;
   }
 
+  // Gather error information
   let errorEmbed = new EmbedBuilder().setColor('#FF0000');
   let errorTitle = 'Error';
   let errorStack = '';
@@ -302,11 +303,13 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
     // Prepare error report for slash commands
     if (commandType === 'slash' && commandInfo.interaction) {
       const interaction = commandInfo.interaction;
+
       errorTitle = `Error in slash command: ${interaction.commandName}`;
       errorEmbed.setTitle(errorTitle);
       errorMessage = messageText;
+      const options = interaction.options?.data || [];
+      const args = options.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
 
-      const args = interaction.options.data.map(opt => `\`${opt.name}\`: ${opt.value}`).join('\n') || 'None';
       errorEmbed.addFields(
         { name: 'User', value: interaction.user ? `${interaction.user.username} <@${interaction.user.id}>` : 'N/A' },
         { name: 'Channel', value: interaction.channelId ? `<#${interaction.channelId}> (ID: ${interaction.channelId})` : 'N/A' },
@@ -314,17 +317,22 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
         { name: 'Arguments', value: args },
         { name: 'Error', value: messageText },
       );
+
     // Prepare error report for prefix commands
     } else if (commandType === 'prefix' && commandInfo.context) {
       const context = commandInfo.context;
-      const commandName = commandInfo.args[0];
+
+      const commandName = commandInfo.command || 'unknown';
+
       errorTitle = `Error in prefix command: ${commandName}`;
       errorMessage = messageText;
+
+      errorEmbed.setTitle(errorTitle);
       errorEmbed.addFields(
         { name: 'Server', value: context.guild ? `${context.guild.name} | ${context.guild.id}` : 'N/A' },
-        { name: 'User', value: `<@${context.author.id}> | ${context.author.username}` },
-        { name: 'Channel', value: `<#${context.channel.id}> | ID: ${context.channel.id}` },
-        { name: 'Arguments', value: commandInfo.args.join(' ') || 'None' },
+        { name: 'User', value: context.author ? `<@${context.author.id}> | ${context.author.username}` : 'N/A' },
+        { name: 'Channel', value: context.channel ? `<#${context.channel.id}> | ID: ${context.channel.id}` : 'N/A' },
+        { name: 'Arguments', value: Array.isArray(commandInfo.args) ? commandInfo.args.join(' ') : 'None' },
         { name: 'Error', value: messageText },
       );
     } else {
@@ -332,7 +340,6 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
         { name: 'Message', value: messageText },
       );
     }
-    errorEmbed.setTitle(errorTitle);
 
     // Get stack trace from passed commandInfo
     if (commandInfo.error) errorStack = commandInfo.error.stack;
@@ -347,12 +354,16 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
 
       // Create a filename with date-time and error details
       const timestamp = moment().format('YYYY-MM-DD_HH-mm');
-      const cmdName = commandType === 'slash' && commandInfo.interaction ?
-        commandInfo.interaction.commandName :
-        commandType === 'prefix' && commandInfo.args ? commandInfo.args[0] : 'unknown';
+      let cmdName = 'unknown';
 
+      if (commandType === 'slash' && commandInfo.interaction) cmdName = commandInfo.interaction.commandName;
+      else if (commandType === 'prefix') cmdName = commandInfo.command || 'unknown';
+
+      // Create the error file path
       errorFile = path.join(errorDir, `${timestamp}_${commandType}_${cmdName}.js`);
       const content = `Error: ${errorMessage}\n\nStack Trace:\n${errorStack}`;
+
+      // Write the error stack to the file
       await fs.promises.writeFile(errorFile, content, 'utf-8');
     }
 
