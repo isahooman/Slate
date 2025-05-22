@@ -315,7 +315,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
         { name: 'Channel', value: interaction.channelId ? `<#${interaction.channelId}> (ID: ${interaction.channelId})` : 'N/A' },
         { name: 'Server', value: interaction.guild ? `${interaction.guild.name} | ${interaction.guild.id}` : 'N/A' },
         { name: 'Arguments', value: args },
-        { name: 'Error', value: messageText },
+        { name: 'Error', value: `\`\`\`\n${messageText}\n\`\`\`` },
       );
 
     // Prepare error report for prefix commands
@@ -333,7 +333,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
         { name: 'User', value: context.author ? `<@${context.author.id}> | ${context.author.username}` : 'N/A' },
         { name: 'Channel', value: context.channel ? `<#${context.channel.id}> | ID: ${context.channel.id}` : 'N/A' },
         { name: 'Arguments', value: Array.isArray(commandInfo.args) ? commandInfo.args.join(' ') : 'None' },
-        { name: 'Error', value: messageText },
+        { name: 'Error', value: `\`\`\`\n${messageText}\n\`\`\`` },
       );
     } else {
       errorEmbed.addFields(
