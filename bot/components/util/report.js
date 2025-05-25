@@ -13,6 +13,15 @@ let _client;
 // Setup
 // ============================================================
 
+// Lazy load logger to avoid circular dependencies
+const logger = (() => {
+  let _logger;
+  return () => {
+    if (!_logger) _logger = require('./logger.js');
+    return _logger;
+  };
+})();
+
 /**
  * Ensures error directory exists
  * @author isahooman
@@ -41,15 +50,6 @@ function getClient() {
   // Only return the client if it exists and is ready
   return _client?.isReady?.() === true ? _client : null;
 }
-
-// Lazy load logger to avoid circular dependencies
-const logger = (() => {
-  let _logger;
-  return () => {
-    if (!_logger) _logger = require('./logger.js');
-    return _logger;
-  };
-})();
 
 // ==========================================================
 // Message Queue
