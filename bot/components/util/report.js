@@ -13,15 +13,6 @@ let _client;
 // Setup
 // ============================================================
 
-// Lazy load logger to avoid circular dependencies
-const logger = (() => {
-  let _logger;
-  return () => {
-    if (!_logger) _logger = require('./logger.js');
-    return _logger;
-  };
-})();
-
 /**
  * Ensures error directory exists
  * @param {object} logger Logger instance
