@@ -1,14 +1,14 @@
 const path = require('path');
-const configManager = require('../../../components/configManager');
 const fs = require('fs');
 const moment = require('moment');
-const report = require('./report');
-const colors = require('./colors');
+const { sendErrorReport, sendReadyNotification } = require('./report.js');
+const configManager = require('../../../components/configManager');
+const { toAnsi, resetAnsi } = require('./colors.js');
 
-const logging = configManager.loadConfig('logging');
-const outputDir = path.join(__dirname, '..', '..', '..', 'output');
-const logFile = path.join(outputDir, 'bot.log');
+// Output directories
+const outputDir = path.join(__dirname, '../../../output');
 const errorDir = path.join(outputDir, 'err');
+const logFile = path.join(outputDir, 'bot.log');
 
 const levels = {
   INFO: 'INFO',
@@ -23,49 +23,105 @@ const levels = {
 };
 
 /**
- * Checks to see if logging levels exist and are enabled.
- * @param {string} level Logging Level name (e.g., 'INFO', 'WARN')
- * @returns {boolean} True if the level is enabled, false otherwise.
+ * Checks to see if logging levels are enabled
+ * @param {number} level Logging Level
+ * @returns {boolean} Active or not
  * @author isahooman
  */
 function isLevelEnabled(level) {
-  let configUpdated = false;
+  const loggingConfig = configManager.loadConfig('logging');
 
-  // Initialize toggle and colors objects if they don't exist
-  if (!logging.toggle) logging.toggle = {};
-  if (!logging.colors) logging.colors = {};
+  if (!Object.prototype.hasOwnProperty.call(loggingConfig.toggle, level)) {
+    // If the level doesn't exist within the config, enable it by default
+    loggingConfig.toggle[level] = true;
+    configManager.saveConfig('logging', loggingConfig);
+  }
+  return configManager.getConfigValue('logging', `toggle.${level}`);
+}
 
-  // Check if the toggle setting exists, default to true if not
-  if (!Object.prototype.hasOwnProperty.call(logging.toggle, level)) {
-    logging.toggle[level] = true;
-    configUpdated = true;
-    process.stdout.write(
-      colors.toAnsi('#FFCC00') +
-      `Log level [${level}] toggle missing from logging config, defaulting to enabled.` +
-      '\x1b[0m\n',
-    );
+/**
+ * Apply color formatting to a log message
+ * @param {string} message - The message to format
+ * @param {string} level - Log level
+ * @returns {string} Formatted message
+ * @author isahooman
+ */
+function consoleFormat(message, level) {
+  const colors = configManager.loadConfig('logging').colors;
+
+  // Get color codes
+  const textColor = toAnsi(colors.TEXT);
+  const timestampColor = toAnsi(colors.TIMESTAMP);
+  const levelColor = toAnsi(colors[level] || colors.TEXT);
+  const bracketColor = toAnsi(colors.BRACKET);
+  const colonColor = toAnsi(colors.COLON);
+
+  let formattedMessage = '';
+  let inBrackets = false;
+  let inColon = false;
+  let position = 0;
+
+  // Format timestamp section: [YYYY-MM-DD HH:mm:ss]
+  const timestampMatch = message.match(/^\[(.*?)\]/);
+  if (timestampMatch) {
+    formattedMessage += `${textColor}[${timestampColor}${timestampMatch[1]}${textColor}]`;
+    position = timestampMatch[0].length;
   }
 
-  // Check if the color setting exists, default to white if not
-  if (!Object.prototype.hasOwnProperty.call(logging.colors, level)) {
-    logging.colors[level] = '#FFFFFF';
-    configUpdated = true;
-    process.stdout.write(
-      colors.toAnsi('#FFCC00') +
-      `Log level [${level}] color missing from logging config, defaulting to #FFFFFF.` +
-      '\x1b[0m\n',
-    );
+  // Format log level section: <LEVEL>
+  const levelMatch = message.substring(position).match(/^\s*<(.*?)>/);
+  if (levelMatch) {
+    formattedMessage += `${textColor} <${levelColor}${levelMatch[1]}${textColor}>`;
+    position += levelMatch[0].length;
   }
 
-  // If any defaults were added, update the config file.
-  if (configUpdated) try {
-    configManager.saveConfig('logging', logging);
-  } catch (err) {
-    process.stderr.write(`Failed to update logging config with default settings for level [${level}]: ${err}\n`);
+  // Process the log message
+  for (; position < message.length; position++) {
+    const char = message[position];
+    const nextChar = message[position + 1] || '';
+
+    // Handle escaped commas
+    if (char === '\\' && nextChar === ',') {
+      formattedMessage += (inColon ? colonColor : textColor) + '\\,';
+      position++;
+      continue;
+    }
+
+    // Handle bracket formatting
+    if (char === '[') {
+      formattedMessage += (inColon ? colonColor : textColor) + '[';
+      inBrackets = true;
+      continue;
+    }
+
+    if (char === ']' && inBrackets) {
+      formattedMessage += (inColon ? colonColor : textColor) + ']';
+      inBrackets = false;
+      continue;
+    }
+
+    // Handle colon formatting
+    if (char === ':' && !inBrackets) {
+      formattedMessage += textColor + ':';
+      inColon = true;
+      continue;
+    }
+
+    // Break colon formatting on comma
+    if (char === ',' && inColon) {
+      formattedMessage += textColor + ',';
+      inColon = false;
+      continue;
+    }
+
+    // Colorize the character based on context
+    formattedMessage +=
+      inBrackets ? bracketColor + char :
+        inColon ? colonColor + char :
+          textColor + char;
   }
 
-  // Return the toggle status (which is now guaranteed to exist)
-  return logging.toggle[level];
+  return formattedMessage + resetAnsi();
 }
 
 /**
@@ -75,37 +131,8 @@ function isLevelEnabled(level) {
  * @author isahooman
  */
 function setLevelEnabled(level, enabled) {
-  if (Object.prototype.hasOwnProperty.call(levels, level)) {
-    logging.toggle[level] = enabled;
-    try {
-      configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
-    } catch (err) {
-      process.stderr.write(`Error writing to logging config file: ${err}\n`);
-    }
-  }
+  if (Object.prototype.hasOwnProperty.call(levels, level)) configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
 }
-
-/**
- * Applies color to text using the colors utility
- * @param {string} text - Text to color
- * @param {string} colorName - Name of the color from config
- * @returns {string} Colored text with ANSI codes
- * @author isahooman
- */
-const colorize = (text, colorName) => {
-  let hexCode = logging.colors[colorName] || '#FFFFFF';
-  // Check if the hex code is valid
-  if (!/^#?[0-9A-F]{6}$/i.test(hexCode)) {
-    process.stdout.write(
-      colors.toAnsi('#FFCC00') +
-      `Invalid color code in logging config for ${colorName}: ${hexCode}. Using fallback color.` +
-      '\x1b[0m\n',
-    );
-    hexCode = '#FFFFFF';
-  }
-  if (!hexCode.startsWith('#')) hexCode = `#${hexCode}`;
-  return colors.toAnsi(hexCode) + text + '\x1b[0m';
-};
 
 /**
  * Formats and logs messages
@@ -123,51 +150,18 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   if (typeof message !== 'string') return;
 
   const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
-  const logtime = colorize(`[${timestamp}]`, 'TIMESTAMP');
-  const loglevel = colorize(level, level);
+  const logText = `[${timestamp}] <${level}> ${message}`;
 
-  // Format file log output
-  const fileformat = inputMessage =>
-    inputMessage.split(/(?<!\\),/).map(part => {
-      part = part.replace(/\\,/g, ',');
-      return part;
-    }).join(',');
+  // Format console output with colors
+  const formattedMessage = consoleFormat(logText, level);
+  process.stdout.write(formattedMessage + '\n');
 
-  // Format message for console output
-  let formattedMessage = message;
+  // Log file output (without colors)
+  fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
 
-  formattedMessage = formattedMessage
-    .split(/(?<!\\),(?![^[]*\])/)
-    .map(part => {
-      // Remove preceding backslashes from the message
-      part = part.replace(/\\,/g, ',');
-
-      // Color text within brackets
-      part = part.replace(/\[(.*?)\]/g, (match, p1) => {
-        return `[${colorize(p1, 'BRACKET')}]`;
-      });
-
-      // Color text after colons
-      if (part.includes(':')) {
-        const [firstPart, ...rest] = part.split(':');
-        part = `${colorize(firstPart, 'TEXT')}:${colorize(rest.join(':'), 'COLON')}`;
-      }
-      return part;
-    })
-    .join(',');
-
-  // Console output
-  process.stdout.write(`${logtime} <${loglevel}> ${formattedMessage}\n`);
-
-  // Log file output
-  fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${fileformat(message)}\n`);
-
-  // Handle notifications
-  const notifyOnReady = configManager.getConfigValue('config', 'notifyOnReady', false);
-  const reportErrors = configManager.getConfigValue('config', 'reportErrors', false);
-
-  if (level === levels.START && notifyOnReady) report.sendReadyNotification(message);
-  if (level === levels.ERROR && reportErrors) report.sendErrorReport(message, commandType, commandInfo);
+  const botConfig = configManager.loadConfig('config');
+  if (level === levels.START && botConfig.notifyOnReady) sendReadyNotification(message, module.exports);
+  if (level === levels.ERROR && botConfig.reportErrors) sendErrorReport(message, commandType, commandInfo, module.exports);
 }
 
 /**

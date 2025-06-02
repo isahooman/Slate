@@ -15,12 +15,14 @@ let _client;
 
 /**
  * Ensures error directory exists
+ * @param {object} logger Logger instance
  * @author isahooman
  */
-function ensureErrorDirectory() {
+function ensureErrorDirectory(logger) {
   if (!fs.existsSync(errorDir)) {
     fs.mkdirSync(errorDir, { recursive: true });
-    logger().info(`Created error directory: [${errorDir}]`);
+    if (logger) logger.info(`Created error directory: [${errorDir}]`);
+    else process.stdout.write(`Created error directory: [${errorDir}]`);
   }
 }
 
@@ -42,15 +44,6 @@ function getClient() {
   return _client?.isReady?.() === true ? _client : null;
 }
 
-// Lazy load logger to avoid circular dependencies
-const logger = (() => {
-  let _logger;
-  return () => {
-    if (!_logger) _logger = require('./logger.js');
-    return _logger;
-  };
-})();
-
 // ==========================================================
 // Message Queue
 // ==========================================================
@@ -64,14 +57,15 @@ let queueInterval = null;
  * Process the message queue.
  * Attempt to send messages if client is ready.
  * Auto-retries if client is not ready.
+ * @param {object} logger Logger instance
  * @author isahooman
  */
-async function processQueue() {
+async function processQueue(logger) {
   // If queue is empty use longer check interval
   if (queue.length === 0) {
     if (queueInterval) {
       clearInterval(queueInterval);
-      queueInterval = setInterval(processQueue, checkQueue);
+      queueInterval = setInterval(() => processQueue(logger), checkQueue);
     }
     return;
   }
@@ -79,43 +73,45 @@ async function processQueue() {
   // If queue has messages use shorter retry interval
   if (!getClient()) {
     if (queueInterval) clearInterval(queueInterval);
-    queueInterval = setInterval(processQueue, retryQueue);
+    queueInterval = setInterval(() => processQueue(logger), retryQueue);
     process.stdout.write(`Client not ready yet, will retry sending ${queue.length} messages in ${retryQueue / 1000} seconds\n`);
     return;
   }
 
-  logger().debug(`Processing message queue, ${queue.length} messages pending\n`);
+  if (logger) logger.debug(`Processing message queue, ${queue.length} messages pending\n`);
+  else process.stdout.write(`Processing message queue, ${queue.length} messages pending\n`);
 
   // Clone and clear queue
   const currentQueue = [...queue];
   queue.length = 0;
 
   // Attempt to send each message in the queue
-  for (const { messageContent, targetType, filePath, options } of currentQueue) try {
-    await sendMessage(messageContent, targetType, filePath, options);
+  for (const { messageContent, targetType, filePath, options, logger: msgLogger } of currentQueue) try {
+    await sendMessage(messageContent, targetType, filePath, options, msgLogger || logger);
   } catch (err) {
     // If sending fails, add back to queue
     process.stderr.write(`Failed to send message: ${err.message}, returning to queue\n`);
-    queue.push({ messageContent, targetType, filePath, options });
+    queue.push({ messageContent, targetType, filePath, options, logger: msgLogger || logger });
   }
 
   // Adjust interval based on queue state after processing
   if (queue.length > 0) {
     if (queueInterval) clearInterval(queueInterval);
-    queueInterval = setInterval(processQueue, retryQueue);
+    queueInterval = setInterval(() => processQueue(logger), retryQueue);
   } else {
     if (queueInterval) clearInterval(queueInterval);
-    queueInterval = setInterval(processQueue, checkQueue);
+    queueInterval = setInterval(() => processQueue(logger), checkQueue);
   }
 }
 
 /**
  * Starts the queue monitoring process
+ * @param {object} logger Logger instance
  * @author isahooman
  */
-function startQueueMonitor() {
+function startQueueMonitor(logger) {
   if (!queueInterval) {
-    queueInterval = setInterval(processQueue, checkQueue);
+    queueInterval = setInterval(() => processQueue(logger), checkQueue);
     process.stdout.write('Queue monitor started\n');
   }
 }
@@ -133,14 +129,15 @@ function startQueueMonitor() {
  *  - Otherwise, sends only to owner(s).
  * @param {string} [filePath] - The path to the file to send (optional).
  * @param {object} [options] - Additional options like userId or channelId
+ * @param {object} [logger] - Logger instance
  * @author isahooman
  */
-async function sendMessage(messageContent, targetType = null, filePath = null, options = {}) {
+async function sendMessage(messageContent, targetType = null, filePath = null, options = {}, logger = null) {
   const client = getClient();
   // Check if the client exists before attempting to send the message
   if (!client) {
     process.stderr.write('Client is not ready yet. Queueing message.\n');
-    queue.push({ messageContent, targetType, filePath, options });
+    queue.push({ messageContent, targetType, filePath, options, logger });
     return;
   }
 
@@ -163,16 +160,16 @@ async function sendMessage(messageContent, targetType = null, filePath = null, o
 
   try {
     // Send message to specific users
-    for (const recipientId of recipients) await sendToUser(messageContent, recipientId, filePath);
+    for (const recipientId of recipients) await sendToUser(messageContent, recipientId, filePath, logger);
 
     // Send message to given channels
-    if (channelId) await sendToChannel(messageContent, [channelId], filePath);
-    else if (targetType === 'error') await sendToChannel(messageContent, errorChannels, filePath);
-    else if (targetType === 'ready') await sendToChannel(messageContent, readyChannels, filePath);
+    if (channelId) await sendToChannel(messageContent, [channelId], filePath, options, logger);
+    else if (targetType === 'error') await sendToChannel(messageContent, errorChannels, filePath, options, logger);
+    else if (targetType === 'ready') await sendToChannel(messageContent, readyChannels, filePath, options, logger);
   } catch (error) {
     // If sending fails, add the message to the queue for retrying
     process.stderr.write(`Failed to send message, adding to queue: ${error}\n`);
-    queue.push({ messageContent, targetType, filePath, options });
+    queue.push({ messageContent, targetType, filePath, options, logger });
     throw error; // Re-throw so caller can handle it
   }
 }
@@ -266,9 +263,10 @@ async function sendToChannel(messageContent, channelIds, filePath = null, option
 /**
  * Sends a notification that the bot is ready
  * @param {string} message Notification message
+ * @param {object} [logger] Logger instance
  * @author isahooman
  */
-async function sendReadyNotification(message) {
+async function sendReadyNotification(message, logger = null) {
   // Create an embed to notify that the bot has started
   const startEmbed = new EmbedBuilder()
     .setColor('#17d5ad')
@@ -276,7 +274,7 @@ async function sendReadyNotification(message) {
     .setDescription(message);
 
   // Send the ready embed
-  await sendMessage(startEmbed, 'ready');
+  await sendMessage(startEmbed, 'ready', null, {}, logger);
 }
 
 /**
@@ -284,9 +282,10 @@ async function sendReadyNotification(message) {
  * @param {string} messageText Error message text
  * @param {string} commandType Command type (slash, prefix, etc.)
  * @param {object} commandInfo Additional command information
+ * @param {object} [logger] Logger instance
  * @author isahooman
  */
-async function sendErrorReport(messageText, commandType = 'unknown', commandInfo = {}) {
+async function sendErrorReport(messageText, commandType = 'unknown', commandInfo = {}, logger = null) {
   if (messageText.startsWith('Shutdown because:')) {
     process.stdout.write(`Shutdown detected, skipping error report\n`);
     return;
@@ -367,7 +366,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
       await fs.promises.writeFile(errorFile, content, 'utf-8');
     }
 
-    await sendMessage(errorEmbed, 'error', errorFile);
+    await sendMessage(errorEmbed, 'error', errorFile, {}, logger);
   } catch (error) {
     process.stderr.write(`Error sending error report:\n${error}\n`);
   }
@@ -377,17 +376,20 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
  * Send a bug report to configured channels
  * @param {string} message Bug report message
  * @param {object} context Additional context (author, guild, channel)
+ * @param {object} [logger] Logger instance
  * @returns {boolean} Success status
  * @author isahooman
  */
-async function sendBugReport(message, context = {}) {
+async function sendBugReport(message, context = {}, logger = null) {
   const user = context.author;
   if (!user) {
-    logger().error('[Bug Report] Missing author in context');
+    if (logger) logger.error('[Bug Report] Missing author in context');
+    else process.stderr.write('[Bug Report] Missing author in context');
     return false;
   }
 
-  logger().debug(`[Bug Report] Bug report submitted by: ${user.username}, Message: ${message}`);
+  if (logger) logger.debug(`[Bug Report] Bug report submitted by: ${user.username}, Message: ${message}`);
+  else process.stdout.write(`[Bug Report] Bug report submitted by: ${user.username}, Message: ${message}`);
 
   const embed = new EmbedBuilder()
     .setColor('#FF0000')
@@ -404,19 +406,21 @@ async function sendBugReport(message, context = {}) {
     const bugReportChannels = configManager.getConfigValue('config', 'bugReportChannels', []);
 
     if (!bugReportChannels.length) {
-      logger().warn('[Bug Report] No bug report channels configured');
+      if (logger) logger.warn('[Bug Report] No bug report channels configured');
       return false;
     }
 
     // Queue the bug report for each channel
     for (const channelId of bugReportChannels) {
-      await sendMessage(embed, null, null, { channelId });
-      logger().info(`[Bug Report] Bug report queued for channel ${channelId}`);
+      await sendMessage(embed, null, null, { channelId }, logger);
+      if (logger) logger.info(`[Bug Report] Bug report queued for channel ${channelId}`);
+      else process.stdout.write(`[Bug Report] Bug report queued for channel ${channelId}`);
     }
 
     return true;
   } catch (error) {
-    logger().error(`[Bug Report] Error processing bug report: ${error.message}`);
+    if (logger) logger.error(`[Bug Report] Error processing bug report: ${error.message}`);
+    else process.stderr.write(`[Bug Report] Error processing bug report: ${error.message}`);
     return false;
   }
 }
@@ -425,17 +429,20 @@ async function sendBugReport(message, context = {}) {
  * Send a suggestion to configured channels
  * @param {string} message Suggestion message
  * @param {object} context Additional context (author, guild, channel)
+ * @param {object} [logger] Logger instance
  * @returns {boolean} Success status
  * @author isahooman
  */
-async function sendSuggestion(message, context = {}) {
+async function sendSuggestion(message, context = {}, logger = null) {
   const user = context.author;
   if (!user) {
-    logger().error('[Suggestion] Missing author in context');
+    if (logger) logger.error('[Suggestion] Missing author in context');
+    else process.stderr.write('[Suggestion] Missing author in context');
     return false;
   }
 
-  logger().debug(`[Suggestion] Suggestion submitted by: ${user.username}, Message: ${message}`);
+  if (logger) logger.debug(`[Suggestion] Suggestion submitted by: ${user.username}, Message: ${message}`);
+  else process.stdout.write(`[Suggestion] Suggestion submitted by: ${user.username}, Message: ${message}`);
 
   const embed = new EmbedBuilder()
     .setColor('#91c2af')
@@ -452,19 +459,21 @@ async function sendSuggestion(message, context = {}) {
     const suggestChannels = configManager.getConfigValue('config', 'suggestChannels', []);
 
     if (!suggestChannels.length) {
-      logger().warn('[Suggestion] No suggestion channels configured');
+      if (logger) logger.warn('[Suggestion] No suggestion channels configured');
       return false;
     }
 
     // Queue the suggestion for each channel
     for (const channelId of suggestChannels) {
-      await sendMessage(embed, null, null, { channelId, needsVote: true });
-      logger().info(`[Suggestion] Suggestion queued for channel ${channelId}`);
+      await sendMessage(embed, null, null, { channelId, needsVote: true }, logger);
+      if (logger) logger.info(`[Suggestion] Suggestion queued for channel ${channelId}`);
+      else process.stdout.write(`[Suggestion] Suggestion queued for channel ${channelId}`);
     }
 
     return true;
   } catch (error) {
-    logger().error(`[Suggestion] Error processing suggestion: ${error.message}`);
+    if (logger) logger.error(`[Suggestion] Error processing suggestion: ${error.message}`);
+    else process.stderr.write(`[Suggestion] Error processing suggestion: ${error.message}`);
     return false;
   }
 }
