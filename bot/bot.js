@@ -22,7 +22,7 @@ function validateConfig() {
   for (const config of requiredConfigs) {
     let isEmpty;
 
-    if (config.name === 'ownerId') isEmpty = !config.value.length || !config.value[0] || config.value[0].trim() === '';
+    if (config.name === 'ownerId') isEmpty = !config.value || !Array.isArray(config.value) || !config.value.length || !config.value[0] || config.value[0].trim() === '';
     else isEmpty =
         // Check for undefined values
         !config.value ||
