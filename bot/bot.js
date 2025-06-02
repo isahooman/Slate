@@ -2,12 +2,26 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const { loadAll, deployCommands, undeploy } = require('./components/core/loader');
 const logger = require('./components/util/logger.js');
 const configManager = require('../components/configManager');
+const path = require('path');
 let cooldownBuilder = require('./components/commands/cooldown.js');
 let cache = new (require('./components/util/cache'));
 
 /**
+ * Processes intent configuration
+ * @param {object} intentConfig - The intent configuration object
+ * @returns {Array} Array of intent bits
+ * @author Effanlaw
+ */
+const handleIntents = intentConfig => {
+  let totalIntentsBits = [];
+  for (const intent in intentConfig) if (intentConfig[intent]) totalIntentsBits.push(GatewayIntentBits[intent]);
+  return totalIntentsBits;
+};
+
+/**
  * Validates essential configuration values
  * @returns {boolean} Whether all required configurations are valid
+ * @author isahooman
  */
 function validateConfig() {
   const requiredConfigs = [
@@ -42,22 +56,26 @@ function validateConfig() {
   return true;
 }
 
-const intents = configManager.loadConfig('intents');
-const handleIntents = intentConfig => {
-  let totalIntentsBits = [];
-  for (const intent in intentConfig) if (intentConfig[intent]) totalIntentsBits.push(GatewayIntentBits[intent]);
-  return totalIntentsBits;
-};
+/**
+ * Checks if the bot is being run from the project root directory
+ * @returns {boolean} Whether the bot is being run from the root directory
+ * @author isahooman
+ */
+function isRoot() {
+  const expectedRoot = path.resolve(__dirname, '..');
+  const currentDir = process.cwd();
 
-// Create the Discord client
-const client = new Client({
-  intents: handleIntents(intents),
-  shards: 'auto',
-});
+  logger.debug(`Expected root: ${expectedRoot}`);
+  logger.debug(`Current directory: ${currentDir}`);
+
+  // Check if running from expected directory
+  return path.resolve(currentDir) === path.resolve(expectedRoot);
+}
 
 /**
  * Starts the bot and loads necessary data
  * @param {Client} bot - Discord Client
+ * @author Effanlaw
  */
 async function startBot(bot) {
   logger.debug('Bot starting..');
@@ -81,12 +99,35 @@ async function startBot(bot) {
   bot.login(token);
 }
 
+/**
+ * Safely starts the bot after directory validation
+ * @author isahooman
+ */
+function safeStart() {
+  if (!isRoot()) {
+    process.stderr.write('Bot must be run from the project directory.\n');
+    process.stderr.write(`Please run from: ${path.resolve(__dirname, '..')}`);
+    process.exit(1);
+  }
+
+  startBot(client);
+}
+
+const intents = configManager.loadConfig('intents');
+
+// Create the Discord client
+const client = new Client({
+  intents: handleIntents(intents),
+  shards: 'auto',
+});
+
 // Export modules
 exports.client = client;
 exports.cooldown = cooldownBuilder;
 exports.cache = cache;
 
-startBot(exports.client);
+// Start the bot
+safeStart();
 
 // Process Events
 process
