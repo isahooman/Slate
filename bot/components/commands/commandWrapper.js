@@ -56,7 +56,7 @@ function addDisabledDisclaimer(msgContent) {
   }
 
   // If the message content is not a string or object, return it as is
-  logger.error('Unexpected content type', { type: typeof msgContent });
+  throw new Error('Unexpected content type', { type: typeof msgContent });
   return msgContent;
 }
 

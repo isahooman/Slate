@@ -47,7 +47,7 @@ async function loadSlashCommands(client, directory, commandsConfig) {
     if (!Object.hasOwn(commandsConfig.slash, command.data.name)) commandsConfig.slash[command.data.name] = true;
     logger.loading(`Loaded slash command: ${command.data.name}`);
   } catch (error) {
-    logger.error(`Error loading slash command at ${filePath}: ${error.message}`);
+    throw new Error(`Error loading slash command at ${filePath}: ${error.message}`);
   }
 }
 
@@ -70,7 +70,7 @@ async function loadPrefixCommands(client, directory, commandsConfig) {
     if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
     logger.loading(`Loaded prefix command: ${command.name} (${command.aliases ? command.aliases.join(', ') : 'No aliases'})`);
   } catch (error) {
-    logger.error(`Error loading prefix command at ${filePath}: ${error.message}`);
+    throw new Error(`Error loading prefix command at ${filePath}: ${error.message}`);
   }
 }
 

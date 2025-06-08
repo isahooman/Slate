@@ -41,6 +41,8 @@ module.exports = {
 
     message.channel.send({ embeds: [embed] })
       .then(() => logger.info(`[Avatar Command] Avatar sent for ${user.tag}`))
-      .catch(error => logger.error(`[Avatar Command] Error sending avatar for ${user.tag}: ${error}`));
+      .catch(error => {
+        throw new Error(`[Avatar Command] Error sending avatar for ${user.tag}: ${error}`);
+      });
   },
 };

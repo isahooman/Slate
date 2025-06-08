@@ -66,7 +66,7 @@ module.exports = {
 
     // Validate the user object
     if (!foundUser || !(foundUser.user || foundUser.id)) {
-      logger.error('[UserInfo Command] Invalid user object found');
+      throw new Error('[UserInfo Command] Invalid user object found');
       return message.channel.send({ content: 'There was an error fetching user information.' });
     }
 
@@ -129,10 +129,10 @@ module.exports = {
       logger.debug('[UserInfo Command] Sending message with embed');
       message.channel.send({ embeds: [embed] })
         .catch(err => {
-          logger.error(`[UserInfo Command] Error sending userinfo embed: ${err}`);
+          throw new Error(`[UserInfo Command] Error sending userinfo embed: ${err}`);
         });
     }).catch(err => {
-      logger.error(`[UserInfo Command] Error fetching user: ${err}`);
+      throw new Error(`[UserInfo Command] Error fetching user: ${err}`);
       message.channel.send({ content: 'There was an error fetching user information.' });
     });
   },

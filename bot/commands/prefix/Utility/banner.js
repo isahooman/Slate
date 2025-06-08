@@ -17,7 +17,7 @@ module.exports = {
         const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
         user = repliedMessage.author;
       } catch (error) {
-        logger.error(`[Banner Command] Error fetching replied-to message: ${error}`);
+        throw new Error(`[Banner Command] Error fetching replied-to message: ${error}`);
         return message.channel.send('Error fetching the replied-to message.');
       }
     } else {
@@ -54,7 +54,7 @@ module.exports = {
         logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
       })
       .catch(error => {
-        logger.error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+        throw new Error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
       });
   },
 };
