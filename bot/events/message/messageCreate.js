@@ -6,31 +6,8 @@ const createDisclaimerProxy = require('../../components/commands/commandWrapper.
 module.exports = {
   name: 'messageCreate',
   execute: async(message, client) => {
-    let messageContent = message.content.split('\n').map(line => `│ ${line}`).join('\n');
-
-    // Calculate the message width for border
-    let maxLength = Math.max(...message.content.split('\n').map(line => line.length));
-    const indicatorWidth = 15;
-
-    // Check for attachments
-    const hasAttachments = message.attachments.size > 0;
-    const isOnlyAttachment = hasAttachments && message.content.trim() === '';
-    if (hasAttachments) messageContent += isOnlyAttachment ? '[attachment]' : '\n│ [attachment]'.slice(0, indicatorWidth);
-
-    // Check for embeds
-    const hasEmbeds = message.embeds.length > 0;
-    const isOnlyEmbed = hasEmbeds && message.content.trim() === '';
-    if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
-
-    // Adjust maxLength for indicators
-    maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
-
-    // Build the border
-    const borderChar = '─';
-    const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
-    const border = borderChar.repeat(borderLength);
-
-    logger.message(`Processing new message from: [${message.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+    // Log the new message
+    logMessage(message);
 
     // Load config
     const blacklist = configManager.loadConfig('blacklist');
@@ -160,3 +137,35 @@ module.exports = {
     }
   },
 };
+
+/**
+ * Formats a message with borders and logs it
+ * @param {object} message - The Discord message object.
+ */
+function logMessage(message) {
+  let messageContent = message.content.split('\n').map(line => `│ ${line}`).join('\n');
+
+  // Calculate the message width for border
+  let maxLength = Math.max(...message.content.split('\n').map(line => line.length));
+  const indicatorWidth = 15;
+
+  // Check for attachments
+  const hasAttachments = message.attachments.size > 0;
+  const isOnlyAttachment = hasAttachments && message.content.trim() === '';
+  if (hasAttachments) messageContent += isOnlyAttachment ? '[attachment]' : '\n│ [attachment]'.slice(0, indicatorWidth);
+
+  // Check for embeds
+  const hasEmbeds = message.embeds.length > 0;
+  const isOnlyEmbed = hasEmbeds && message.content.trim() === '';
+  if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
+
+  // Adjust maxLength for indicators
+  maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
+
+  // Build the border
+  const borderChar = '─';
+  const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
+  const border = borderChar.repeat(borderLength);
+
+  logger.message(`Processing new message from: [${message.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+}
