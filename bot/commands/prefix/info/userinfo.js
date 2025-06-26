@@ -3,137 +3,104 @@ const { EmbedBuilder } = require('discord.js');
 const Search = require('../../../components/util/search');
 
 const badges = {
+  // Misc
   Staff: 'Discord Staff',
   Partner: 'Partnered Server Owner',
+  CertifiedModerator: 'Moderator Program Alumni',
+  PremiumEarlySupporter: 'Early Supporter',
 
-  // Bug Hunter badges
-  BugHunterLevel1: 'Bug Hunter Level 1',
-  BugHunterLevel2: 'Bug Hunter Level 2',
-
-  // HypeSquad Events badges
+  // HypeSquad badges
   Hypesquad: 'HypeSquad Events Member',
   HypeSquadOnlineHouse1: 'HypeSquad Bravery',
   HypeSquadOnlineHouse2: 'HypeSquad Brilliance',
   HypeSquadOnlineHouse3: 'HypeSquad Balance',
 
-  // Flagged accounts
+  // Bug Hunter badges
+  BugHunterLevel1: 'Bug Hunter Level 1',
+  BugHunterLevel2: 'Bug Hunter Level 2',
+
+  // Developer badges
+  VerifiedDeveloper: 'Early Verified Bot Developer',
+  ActiveDeveloper: 'Active Developer',
+  Collaborator: 'Collaborator',
+  RestrictedCollaborator: 'Restricted Collaborator',
+
+  // Bot badges
+  VerifiedBot: 'Verified Bot',
+  BotHTTPInteractions: 'Bot HTTP Interactions',
+
+  // Account status badges
   Spammer: 'Spammer',
   Quarantined: 'Quarantined Account',
-
-  // Dev badges
-  ActiveDeveloper: 'Active Developer',
-  VerifiedDeveloper: 'Early Verified Bot Developer',
-
-  // Misc badges
-  VerifiedBot: 'Verified Bot',
-  PremiumEarlySupporter: 'Early Supporter',
-  CertifiedModerator: 'Discord Certified Moderator',
 };
 
 module.exports = {
   name: 'userinfo',
   usage: 'userinfo <user>',
   category: 'info',
-  aliases: ['ui'],
+  aliases: ['ui', 'whois'],
   allowDM: true,
-  description: 'Shows information the given user',
+  description: 'Shows information about the given user',
 
   async execute(message, args) {
     const userQuery = args.join(' ');
     logger.debug(`[UserInfo Command] User query: "${userQuery || 'None'}", from user: ${message.author.tag}`);
 
-    const search = new Search();
+    try {
+      // Find target user - default to message author if no query
+      const search = new Search();
+      const users = userQuery ? await search.member(message, userQuery) : [message.member];
 
-    let users;
-    if (!userQuery) {
-      // If no query provided, default to the message author
-      logger.debug('[UserInfo Command] No query provided, using message author');
-      users = [message.member];
-    } else {
-      // Search for the user with the provided query
-      users = await search.member(message, userQuery);
-    }
+      if (!users?.length) return message.channel.send({ content: 'Could not find any matching users.' });
 
-    // Check if any users were found
-    if (!users || users.length === 0 || !users[0]) {
-      logger.debug('[UserInfo Command] No matching users found');
-      return message.channel.send({ content: 'Could not find any matching users.' });
-    }
+      const foundUser = users[0];
+      const userToFetch = foundUser.user || foundUser;
 
-    // Get the first matching user
-    const foundUser = users[0];
-    logger.debug(`[UserInfo Command] Found user: ${foundUser.user?.username || foundUser?.username || 'Unknown'} | ${foundUser.user?.id || foundUser?.id || 'Unknown ID'}`);
+      logger.debug(`[UserInfo Command] Found: ${userToFetch.tag || userToFetch.username} (${userToFetch.id})`);
 
-    // Validate the user object
-    if (!foundUser || !(foundUser.user || foundUser.id)) {
-      throw new Error('[UserInfo Command] Invalid user object found');
-      return message.channel.send({ content: 'There was an error fetching user information.' });
-    }
+      const fetchedUser = await userToFetch.fetch(true);
 
-    const userToFetch = foundUser.user || foundUser;
-
-    logger.debug(`[UserInfo Command] Fetching user details for: ${userToFetch.tag} | ${userToFetch.id}`);
-
-    userToFetch.fetch(true).then(fetchedUser => {
+      // Create and configure embed
       const embed = new EmbedBuilder()
         .setAuthor({
           name: `User Information for ${fetchedUser.displayName || fetchedUser.username}`,
           iconURL: fetchedUser.displayAvatarURL({ extension: 'png', size: 512 }),
         })
-        // Set embed color to the user's top role color
-        .setColor(message.member.roles.color ? message.member.roles.color.hexColor : 0x000001)
-        // Set user's avatar as the thumbnail
+        .setColor(message.member.roles?.color?.hexColor || 0x000001)
         .setThumbnail(fetchedUser.displayAvatarURL({ extension: 'png', size: 512 }))
-        // Add basic user information fields
         .addFields(
           { name: 'ID', value: fetchedUser.id },
           { name: 'Account created', value: fetchedUser.createdAt.toDateString(), inline: true },
-          { name: 'Joined server', value: message.guild ? foundUser.joinedAt?.toDateString() || 'N/A' : 'N/A', inline: true },
+          { name: 'Joined server', value: message.guild && foundUser.joinedAt ? foundUser.joinedAt.toDateString() : 'N/A', inline: true },
         );
 
-      // Add roles information if in a guild
+      // Add roles if in a guild
       if (message.guild && foundUser.roles) {
-        logger.debug(`[UserInfo Command] Processing roles for guild: ${message.guild.name} | ${message.guild.id}`);
-
-        // Format the roles, showing colors and ignoring @everyone
         const rolesList = foundUser.roles.cache
           .filter(r => r.name !== '@everyone')
           .map(r => `<@&${r.id}> | ${r.hexColor !== '#000000' ? r.hexColor : 'No color'}`)
           .join('\n');
 
-        embed.addFields({
-          name: 'Roles',
-          value: rolesList || 'None',
-          inline: false,
-        });
+        embed.addFields({ name: 'Roles', value: rolesList || 'None' });
       }
 
       // Add user badges
-      logger.debug('[UserInfo Command] Processing user badges');
-      let flags = fetchedUser.flags.serialize();
-      let flagString = '';
-
-      // Convert badges to public names
-      for (const flag in flags) if (flags[flag]) {
-        const badgeName = badges[flag] || flag;
-        flagString += `- ${badgeName}\n`;
-      }
+      const flags = fetchedUser.flags.serialize();
+      const flagString = Object.entries(flags)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, value]) => value)
+        .map(([flag]) => `- ${badges[flag] || flag}`)
+        .join('\n');
 
       embed.addFields({
         name: 'Badges',
-        value: flagString !== '' ? flagString : 'This user has no badges!',
-        inline: false,
+        value: flagString || 'This user has no badges!',
       });
 
       // Send the embed
-      logger.debug('[UserInfo Command] Sending message with embed');
-      message.channel.send({ embeds: [embed] })
-        .catch(err => {
-          throw new Error(`[UserInfo Command] Error sending userinfo embed: ${err}`);
-        });
-    }).catch(err => {
-      throw new Error(`[UserInfo Command] Error fetching user: ${err}`);
-      message.channel.send({ content: 'There was an error fetching user information.' });
-    });
+      return message.channel.send({ embeds: [embed] });
+    } catch (error) {
+      throw new Error(`[UserInfo Command] Error fetching user info: ${error.message}`);
+    }
   },
 };
