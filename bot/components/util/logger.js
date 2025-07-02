@@ -23,6 +23,46 @@ const levels = {
 };
 
 /**
+ * Logs a message to the console with a timestamp and log level.
+ * @param {string} message - The message to log.
+ */
+function consoleOut(message) {
+  const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
+  process.stdout.write(`[${timestamp}] ${message}\n`);
+}
+
+/**
+ * Ensures required directories and files exist
+ * @author isahooman
+ */
+function ensureDirectories() {
+  try {
+    // Ensure the output directory exists
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+      consoleOut(`Created output directory: [${outputDir}]`);
+    }
+
+    // Ensure the error directory exists
+    if (!fs.existsSync(errorDir)) {
+      fs.mkdirSync(errorDir, { recursive: true });
+      consoleOut(`Created error directory: [${errorDir}]`);
+    }
+
+    // Ensure log file exists
+    if (!fs.existsSync(logFile)) {
+      fs.writeFileSync(logFile, '', { flag: 'w' });
+      consoleOut(`Created log file: [${logFile}]`);
+    }
+  } catch (err) {
+    consoleOut(`Failed to create directories or log file: ${err.message}`);
+  }
+}
+
+// Initialize directories and files before any logging
+ensureDirectories();
+
+/**
  * Checks to see if logging levels are enabled
  * @param {number} level Logging Level
  * @returns {boolean} Active or not
@@ -156,33 +196,22 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   const formattedMessage = consoleFormat(logText, level);
   process.stdout.write(formattedMessage + '\n');
 
-  // Log file output (without colors)
-  fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
+  try {
+    // Log file output (without colors)
+    fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
+  } catch {
+    try {
+      ensureDirectories();
+      fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
+    } catch (retryErr) {
+      process.stderr.write(`Failed to write to log file: ${retryErr.message}`);
+    }
+  }
 
   const botConfig = configManager.loadConfig('config');
   if (level === levels.START && botConfig.notifyOnReady) sendReadyNotification(message, module.exports);
   if (level === levels.ERROR && botConfig.reportErrors) sendErrorReport(message, commandType, commandInfo, module.exports);
 }
-
-/**
- * Ensures required directories exist
- * @author isahooman
- */
-const ensureDirectories = () => {
-  // Ensure the output directory exists
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-    logMessage(levels.INFO, `Created output directory: [${outputDir}]`);
-  }
-
-  // Ensure the error directory exists
-  if (!fs.existsSync(errorDir)) {
-    fs.mkdirSync(errorDir, { recursive: true });
-    logMessage(levels.INFO, `Created error directory: [${errorDir}]`);
-  }
-};
-
-ensureDirectories();
 
 module.exports = {
   info: (message, commandType, commandInfo) => logMessage(levels.INFO, message, commandType, commandInfo),

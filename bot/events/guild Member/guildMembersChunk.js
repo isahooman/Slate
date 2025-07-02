@@ -5,7 +5,7 @@ module.exports = {
   execute(members, guild) {
     logger.info(`Received a chunk of guild members;
       Guild: ${guild.name} | ${guild.id},
-      Member Count in Chunk: ${members.length},
+      Member Count in Chunk: ${members.size},
       Received At: ${new Date().toISOString()}
     `);
   },
