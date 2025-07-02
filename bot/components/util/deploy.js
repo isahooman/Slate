@@ -15,25 +15,43 @@ async function loadCommandFiles(directory) {
   const commandFiles = (await readRecursive(fullPath)).filter(file => path.extname(file).toLowerCase() === '.js');
 
   return commandFiles.map(file => {
-    const command = require(file);
-    let commandData;
+    try {
+      const command = require(file);
 
-    // Convert SlashCommandBuilder data to json if present, otherwise use raw data
-    if (command.data instanceof SlashCommandBuilder) commandData = command.data.toJSON();
-    else commandData = command.data;
-
-    // If the command has the 'userInstall' parameter add the necessary data
-    if (command.userInstall) {
-      // Ignore userInstall for dev commands
-      if (directory.includes('dev')) {
-        logger.warn(`Command ${command.data.name} in ${directory} uses the [userInstall] option. Dev commands do not support user installs.`);
-        return commandData;
+      if (!command.data) {
+        logger.error(`Command file ${file} is missing 'data' property`);
+        return null;
       }
-      commandData.integrationTypes = [0, 1];
-      commandData.contexts = [0, 1, 2];
+
+      let commandData;
+
+      // Convert SlashCommandBuilder data to json if present, otherwise use raw data
+      if (command.data instanceof SlashCommandBuilder) commandData = command.data.toJSON();
+      else commandData = command.data;
+
+      // Validate command has a name property
+      if (!commandData || !commandData.name) {
+        logger.error(`Command file ${file} has invalid command data or missing name property`);
+        return null;
+      }
+
+      // If the command has the 'userInstall' parameter add the necessary data
+      if (command.userInstall) {
+        // Ignore userInstall for dev commands
+        if (directory.includes('dev')) {
+          logger.warn(`Command ${commandData.name} in ${directory} uses the [userInstall] option. Dev commands do not support user installs.`);
+          return commandData;
+        }
+        commandData.integrationTypes = [0, 1];
+        commandData.contexts = [0, 1, 2];
+      }
+
+      return commandData;
+    } catch (error) {
+      logger.error(`Error loading command file ${file}: ${error.message}`);
+      return null;
     }
-    return commandData;
-  });
+  }).filter(cmd => cmd !== null);
 }
 
 /**
@@ -57,9 +75,11 @@ async function deployCommands() {
   try {
     // Load and deploy global commands
     const globalCommands = await loadCommandFiles('commands/slash/global');
+    logger.info(`Loaded ${globalCommands.length} global commands`);
+
     const uniqueGlobalCommands = Array.from(new Map(globalCommands.map(cmd => [cmd.name, cmd])).values());
     if (uniqueGlobalCommands.length) {
-      uniqueGlobalCommands.forEach(command => logger.info(`Filtered duplicate global command: ${command.name}`));
+      if (globalCommands.length !== uniqueGlobalCommands.length) logger.warn(`Filtered ${globalCommands.length - uniqueGlobalCommands.length} duplicate global commands`);
       uniqueGlobalCommands.forEach(command => logger.info(`Deploying global command: ${command.name}`));
       await rest.put(Routes.applicationCommands(clientId), { body: uniqueGlobalCommands });
       logger.info('Successfully registered global slash commands!');
@@ -70,9 +90,11 @@ async function deployCommands() {
     // Load and deploy dev commands to the home guild
     if (guildId) {
       const devCommands = await loadCommandFiles('commands/slash/dev');
+      logger.info(`Loaded ${devCommands.length} dev commands`);
+
       const uniqueDevCommands = Array.from(new Map(devCommands.map(cmd => [cmd.name, cmd])).values());
       if (uniqueDevCommands.length) {
-        uniqueDevCommands.forEach(command => logger.info(`Filtered duplicate dev command: ${command.name}`));
+        if (devCommands.length !== uniqueDevCommands.length) logger.warn(`Filtered ${devCommands.length - uniqueDevCommands.length} duplicate dev commands`);
         uniqueDevCommands.forEach(command => logger.info(`Deploying dev command: ${command.name}`));
         await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: uniqueDevCommands });
         logger.info(`Successfully registered dev slash commands for: ${guildId}`);
