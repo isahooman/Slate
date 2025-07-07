@@ -1,6 +1,9 @@
 @ECHO OFF
 setlocal enabledelayedexpansion
 
+REM Ensure output directory exists
+if not exist "output" mkdir "output"
+
 echo ==================================== >> output/bot.log
 echo %date% %time% >> output/bot.log
 echo ==================================== >> output/bot.log
