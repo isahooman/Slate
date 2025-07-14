@@ -18,7 +18,6 @@ module.exports = {
         user = repliedMessage.author;
       } catch (error) {
         throw new Error(`[Banner Command] Error fetching replied-to message: ${error}`);
-        return message.channel.send('Error fetching the replied-to message.');
       }
     } else if (args.length === 0) {
       // If no arguments provided, use the message author
@@ -50,12 +49,15 @@ module.exports = {
         .setURL(user.bannerURL({ dynamic: true, size: 4096 }))
         .setImage(user.bannerURL({ dynamic: true, size: 4096 }));
 
-    message.channel.send({ embeds: [embed] })
-      .then(() => {
-        logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
-      })
-      .catch(error => {
-        throw new Error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
-      });
+      message.channel.send({ embeds: [embed] })
+        .then(() => {
+          logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
+        })
+        .catch(error => {
+          throw new Error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
+        });
+    } catch (error) {
+      throw new Error(`[Banner Command] Error fetching user data: ${error}`);
+    }
   },
 };
