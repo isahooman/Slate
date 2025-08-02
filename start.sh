@@ -1,6 +1,9 @@
 #!/bin/bash
 set +x
 
+# Ensure output directory exists
+mkdir -p ./output
+
 echo "=====================================" >> ./output/bot.log
 date >> ./output/bot.log
 echo "=====================================" >> ./output/bot.log
@@ -27,11 +30,11 @@ while true; do
 
   echo
   echo "Discord bot has stopped with exit code $exit_code. Restarting..."
-  echo >> bot.log
+  echo >> ./output/bot.log
   echo "====================================" >> ./output/bot.log
   echo "$(date) $(date +%T)" >> ./output/bot.log
   echo "====================================" >> ./output/bot.log  
-  echo "" >> bot.log
+  echo "" >> ./output/bot.log
 
   current_time=$(( $(date +%H) * 3600 + $(date +%M) * 60 + $(date +%S) ))
   time_difference=$(( current_time - restart_time ))

@@ -62,14 +62,14 @@ function validateConfig() {
  * @author isahooman
  */
 function isRoot() {
-  const expectedRoot = path.resolve(__dirname, '..');
+  const expectedDir = path.resolve(__dirname, '..');
   const currentDir = process.cwd();
 
-  logger.debug(`Expected root: ${expectedRoot}`);
+  logger.debug(`Expected directory: ${expectedDir}`);
   logger.debug(`Current directory: ${currentDir}`);
 
   // Check if running from expected directory
-  return path.resolve(currentDir) === path.resolve(expectedRoot);
+  return path.resolve(currentDir) === path.resolve(expectedDir);
 }
 
 /**

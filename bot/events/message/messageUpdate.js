@@ -1,36 +1,13 @@
-const logger = require('../../components/util/logger.js');
 const { cooldown } = require('../../bot.js');
+const logger = require('../../components/util/logger.js');
 const configManager = require('../../../components/configManager');
 const createDisclaimerProxy = require('../../components/commands/commandWrapper.js');
 
 module.exports = {
   name: 'messageUpdate',
-  execute: async(oldMessage, newMessage, client) => {
-    let messageContent = newMessage.content.split('\n').map(line => `│ ${line}`).join('\n');
-
-    // Calculate the message width for border
-    let maxLength = Math.max(...newMessage.content.split('\n').map(line => line.length));
-    const indicatorWidth = 15;
-
-    // Check for attachments
-    const hasAttachments = newMessage.attachments.size > 0;
-    const isOnlyAttachment = hasAttachments && newMessage.content.trim() === '';
-    if (hasAttachments) messageContent += isOnlyAttachment ? '[attachment]' : '\n│ [attachment]'.slice(0, indicatorWidth);
-
-    // Check for embeds
-    const hasEmbeds = newMessage.embeds.length > 0;
-    const isOnlyEmbed = hasEmbeds && newMessage.content.trim() === '';
-    if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
-
-    // Adjust maxLength for indicators
-    maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
-
-    // Build the border
-    const borderChar = '─';
-    const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
-    const border = borderChar.repeat(borderLength);
-
-    logger.message(`Processing edited message from: [${newMessage.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+  execute: async(newMessage, client) => {
+    // Log the updated message
+    logMessage(newMessage);
 
     // Load config
     const blacklist = configManager.loadConfig('blacklist');
@@ -56,48 +33,35 @@ module.exports = {
       return;
     }
 
+    // Ignore messages from bots
     if (newMessage.author.bot) {
       logger.debug('Ignoring bot message.');
       return;
     }
 
-    // Check if the updated message mentions the bot
+    // check message for mention
     const mention = new RegExp(`^<@!?${client.user.id}>$`);
     const mentionWithCommand = new RegExp(`^<@!?${client.user.id}> `);
-
-    // Respond to mentions without a command with the bot's prefix
     if (mention.test(newMessage.content)) {
-      logger.info(`Bot mentioned by ${newMessage.author.tag}`);
+      logger.info(`Bot mentioned by: ${newMessage.author.tag}`);
       return newMessage.reply(`My prefix is \`${prefix}\``);
     }
 
-    // Check if the message starts with the prefix or mentions the bot
-    const isMention = mentionWithCommand.test(newMessage.content);
-    if (!newMessage.content.startsWith(prefix) && !isMention) {
-      logger.debug(`Message does not start with prefix or mention.`);
+    // Check message for prefix or mention
+    if (!newMessage.content.startsWith(prefix) && !mentionWithCommand.test(newMessage.content)) {
+      logger.debug('Message does not start with prefix or mention.');
       return;
     }
 
-    // Extract the command and arguments from the updated message
-    const content = isMention ?
-      newMessage.content.replace(mentionWithCommand, '') :
-      newMessage.content.slice(prefix.length);
+    const content = newMessage.content.startsWith(prefix) ? newMessage.content.slice(prefix.length) : newMessage.content.replace(mentionWithCommand, '');
+    let args = content.split(/ +/);
 
-    const args = content.split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    let commandName = args.shift().toLowerCase();
 
-    // Check if the command name is an alias
+    // Check message for command or command alises
     const command = client.prefixCommands.get(commandName) || client.commandAliases.get(commandName);
-
-    // Ignore unknown commands
     if (!command) {
-      logger.debug(`No command found for: ${commandName}`);
-      return;
-    }
-
-    // Restrict owner-only commands
-    if (command.category.toLowerCase() === 'owner' && !ownerId.includes(newMessage.author.id)) {
-      logger.debug(`Unauthorized attempt to use owner command: ${commandName} by ${newMessage.author.tag}`);
+      logger.debug(`Command not found: ${commandName}`);
       return;
     }
 
@@ -112,7 +76,13 @@ module.exports = {
       newMessage = createDisclaimerProxy(newMessage);
     }
 
-    // Check if the command is NSFW and if it was used within an NSFW channel
+    // Owner-only commands
+    if (command.category.toLowerCase() === 'owner' && !ownerId.includes(newMessage.author.id)) {
+      logger.debug(`Unauthorized attempt to use owner command: ${commandName}`);
+      return;
+    }
+
+    // NSFW check
     if (command.nsfw && !newMessage.channel.nsfw) {
       logger.debug(`NSFW command used in non-NSFW channel: ${commandName}`);
       return;
@@ -160,11 +130,42 @@ module.exports = {
         command: command.name,
         stack: error.stack,
       });
-
-      // Reply to the user with generic error message
+      // Reply to the user with a generic error message
       await newMessage.reply({
         content: 'An error occurred with this command.',
       }).catch(err => logger.error(`Reply error: ${err.message}`));
     }
   },
 };
+
+/**
+ * Formats a message with borders and logs it
+ * @param {object} message - The Discord message object.
+ */
+function logMessage(message) {
+  let messageContent = message.content.split('\n').map(line => `│ ${line}`).join('\n');
+
+  // Calculate the message width for border
+  let maxLength = Math.max(...message.content.split('\n').map(line => line.length));
+  const indicatorWidth = 15;
+
+  // Check for attachments
+  const hasAttachments = message.attachments.size > 0;
+  const isOnlyAttachment = hasAttachments && message.content.trim() === '';
+  if (hasAttachments) messageContent += isOnlyAttachment ? '[attachment]' : '\n│ [attachment]'.slice(0, indicatorWidth);
+
+  // Check for embeds
+  const hasEmbeds = message.embeds.length > 0;
+  const isOnlyEmbed = hasEmbeds && message.content.trim() === '';
+  if (hasEmbeds) messageContent += isOnlyEmbed ? '[embed]' : '\n│ [embed]'.slice(0, indicatorWidth);
+
+  // Adjust maxLength for indicators
+  maxLength = Math.max(...messageContent.split('\n').map(line => line.length));
+
+  // Build the border
+  const borderChar = '─';
+  const borderLength = Math.max(maxLength + 2, indicatorWidth + 2);
+  const border = borderChar.repeat(borderLength);
+
+  logger.message(`Processing edited message from: [${message.author.tag}]:\n╭${border}╮\n${messageContent}\n╰${border}╯`);
+}
