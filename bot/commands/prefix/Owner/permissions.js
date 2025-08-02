@@ -31,7 +31,7 @@ module.exports = {
       const row = new ActionRowBuilder()
         .addComponents(
           new StringSelectMenuBuilder()
-            .setCustomId('permissionsMenu')
+            .setCustomId(`permissionsMenu.${message.author.id}`)
             .setPlaceholder('Select a category')
             .addOptions(
               { label: 'General', value: 'general' },

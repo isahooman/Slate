@@ -3,6 +3,10 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
   async stringSelectMenu(interaction, client) {
     try {
+      // Extract user ID
+      const [, authorizedUserId] = interaction.customId.split('.');
+
+      if (!authorizedUserId || authorizedUserId !== interaction.user.id) return;
       // Get the bot's nickname
       const botName = interaction.guild.members.me.nickname || client.user.username;
       // Get the selected category
