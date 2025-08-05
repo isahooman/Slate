@@ -1,0 +1,25 @@
+const { deployCommands } = require('../../../../components/core/loader.js');
+const logger = require('../../../../components/util/logger.js');
+const { SlashCommandBuilder } = require('discord.js');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('deploy')
+    .setDescription('Deploy all slash commands.'),
+  category: 'owner',
+
+  async execute(interaction) {
+    try {
+      // Log the start of the deployment
+      logger.debug(`[Deploy Command] Starting to deploy commands`);
+
+      // Call the deployCommands function
+      await deployCommands();
+
+      // Reply to the interaction
+      await interaction.reply('Slash commands deployed successfully!');
+    } catch (error) {
+      throw new Error(`[Deploy Command] Error while deploying commands: ${error}`);
+    }
+  },
+};

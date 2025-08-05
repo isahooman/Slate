@@ -1,29 +1,40 @@
 #!/bin/bash
 set +x
 
-echo "=====================================" >> ./bot.log
-date >> ./bot.log
-echo "=====================================" >> ./bot.log
+# Ensure output directory exists
+mkdir -p ./output
+
+echo "=====================================" >> ./output/bot.log
+date >> ./output/bot.log
+echo "=====================================" >> ./output/bot.log
 
 echo "Updating Node.js packages..."
-echo "Updating Node.js packages..." >> ./bot.log
+echo "Updating Node.js packages..." >> ./output/bot.log
 npm install > /dev/null 2>&1
 echo "Node.js packages updated."
-echo "Node.js packages updated." >> ./bot.log
+echo "Node.js packages updated." >> ./output/bot.log
 
 restart_count=0
 restart_time=0
 
 while true; do
   echo "Starting..."
-  node bot.js
+  node bot/bot.js
+  exit_code=$?
+  
+  if [ $exit_code -eq 0 ]; then
+    echo "Bot shut down gracefully."
+    echo "Bot shut down gracefully." >> ./output/bot.log
+    exit 0
+  fi
+
   echo
-  echo "Discord bot has stopped. Restarting..."
-  echo >> bot.log
-  echo "====================================" >> ./bot.log
-  echo "$(date) $(date +%T)" >> ./bot.log
-  echo "====================================" >> ./bot.log  
-  echo "" >> bot.log
+  echo "Discord bot has stopped with exit code $exit_code. Restarting..."
+  echo >> ./output/bot.log
+  echo "====================================" >> ./output/bot.log
+  echo "$(date) $(date +%T)" >> ./output/bot.log
+  echo "====================================" >> ./output/bot.log  
+  echo "" >> ./output/bot.log
 
   current_time=$(( $(date +%H) * 3600 + $(date +%M) * 60 + $(date +%S) ))
   time_difference=$(( current_time - restart_time ))

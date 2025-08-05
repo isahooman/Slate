@@ -31,10 +31,8 @@ package-lock.json
 # Extra
 project_structure*
 
-# Not ready
-/gui
-
 # Local Items
 /private
 *.bak
 changelog*
+/output

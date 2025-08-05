@@ -1,0 +1,28 @@
+{
+  toggle: {
+    INFO: true,
+    WARN: true,
+    ERROR: true,
+    DEBUG: true,
+    START: true,
+    LOADING: true,
+    COMMAND: true,
+    MESSAGE: true,
+    INTERACTION: true,
+  },
+  colors: {
+    TEXT: "#FFFFFF",
+    TIMESTAMP: "#14a8cd",
+    INFO: "#808080",
+    WARN: "#FFFF00",
+    ERROR: "#FF0000",
+    DEBUG: "#0000FF",
+    COMMAND: "#0dbc79",
+    START: "#0dbc79",
+    MESSAGE: "#ff69b4",
+    INTERACTION: "#FF69B4",
+    LOADING: "#17d5ad",
+    BRACKET: "#ce987d",
+    COLON: "#bf00ff",
+  },
+}

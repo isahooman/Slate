@@ -38,8 +38,7 @@ function writeJSON5(filePath, data) {
   }
 }
 
-module.exports =
-{
+module.exports = {
   readJSON5,
   writeJSON5,
 };
