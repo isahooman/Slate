@@ -8,22 +8,5 @@
     "source.fixAll.eslint": "explicit",
     "source.fixAll": "explicit"
   },
-  "eslint.debug": true,
   "eslint.format.enable": true,
-  "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/.DS_Store": true,
-    "**/Thumbs.db": true,
-    ".git*": true,
-    "node_modules": true,
-    ".vscode": true,
-    "package.json": false,
-    "eslint.config.cjs": true,
-    "package-lock.json": true,
-    "LICENSE": true
-  },
-  "hide-files.files": [],
-  "explorerExclude.backup": {}
 }
