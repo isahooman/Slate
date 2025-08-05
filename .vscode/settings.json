@@ -19,10 +19,11 @@
     ".git*": true,
     "node_modules": true,
     ".vscode": true,
-    "package.json": true,
+    "package.json": false,
     "eslint.config.cjs": true,
     "package-lock.json": true,
     "LICENSE": true
   },
-  "hide-files.files": []
+  "hide-files.files": [],
+  "explorerExclude.backup": {}
 }
