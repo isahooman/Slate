@@ -40,14 +40,25 @@ async function loadCommands(client) {
  */
 async function loadSlashCommands(client, directory, commandsConfig) {
   const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  const existingCommandNames = new Set();
+
   for (const filePath of commandFiles) try {
     const command = require(filePath);
     command.filePath = filePath;
     client.slashCommands.set(command.data.name, command);
+    existingCommandNames.add(command.data.name);
+
     if (!Object.hasOwn(commandsConfig.slash, command.data.name)) commandsConfig.slash[command.data.name] = true;
+
     logger.loading(`Loaded slash command: ${command.data.name}`);
   } catch (error) {
     throw new Error(`Error loading slash command at ${filePath}: ${error.message}`);
+  }
+
+  // Remove orphaned config entries
+  for (const commandName in commandsConfig.slash) if (!existingCommandNames.has(commandName)) {
+    delete commandsConfig.slash[commandName];
+    logger.warn(`Slash command [${commandName}] found in config but no file exists, removing from config.`);
   }
 }
 
@@ -60,17 +71,27 @@ async function loadSlashCommands(client, directory, commandsConfig) {
  */
 async function loadPrefixCommands(client, directory, commandsConfig) {
   const commandFiles = (await readRecursive(directory)).filter(file => path.extname(file) === '.js');
+  const existingCommandNames = new Set();
+
   for (const filePath of commandFiles) try {
     const command = require(filePath);
     command.filePath = filePath;
     client.prefixCommands.set(command.name.toLowerCase(), command);
+    existingCommandNames.add(command.name.toLowerCase());
 
     if (!Object.hasOwn(commandsConfig.prefix, command.name.toLowerCase())) commandsConfig.prefix[command.name.toLowerCase()] = true;
 
     if (command.aliases && Array.isArray(command.aliases)) for (const alias of command.aliases) client.commandAliases.set(alias.toLowerCase(), command);
+
     logger.loading(`Loaded prefix command: ${command.name} (${command.aliases ? command.aliases.join(', ') : 'No aliases'})`);
   } catch (error) {
     throw new Error(`Error loading prefix command at ${filePath}: ${error.message}`);
+  }
+
+  // Remove orphaned config entries
+  for (const commandName in commandsConfig.prefix) if (!existingCommandNames.has(commandName)) {
+    delete commandsConfig.prefix[commandName];
+    logger.warn(`Prefix command [${commandName}] found in config but no file exists, removing from config.`);
   }
 }
 

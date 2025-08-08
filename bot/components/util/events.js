@@ -19,6 +19,16 @@ async function loadEvents(client) {
     const eventConfig = configManager.loadConfig('events');
     let configUpdated = false;
 
+    // Keep track of existing events
+    const existingEventNames = new Set(eventFiles.map(file => path.basename(file, '.js')));
+
+    // Remove orphaned config entries
+    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
+      delete eventConfig[configEventName];
+      configUpdated = true;
+      logger.warn(`Event [${configEventName}] found in config but no file exists, removing from config.`);
+    }
+
     // Loop through each event file
     for (const file of eventFiles) {
       const eventName = path.basename(file, '.js');
@@ -43,7 +53,7 @@ async function loadEvents(client) {
       }
     }
 
-    // Save config if any defaults were added
+    // Save config if any changes were made
     if (configUpdated) configManager.saveConfig('events', eventConfig);
 
     logger.info('Events loaded.');
@@ -67,6 +77,17 @@ async function reloadAllEvents(client) {
 
     // Load event config
     const eventConfig = configManager.loadConfig('events');
+    let configUpdated = false;
+
+    // Keep track of existing event names
+    const existingEventNames = new Set(eventFiles.map(file => path.basename(file, '.js')));
+
+    // Remove orphaned config entries
+    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
+      delete eventConfig[configEventName];
+      configUpdated = true;
+      logger.debug(`Event [${configEventName}] found in config but no file exists, removing from config.`);
+    }
 
     // Loop through each event file
     for (const file of eventFiles) {
@@ -96,6 +117,10 @@ async function reloadAllEvents(client) {
         client.removeAllListeners(event.name);
       }
     }
+
+    // Save config if any orphaned entries were removed
+    if (configUpdated) configManager.saveConfig('events', eventConfig);
+
     logger.info('All events reloaded successfully.');
   } catch (error) {
     // If readRecursive throws an error, the directory doesn't exist
