@@ -2,7 +2,7 @@
   interactionCreate: true,
   messageCreate: true,
   messageUpdate: true,
-  ready: true,
+  clientReady: true,
   warn: false,
   error: false,
 

@@ -1,10 +1,10 @@
 const logger = require('../../components/util/logger.js');
 const { ActivityType } = require('discord.js');
 const { cache } = require('../../bot.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../../../components/configManager.js');
 
 module.exports = {
-  name: 'ready',
+  name: 'clientReady',
   once: true,
   execute(client) {
     logger.start(`Logged in as ${client.user.tag}!`);
