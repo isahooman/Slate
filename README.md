@@ -80,7 +80,7 @@
   - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
   - <span style="color:lightgreen;">Avatar</span> - Fetch the provided user's avatar.<br>
   - <span style="color:lightgreen;">Banner</span> - Fetch the provided user's banner.<br>
-  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<<br>
+  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<br>
   - <span style="color:lightgreen;">Math</span> - Solve the provided math equation.<br>
 - Fun
   - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
