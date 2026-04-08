@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
@@ -33,7 +33,7 @@ function ensureErrorDirectory(logger) {
  */
 function getClient() {
   if (!_client) try {
-    const bot = require('../../bot.js');
+    const bot = require('#bot');
     _client = bot.client;
   } catch (err) {
     process.stderr.write(`Failed to load client: ${err.message}`);

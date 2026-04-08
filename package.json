@@ -12,8 +12,8 @@
     "tree": "pwsh ./.vscode/scripts/Project_Tree.ps1",
     "start": "cross-os start-os",
     "start-os": {
-      "darwin": "sh start.sh",
-      "linux": "sh start.sh",
+      "darwin": "bash start.sh",
+      "linux": "bash start.sh",
       "win32": "start.bat"
     },
     "build": "npm install",
@@ -42,5 +42,10 @@
     "darwin",
     "linux",
     "win32"
-  ]
+  ],
+  "imports": {
+    "#root/*": "./*",
+    "#components/*": "./bot/components/*",
+    "#bot": "./bot/bot.js"
+  }
 }

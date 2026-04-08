@@ -1,8 +1,8 @@
 const moment = require('moment'); require('moment-duration-format');
 const { EmbedBuilder } = require('discord.js');
-const { client, cache } = require('../../../bot.js');
+const { client, cache } = require('#bot');
 const { cpu, mem } = require('node-os-utils');
-const logger = require('../../../components/util/logger.js');
+const logger = require('#components/util/logger.js');
 
 module.exports = {
   name: 'stats',

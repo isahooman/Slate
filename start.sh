@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set +x
 
 # Ensure output directory exists
@@ -21,8 +22,8 @@ while true; do
   echo "Starting..."
   node bot/bot.js
   exit_code=$?
-  
-  if [ $exit_code -eq 0 ]; then
+
+  if [ "$exit_code" -eq 0 ]; then
     echo "Bot shut down gracefully."
     echo "Bot shut down gracefully." >> ./output/bot.log
     exit 0
@@ -33,17 +34,18 @@ while true; do
   echo >> ./output/bot.log
   echo "====================================" >> ./output/bot.log
   echo "$(date) $(date +%T)" >> ./output/bot.log
-  echo "====================================" >> ./output/bot.log  
+  echo "====================================" >> ./output/bot.log
   echo "" >> ./output/bot.log
 
   current_time=$(( $(date +%H) * 3600 + $(date +%M) * 60 + $(date +%S) ))
   time_difference=$(( current_time - restart_time ))
 
-  if [[ $time_difference -le 15 ]]; then
-    if [[ $restart_count -ge 3 ]]; then
+  if [ "$time_difference" -le 15 ]; then
+    if [ "$restart_count" -ge 3 ]; then
       echo "Bot has restarted 3 times in the last 15 seconds. Exiting..."
       exit 1
     fi
+    restart_count=$(( restart_count + 1 ))
   else
     restart_count=1
     restart_time=$current_time

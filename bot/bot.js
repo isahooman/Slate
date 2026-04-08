@@ -1,16 +1,17 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const { loadAll, deployCommands, undeploy } = require('./components/core/loader');
-const logger = require('./components/util/logger.js');
-const configManager = require('../components/configManager');
 const path = require('path');
-let cooldownBuilder = require('./components/commands/cooldown.js');
-let cache = new (require('./components/util/cache'));
+
+const { Client, GatewayIntentBits } = require('discord.js');
+const { loadAll, deployCommands, undeploy } = require('#components/core/loader.js');
+const logger = require('#components/util/logger.js');
+const configManager = require('#components/configManager.js');
+let cooldownBuilder = require('#components/commands/cooldown.js');
+let cache = new (require('#components/util/cache.js'));
 
 /**
  * Processes intent configuration
  * @param {object} intentConfig - The intent configuration object
  * @returns {Array} Array of intent bits
- * @author Effanlaw
+ * @author EthanLawr
  */
 const handleIntents = intentConfig => {
   let totalIntentsBits = [];
@@ -38,12 +39,12 @@ function validateConfig() {
 
     if (config.name === 'ownerId') isEmpty = !config.value || !Array.isArray(config.value) || !config.value.length || !config.value[0] || config.value[0].trim() === '';
     else isEmpty =
-        // Check for undefined values
-        !config.value ||
-        // Check for empty strings
-        (typeof config.value === 'string' && config.value.trim() === '') ||
-        // Check for empty arrays
-        (Array.isArray(config.value) && config.value.length === 0);
+      // Check for undefined values
+      !config.value ||
+      // Check for empty strings
+      (typeof config.value === 'string' && config.value.trim() === '') ||
+      // Check for empty arrays
+      (Array.isArray(config.value) && config.value.length === 0);
 
     if (isEmpty) missingConfigs.push(config.name);
   }
@@ -75,7 +76,7 @@ function isRoot() {
 /**
  * Starts the bot and loads necessary data
  * @param {Client} bot - Discord Client
- * @author Effanlaw
+ * @author EthanLawr
  */
 async function startBot(bot) {
   logger.debug('Bot starting..');
@@ -181,6 +182,7 @@ process
     } catch (error) {
       logger.error(`Error during undeploy: ${error}`);
     }
+
     // Logout of Discord
     await exports.client.destroy();
     logger.info('Bot successfully logged out.');

@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
 const { sendErrorReport, sendReadyNotification } = require('./report.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 const { toAnsi, resetAnsi } = require('./colors.js');
 
 // Output directories
@@ -64,7 +64,7 @@ ensureDirectories();
 
 /**
  * Checks to see if logging levels are enabled
- * @param {number} level Logging Level
+ * @param {string} level Logging Level
  * @returns {boolean} Active or not
  * @author isahooman
  */
@@ -171,7 +171,13 @@ function consoleFormat(message, level) {
  * @author isahooman
  */
 function setLevelEnabled(level, enabled) {
-  if (Object.prototype.hasOwnProperty.call(levels, level)) configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
+  if (Object.prototype.hasOwnProperty.call(levels, level)) {
+    configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
+    return;
+  }
+
+  // Handle direct level string
+  configManager.updateConfigValue('logging', `toggle.${level}`, enabled);
 }
 
 /**
@@ -223,6 +229,7 @@ module.exports = {
   message: message => logMessage(levels.MESSAGE, message),
   interaction: message => logMessage(levels.INTERACTION, message),
   loading: message => logMessage(levels.LOADING, message),
+
   setLevelEnabled,
   isLevelEnabled,
   levels,

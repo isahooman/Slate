@@ -2,7 +2,7 @@ const { Collection } = require('discord.js');
 const path = require('path');
 const logger = require('../util/logger.js');
 const { readRecursive } = require('../core/fileHandler.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 
 /**
  * Load all commands and ensure they exist in the config file

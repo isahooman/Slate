@@ -1,5 +1,5 @@
-const logger = require('../../components/util/logger.js');
-const { handleSlashCommand, handleInteraction } = require('../../components/commands/commandHandler.js');
+const logger = require('#components/util/logger.js');
+const { handleSlashCommand, handleInteraction } = require('#components/commands/commandHandler.js');
 
 module.exports = {
   name: 'interactionCreate',

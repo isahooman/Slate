@@ -1,7 +1,7 @@
 const path = require('path');
 const logger = require('./logger.js');
 const { readRecursive } = require('../core/fileHandler.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 
 /**
  * Load Events

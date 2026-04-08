@@ -1,5 +1,5 @@
-const logger = require('../../components/util/logger.js');
-const { cache } = require('../../bot.js');
+const logger = require('#components/util/logger.js');
+const { cache } = require('#bot');
 
 module.exports = {
   name: 'guildCreate',

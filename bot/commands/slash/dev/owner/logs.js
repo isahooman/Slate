@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require('discord.js');
-const logger = require('../../../../components/util/logger.js');
+const logger = require('#components/util/logger.js');
 const path = require('path');
-const { readFile } = require('../../../../components/core/fileHandler.js');
+const { readFile } = require('#components/core/fileHandler.js');
 
 module.exports = {
   data: new SlashCommandBuilder()

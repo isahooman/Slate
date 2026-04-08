@@ -1,7 +1,7 @@
 const logger = require('../util/logger.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 const createDisclaimerProxy = require('./commandWrapper.js');
-const { cooldown } = require('../../bot.js');
+const { cooldown } = require('#bot');
 const path = require('path');
 
 /**

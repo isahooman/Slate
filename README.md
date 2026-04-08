@@ -123,7 +123,7 @@ cd Slate
 Next you'll need to setup [config.json5](./config/bot/config.json5) as well as the optional extra config files.
 
 ```bash
-sudo nano ./config/config.json5
+sudo nano ./config/bot/config.json5
 ```
 
 You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.
@@ -167,7 +167,7 @@ Next you'll need to configure your bot in [config.json5](./config/bot/config.jso
 
 ```sh
 # Opens the config file within the notepad text editor
-notepad ./config/config.json5
+notepad ./config/bot/config.json5
 ```
 
 You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.<br>
@@ -212,7 +212,7 @@ Next you'll need to configure your bot in [config.json5](./config/bot/config.jso
 
 ```sh
 # Opens the config file within the notepad text editor
-nano ./config/config.json5
+nano ./config/bot/config.json5
 ```
 
 You can follow the [configuration example](./config/bot/README.md#configjson) here if needed.<br>

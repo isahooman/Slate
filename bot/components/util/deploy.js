@@ -2,7 +2,7 @@ const path = require('path');
 const { readRecursive } = require('../core/fileHandler.js');
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');
-const configManager = require('../../../components/configManager');
+const configManager = require('../configManager');
 
 /**
  * Load commands and their data

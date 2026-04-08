@@ -36,3 +36,4 @@ project_structure*
 *.bak
 changelog*
 /output
+config/service/bot-id.json

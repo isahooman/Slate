@@ -1,5 +1,5 @@
-const logger = require('../../components/util/logger.js');
-const { handlePrefixCommand } = require('../../components/commands/commandHandler.js');
+const logger = require('#components/util/logger.js');
+const { handlePrefixCommand } = require('#components/commands/commandHandler.js');
 
 module.exports = {
   name: 'messageUpdate',

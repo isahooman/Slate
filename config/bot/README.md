@@ -42,16 +42,16 @@ Table of Contents
 ```json5
 {
   // Your discord bot token
-  token: "MTA2MjkzMTk3MzU3NzkwNDEzOQ.GTX3J-.62b_6VJfJu6jNbOGNyAyqeJkvzRvo5YVpSbANY",
+  token: "YOUR_BOT_TOKEN_HERE",
 
   // Your discord application client id
-  clientId: "1032931173577814139",
+  clientId: "YOUR_CLIENT_ID_HERE",
 
   // Your id along with any other owners
-  ownerId: ["496360025099337727", "932498572837456323"],
+  ownerId: ["YOUR_USER_ID_HERE"],
 
   // Your home server id
-  guildId: "762498572837456323",
+  guildId: "YOUR_GUILD_ID_HERE",
 
   // Prefix in which the bot will respond too
   prefix: "!",
@@ -61,17 +61,21 @@ Table of Contents
 
   // whether or not the bot will send a message when it's online and ready
   notifyOnReady: true,
-  // (optional) Channel within the home server which will receive ready notification
-  readyChannel: ["1177831782468437121"],
+  // (optional) Channels within the home server which will receive ready notification
+  readyChannels: ["1177831782468437121"],
   // (optional) Users who will receive ready notifications
   readyUsers: ["496360025099337728"],
 
   // whether or not the bot will attempt to send a report when an error occurs
   reportErrors: true,
-  // (optional) Channel within the home server which the bot will send error reports to
-  reportChannel: ["1177831782468437121"],
+  // (optional) Channels within the home server which the bot will send error reports to
+  errorChannels: ["1177831782468437121"],
   // (optional) Users who will receive error reports in dms
-  reportUsers: ["496360025099337728"],
+  errorUsers: ["496360025099337728"],
+
+  // Feedback channels
+  bugReportChannels: ["1177831782468437121"],
+  suggestChannels: ["1177831782468437121"],
 }
 ```
 
@@ -97,9 +101,9 @@ Table of Contents
 - `notifyOnReady`
   - Boolean: `true` or `false`
   - This refers to whether or not the bot will send a message when it's online and ready
-- `readyChannel`
+- `readyChannels`
   - Array of Strings: `["1177831782468437121"]`
-  - This refers to the channel within the home server which will receive ready notification
+  - This refers to the channels within the home server which will receive ready notification
 - `readyUsers`
   - Array of Strings: `["496360025099337728"]`
   - This refers to the users who will receive ready notifications
@@ -107,12 +111,18 @@ Table of Contents
 - `reportErrors`
   - Boolean: `true` or `false`
   - This refers to whether or not the bot will attempt to send a report when an error occurs
-- `reportChannel`
+- `errorChannels`
   - Array of Strings: `["1177831782468437121"]`
-  - This refers to the channel within the home server which the bot will send error reports to
-- `reportUsers`
+  - This refers to the channels within the home server which the bot will send error reports to
+- `errorUsers`
   - Array of Strings: `["496360025099337728"]`
   - This refers to the users who will receive error reports in dms
+- `bugReportChannels`
+  - Array of Strings: `["1177831782468437121"]`
+  - Channels where bug reports from the bugreport command are sent
+- `suggestChannels`
+  - Array of Strings: `["1177831782468437121"]`
+  - Channels where suggestions from the suggest command are sent
 
 ## events.json5
 
