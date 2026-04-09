@@ -3,6 +3,8 @@ const logger = require('./logger.js');
 const { readRecursive } = require('../core/fileHandler.js');
 const configManager = require('../configManager');
 
+const listeners = new Map();
+
 /**
  * Load Events
  * @param {client} client - Discord Client
@@ -46,8 +48,10 @@ async function loadEvents(client) {
         const event = require(file); // Use the file path directly in require
 
         // Attach the event listener to the client
-        if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
-        else client.on(event.name, (...args) => event.execute(...args, client));
+        const listener = (...args) => event.execute(...args, client);
+        if (event.once) client.once(event.name, listener);
+        else client.on(event.name, listener);
+        listeners.set(file, { eventName: event.name, listener });
       } else {
         logger.debug(`Event [${eventName}] is disabled in config, skipping load.`);
       }
@@ -102,19 +106,28 @@ async function reloadAllEvents(client) {
         // Reload event data
         const event = require(file);
 
-        // Remove all listeners for the event
-        client.removeAllListeners(event.name);
+        // Remove the registered listener for this file
+        const stored = listeners.get(file);
+        if (stored) {
+          client.removeListener(stored.eventName, stored.listener);
+          listeners.delete(file);
+        }
 
         // Register the new event listener
-        if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
-        else client.on(event.name, (...args) => event.execute(...args, client));
+        const listener = (...args) => event.execute(...args, client);
+        if (event.once) client.once(event.name, listener);
+        else client.on(event.name, listener);
+        listeners.set(file, { eventName: event.name, listener });
 
         logger.loading(`Reloaded event: ${event.name}`);
       } else {
         logger.debug(`Event [${eventName}] is disabled, skipping reload.`);
-        // Ensure disabled events have no listeners
-        const event = require(file);
-        client.removeAllListeners(event.name);
+        // Remove the registered listener for this file
+        const stored = listeners.get(file);
+        if (stored) {
+          client.removeListener(stored.eventName, stored.listener);
+          listeners.delete(file);
+        }
       }
     }
 
@@ -159,13 +172,19 @@ async function reloadEvent(client, eventName) {
     // Reload event data
     const event = require(eventFile);
 
-    // Remove all listeners for the event first
-    client.removeAllListeners(event.name);
+    // Remove only the bot-registered listener for this file
+    const stored = listeners.get(eventFile);
+    if (stored) {
+      client.removeListener(stored.eventName, stored.listener);
+      listeners.delete(eventFile);
+    }
 
     // Register the new event listener only if enabled
     if (eventConfig[eventName] === true) {
-      if (event.once) client.once(event.name, (...args) => event.execute(...args, client));
-      else client.on(event.name, (...args) => event.execute(...args, client));
+      const listener = (...args) => event.execute(...args, client);
+      if (event.once) client.once(event.name, listener);
+      else client.on(event.name, listener);
+      listeners.set(eventFile, { eventName: event.name, listener });
       logger.loading(`Reloaded event: ${event.name}`);
       return true;
     } else {
