@@ -6,6 +6,7 @@ class ConfigManager {
   constructor(configBasePath = './config') {
     this.configBasePath = configBasePath;
     this.listeners = new Map();
+    this.cache = new Map();
   }
 
   /**
@@ -29,11 +30,16 @@ class ConfigManager {
    * @author isahooman
    */
   loadConfig(configType) {
+    // Return cached value if available
+    if (this.cache.has(configType)) return this.cache.get(configType);
+
     const configPath = this.getConfigPath(configType);
 
     try {
       // Check if the file exists and read it
-      return fs.existsSync(configPath) ? readJSON5(configPath) : {};
+      const config = fs.existsSync(configPath) ? readJSON5(configPath) : {};
+      this.cache.set(configType, config);
+      return config;
     } catch (error) {
       process.stderr.write(`Error loading config ${configType}: ${error}\n`);
       return {};
@@ -57,6 +63,9 @@ class ConfigManager {
 
       // Write new configuration to file
       writeJSON5(configPath, config);
+
+      // Invalidate cache so next loadConfig reads the new value
+      this.cache.delete(configType);
 
       // Notify all listeners about the change
       this.notifyListeners(configType, config);
