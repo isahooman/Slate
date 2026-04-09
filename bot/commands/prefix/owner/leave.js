@@ -1,6 +1,6 @@
 module.exports = {
-  name: 'Leave',
-  usage: 'Leave (-y to skip confirmation)',
+  name: 'leave',
+  usage: 'leave (-y to skip confirmation)',
   category: 'Owner',
   allowDM: false,
   description: 'Make the bot leave the current server',
