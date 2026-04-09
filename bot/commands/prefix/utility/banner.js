@@ -9,53 +9,57 @@ module.exports = {
   allowDM: false,
   description: 'Send the banner of a provided user.',
   async execute(message, args) {
-    let user;
+    let member = null;
+    let user = null;
 
     if (message.reference) {
-      // Check if the message is a reply
+      // Use the author of the replied-to message
       try {
         const repliedMessage = await message.channel.messages.fetch(message.reference.messageId);
-        user = repliedMessage.author;
-      } catch (error) {
-        throw new Error(`[Banner Command] Error fetching replied-to message: ${error}`);
+        member = await message.guild.members.fetch(repliedMessage.author.id).catch(() => null);
+        user = member ? member.user : repliedMessage.author;
+      } catch {
+        return message.channel.send('Error fetching the replied-to message.');
       }
     } else if (args.length === 0) {
-      // If no arguments provided, use the message author
-      user = message.author;
+      // No arguments — use the message author
+      member = message.member;
+      user = member.user;
     } else {
-      // Search for the user
+      // Search for the specified user
       const searchResults = await search.member(message, args.join(' '));
 
-      if (searchResults.length === 1) user = searchResults[0].user;
-      else if (searchResults.length === 0) user = null;
-      else return message.channel.send('Multiple users found. Please be more specific.');
+      if (searchResults && searchResults.length === 1) {
+        member = searchResults[0];
+        user = member.user;
+      } else if (!searchResults || searchResults.length === 0) {
+        member = null;
+      } else {
+        return message.channel.send('Multiple users found. Please be more specific.');
+      }
     }
 
-    // If no user is found
-    if (!user) return message.channel.send('No users found.');
+    if (!member && !user) return message.channel.send('No users found.');
 
-    logger.debug(`[Banner Command] Retrieving banner for user ${user.tag}`);
+    const target = member || user;
+    const targetUser = member ? member.user : user;
+
+    logger.debug(`[Banner Command] Retrieving banner for user ${targetUser.tag}`);
 
     try {
-      // Fetch user data
-      user = await message.client.users.fetch(user.id, { force: true });
+      // Fetch user to ensure banner data is populated
+      const fetchedUser = await message.client.users.fetch(targetUser.id, { force: true });
+      const bannerURL = fetchedUser.bannerURL({ size: 4096 });
 
-      // Check if user has a banner
-      if (!user.banner) return message.channel.send('This user does not have a banner.');
+      if (!bannerURL) return message.channel.send('This user does not have a banner.');
 
-      // Create and send the embed
       const embed = new EmbedBuilder()
-        .setTitle(`${user.displayName}'s Banner`)
-        .setURL(user.bannerURL({ dynamic: true, size: 4096 }))
-        .setImage(user.bannerURL({ dynamic: true, size: 4096 }));
+        .setTitle(`${target.displayName}'s Banner`)
+        .setURL(bannerURL)
+        .setImage(bannerURL);
 
-      message.channel.send({ embeds: [embed] })
-        .then(() => {
-          logger.info(`[Banner Command] Banner sent successfully for user ${user.tag} in ${message.guild.name}`);
-        })
-        .catch(error => {
-          throw new Error(`[Banner Command] Error sending banner for user: ${user.tag}, in: ${message.guild.name}:\n${error}`);
-        });
+      await message.channel.send({ embeds: [embed] });
+      logger.info(`[Banner Command] Banner sent for ${targetUser.tag}`);
     } catch (error) {
       throw new Error(`[Banner Command] Error fetching user data: ${error}`);
     }
