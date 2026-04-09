@@ -25,8 +25,8 @@ module.exports = {
     await interaction.reply('Pinging...');
 
     let embedColor;
-    if (botPing < 75) embedColor = '#00ff37';
-    else if (botPing < 150) embedColor = '#FFC107';
+    if (botPing < 60) embedColor = '#00ff37';
+    else if (botPing < 100) embedColor = '#FFC107';
     else embedColor = '#F44336';
 
     const embed = new EmbedBuilder()
