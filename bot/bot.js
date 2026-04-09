@@ -146,7 +146,7 @@ process
     // Attempt to reconnect if the client died.
     if (!exports.client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await exports.client.login;
+      await exports.client.login(configManager.getConfigValue('config', 'token'));
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
@@ -161,7 +161,7 @@ process
     // Attempt to reconnect if the client died.
     if (!exports.client.user) try {
       logger.info('Attempting to reconnect to Discord...');
-      await exports.client.login;
+      await exports.client.login(configManager.getConfigValue('config', 'token'));
       const endTime = Date.now();
       logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
     } catch (error) {
