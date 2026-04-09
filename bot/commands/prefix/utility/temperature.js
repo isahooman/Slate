@@ -4,7 +4,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'temperature',
   usage: 'temperature <scale> <temperature>',
-  category: 'Utility',
+  category: 'utility',
   aliases: ['temp'],
   allowDM: true,
   description: 'convert temperature between different scales.',

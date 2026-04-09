@@ -4,7 +4,7 @@ const { sendBugReport } = require('#components/util/report.js');
 module.exports = {
   name: 'bugreport',
   usage: 'bugreport <message>',
-  category: 'Utility',
+  category: 'utility',
   aliases: ['reportbug'],
   allowDM: true,
   description: 'Report a bug',

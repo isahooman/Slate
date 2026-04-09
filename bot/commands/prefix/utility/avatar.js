@@ -5,7 +5,7 @@ const search = new (require('#components/util/search.js'))();
 module.exports = {
   name: 'avatar',
   usage: 'avatar <@user>|<user id>',
-  category: 'Utility',
+  category: 'utility',
   aliases: ['av', 'pfp'],
   allowDM: false,
   description: 'Send the avatar of a user.',

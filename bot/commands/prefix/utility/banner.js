@@ -5,7 +5,7 @@ const search = new (require('#components/util/search.js'))();
 module.exports = {
   name: 'banner',
   usage: 'banner <@user>|<user id>|<username>',
-  category: 'Utility',
+  category: 'utility',
   allowDM: false,
   description: 'Send the banner of a provided user.',
   async execute(message, args) {

@@ -4,7 +4,7 @@ const { sendSuggestion } = require('#components/util/report.js');
 module.exports = {
   name: 'suggest',
   usage: 'suggest <suggestion>',
-  category: 'Utility',
+  category: 'utility',
   aliases: ['suggestion'],
   allowDM: true,
   description: 'Make a suggestion',

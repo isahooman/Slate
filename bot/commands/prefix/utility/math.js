@@ -5,7 +5,7 @@ const math = require('mathjs');
 module.exports = {
   name: 'math',
   usage: 'math <equation>',
-  category: 'Utility',
+  category: 'utility',
   allowDM: true,
   description: 'Calculates math equations.',
   execute(message, args) {

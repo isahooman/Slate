@@ -4,7 +4,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'enlarge',
   usage: 'enlarge <emoji>',
-  category: 'Utility',
+  category: 'utility',
   allowDM: true,
   description: 'Enlarges an emoji.',
   execute(message, args) {

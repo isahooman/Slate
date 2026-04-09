@@ -6,7 +6,7 @@ const fetch = import('node-fetch');
 module.exports = {
   name: 'emojis',
   usage: 'emojis',
-  category: 'Utility',
+  category: 'utility',
   allowDM: false,
   description: 'Send all emojis from the current server in a zip file',
   async execute(message) {
