@@ -63,7 +63,7 @@ class User extends Cooldown {
    * @author EthanLawr
    */
   get(userID) {
-    if (this.data.get(userID)) this.data.get(userID);
+    if (this.data.get(userID)) return this.data.get(userID);
     return false;
   }
 
@@ -79,6 +79,19 @@ class User extends Cooldown {
     if (this.data.get(userID)) if (this.data.get(userID).cooldowns.find(data => data.name === commandData.name)) return this.data.get(userID).cooldowns.find(data => data.name === commandData.name);
     return false;
   }
+
+  /**
+   * Returns remaining cooldown time for a user command
+   * @param {string} userID User ID Snowflake
+   * @param {object} commandData Command Object Data
+   * @returns {number} Remaining milliseconds (0 if no active cooldown)
+   */
+  remaining(userID, commandData) {
+    const cooldownData = this.find(userID, commandData);
+    if (!cooldownData) return 0;
+    return Math.max(0, cooldownData.time - Date.now());
+  }
+
   /**
    * Checks to see if there is a user cooldown for a command
    * @param {object} commandData Command Object Data
@@ -141,6 +154,31 @@ class Guild extends Cooldown {
   }
 
   /**
+   * Finds a guild command cooldown entry
+   * @param {string} guildID Guild ID Snowflake
+   * @param {object} commandData Command Object Data
+   * @returns {object|boolean} Cooldown entry or false if none exists
+   */
+  find(guildID, commandData) {
+    commandData = slashCheck(commandData);
+    const guildData = this.data.get(guildID);
+    if (guildData) return guildData.cooldowns.find(data => data.name === commandData.name) || false;
+    return false;
+  }
+
+  /**
+   * Returns remaining cooldown time for a guild command
+   * @param {string} guildID Guild ID Snowflake
+   * @param {object} commandData Command Object Data
+   * @returns {number} Remaining milliseconds (0 if no active cooldown)
+   */
+  remaining(guildID, commandData) {
+    const cooldownData = this.find(guildID, commandData);
+    if (!cooldownData) return 0;
+    return Math.max(0, cooldownData.time - Date.now());
+  }
+
+  /**
    * Checks to see if there is a guild cooldown for a command
    * @param {object} commandData Command Object Data
    * @returns {boolean} True if exists
@@ -195,8 +233,32 @@ class Global extends Cooldown {
    * @author EthanLawr
    */
   get(commandData) {
+    commandData = slashCheck(commandData);
     if (this.data.get(commandData.name)) return this.data.get(commandData.name);
     return false;
+  }
+
+  /**
+   * Finds a global command cooldown entry
+   * @param {object} commandData Command Object Data
+   * @returns {object|boolean} Cooldown entry or false if none exists
+   */
+  find(commandData) {
+    commandData = slashCheck(commandData);
+    const globalData = this.data.get(commandData.name);
+    if (globalData) return globalData.cooldowns.find(data => data.name === commandData.name) || false;
+    return false;
+  }
+
+  /**
+   * Returns remaining cooldown time for a global command
+   * @param {object} commandData Command Object Data
+   * @returns {number} Remaining milliseconds (0 if no active cooldown)
+   */
+  remaining(commandData) {
+    const cooldownData = this.find(commandData);
+    if (!cooldownData) return 0;
+    return Math.max(0, cooldownData.time - Date.now());
   }
 
   /**

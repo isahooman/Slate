@@ -259,6 +259,25 @@ function isValidCommandName(name) {
 }
 
 /**
+ * Formats remaining cooldown time into a user-friendly string
+ * @param {number} ms - Remaining milliseconds
+ * @returns {string} Formatted duration
+ */
+function formatCooldownTime(ms) {
+  const total = Math.max(1, Math.ceil(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+
+  const time = [];
+  if (hours) time.push(`${hours} hour${hours === 1 ? '' : 's'}`);
+  if (minutes) time.push(`${minutes} minute${minutes === 1 ? '' : 's'}`);
+  if (seconds) time.push(`${seconds} second${seconds === 1 ? '' : 's'}`);
+
+  return time.join(', ') || '1 second';
+}
+
+/**
  * Handles component interactions (buttons, select menus, modals)
  * @param {object} interaction - The interaction object from Discord.js
  * @param {object} client - The Discord.js client instance
@@ -330,50 +349,38 @@ async function handleInteraction(interaction, client) {
 function handleCooldowns(context, command, type) {
   const userId = type === 'prefix' ? context.author.id : context.user.id;
   const guildId = context.guild?.id;
-  const commandName = type === 'prefix' ? command.name : command.data.name;
 
   const replyMethod = type === 'prefix' ?
-    msg => context.reply(msg) :
-    msg => context.reply({ content: msg, ephemeral: true });
+    msg => context.reply(msg).catch(error => logger.error(`Failed to send cooldown message: ${error.message}`)) :
+    msg => context.reply({ content: msg, ephemeral: true }).catch(error => logger.error(`Failed to send cooldown message: ${error.message}`));
 
   // Check user cooldown
-  if (cooldown.user.enabled(command)) if (!cooldown.user.data.get(userId)) {
-    cooldown.user.add(userId, command);
-  } else {
-    const userCooldowns = cooldown.user.data.get(userId).cooldowns;
-    const cmdCooldown = userCooldowns.find(x => x.name === commandName);
-
-    if (cmdCooldown?.time > Date.now()) {
-      replyMethod('You still have a cooldown on this command');
+  if (cooldown.user.enabled(command)) {
+    const remaining = cooldown.user.remaining(userId, command);
+    if (remaining > 0) {
+      replyMethod(`You still have to wait for ${formatCooldownTime(remaining)} to use this command again.`);
       return false;
     }
+    cooldown.user.add(userId, command);
   }
 
   // Check guild cooldown
-  if (guildId && cooldown.guild.enabled(command)) if (!cooldown.guild.data.get(guildId)) {
-    cooldown.guild.add(guildId, command);
-  } else {
-    const guildCooldowns = cooldown.guild.data.get(guildId).cooldowns;
-    const cmdCooldown = guildCooldowns.find(x => x.name === commandName);
-
-    if (cmdCooldown?.time > Date.now()) {
-      replyMethod('The guild still has a cooldown on this command');
-      return false;
-    }
+  if (!guildId || !cooldown.guild.enabled(command)) return true;
+  const guildRemaining = cooldown.guild.remaining(guildId, command);
+  if (guildRemaining > 0) {
+    replyMethod(`This command is on a server wide cooldown for the next ${formatCooldownTime(guildRemaining)}.`);
+    return false;
   }
+  cooldown.guild.add(guildId, command);
 
   // Check global cooldown
-  if (cooldown.global.enabled(command)) if (!cooldown.global.get(command)) {
-    cooldown.global.add(command);
-  } else {
-    const globalCooldowns = cooldown.global.get(command).cooldowns;
-    const cmdCooldown = globalCooldowns.find(x => x.name === commandName);
-
-    if (cmdCooldown?.time > Date.now()) {
-      replyMethod('This command is still on cooldown globally');
-      return false;
-    }
+  if (!cooldown.global.enabled(command)) return true;
+  const globalRemaining = cooldown.global.remaining(command);
+  if (globalRemaining > 0) {
+    replyMethod(`This command is on a global cooldown for the next ${formatCooldownTime(globalRemaining)}.`);
+    return false;
   }
+  cooldown.global.add(command);
 
   return true;
 }
