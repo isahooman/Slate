@@ -23,7 +23,7 @@ module.exports = {
       }
 
       // Read the log file
-      const logFilePath = path.join(__dirname, '#root/output/bot.log');
+      const logFilePath = path.join(__dirname, '../../../../output/bot.log');
       let logData = await readFile(logFilePath);
 
       // Retrieve the log lines
