@@ -55,9 +55,8 @@ function addDisabledDisclaimer(msgContent) {
     return modifiedContent;
   }
 
-  // If the message content is not a string or object, return it as is
+  // If the message content is not a string or object, throw an error
   throw new Error('Unexpected content type', { type: typeof msgContent });
-  return msgContent;
 }
 
 module.exports = createDisclaimerProxy;

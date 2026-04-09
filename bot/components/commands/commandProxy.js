@@ -15,7 +15,6 @@ const createMethodHandler = (target, methodName, disclaimerFn, shouldProxy = fal
       return shouldProxy ? proxyMessageEdit(result, disclaimerFn) : result;
     } catch (error) {
       throw new Error(`Error in ${methodName} proxy handler: ${error.message}`);
-      throw error;
     }
   };
 
