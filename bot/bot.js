@@ -26,10 +26,10 @@ const handleIntents = intentConfig => {
  */
 function validateConfig() {
   const requiredConfigs = [
-    { name: 'token', value: configManager.getConfigValue('config', 'token') },
-    { name: 'clientId', value: configManager.getConfigValue('config', 'clientId') },
-    { name: 'ownerId', value: configManager.getConfigValue('config', 'ownerId') },
-    { name: 'prefix', value: configManager.getConfigValue('config', 'prefix') },
+    { name: 'token', value: configManager.getConfigValue('config', 'token'), msg: '`token` must be a non-empty string.' },
+    { name: 'clientId', value: configManager.getConfigValue('config', 'clientId'), msg: '`clientId` must be a non-empty string.' },
+    { name: 'ownerId', value: configManager.getConfigValue('config', 'ownerId'), msg: '`ownerId` must be a non-empty array of Discord user IDs.' },
+    { name: 'prefix', value: configManager.getConfigValue('config', 'prefix'), msg: '`prefix` must be a non-empty string.' },
   ];
 
   const missingConfigs = [];
@@ -46,11 +46,13 @@ function validateConfig() {
       // Check for empty arrays
       (Array.isArray(config.value) && config.value.length === 0);
 
-    if (isEmpty) missingConfigs.push(config.name);
+    if (isEmpty) missingConfigs.push(config);
   }
 
   if (missingConfigs.length > 0) {
-    logger.warn(`Required config info is missing or empty: ${missingConfigs.join(', ')}`);
+    const configPath = path.resolve(configManager.getConfigPath('config'));
+    logger.warn(`Required config info is missing or empty in: ${configPath}`);
+    for (const config of missingConfigs) logger.warn(`- ${config.msg}`);
     return false;
   }
 
@@ -83,7 +85,7 @@ async function startBot(bot) {
 
   // Check for required config data
   if (!validateConfig()) {
-    logger.error('Bot startup aborted due to missing configuration. Please fill out the required fields in the config.json5 file.');
+    logger.error(`Bot startup aborted due to invalid configuration.`);
     // Exit with 0 to avoid auto recovery
     process.exit(0);
   }
