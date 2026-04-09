@@ -17,7 +17,7 @@ module.exports = {
       // Sends shutdown signal
       process.emit('SIGINT');
     } catch (error) {
-      throw new Error('[Shutdown Command] Error occurred while shutting down:', error);
+      throw new Error(`[Shutdown Command] Error occurred while shutting down: ${error.message}`);
     }
   },
 };
