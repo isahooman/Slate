@@ -1,4 +1,4 @@
-const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('#components/core/loader.js');
+const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, eventExists, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('#components/core/loader.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('#components/util/logger.js');
 
@@ -34,7 +34,7 @@ module.exports = {
         }
 
         // Check if the event exists
-        if (!isEventEnabled(target)) {
+        if (!eventExists(target)) {
           logger.debug(`[Toggle Command] Event '${target}' does not exist`);
           interaction.reply(`Event '${target}' does not exist.`);
           return;

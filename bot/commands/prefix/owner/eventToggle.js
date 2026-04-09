@@ -1,4 +1,4 @@
-const { setEventEnabled, isEventEnabled, reloadAllEvents } = require('#components/core/loader.js');
+const { setEventEnabled, isEventEnabled, eventExists, reloadAllEvents } = require('#components/core/loader.js');
 const logger = require('#components/util/logger.js');
 
 module.exports = {
@@ -19,7 +19,7 @@ module.exports = {
     }
 
     // Check if the event exists
-    if (!isEventEnabled(eventName)) {
+    if (!eventExists(eventName)) {
       logger.warn(`[EventToggle Command] Event '${eventName}' does not exist.`);
       message.reply(`Event '${eventName}' does not exist.`);
       return;

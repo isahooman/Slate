@@ -1,5 +1,5 @@
 const { loadCommands, togglePrefixCommand, toggleSlashCommand, reloadAllCommands, isPrefixCommandEnabled, isSlashCommandEnabled, findNearestCommand, reloadCommand } = require('../commands/commands.js');
-const { loadEvents, reloadAllEvents, setEventEnabled, isEventEnabled, reloadEvent } = require('../util/events.js');
+const { loadEvents, reloadAllEvents, setEventEnabled, isEventEnabled, eventExists, reloadEvent } = require('../util/events.js');
 const { deployCommands, undeploy } = require('../util/deploy.js');
 
 /**
@@ -18,6 +18,7 @@ module.exports = {
   toggleSlashCommand,
   setEventEnabled,
   isEventEnabled,
+  eventExists,
   reloadAllCommands,
   isPrefixCommandEnabled,
   isSlashCommandEnabled,

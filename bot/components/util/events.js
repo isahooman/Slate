@@ -217,10 +217,21 @@ function isEventEnabled(eventName) {
   return configManager.getConfigValue('events', eventName, true);
 }
 
+/**
+ * Checks if a given event exists in event config.
+ * @param {string} eventName - The name of the event to check.
+ * @returns {boolean} - Returns true if the event exists in config, otherwise false.
+ */
+function eventExists(eventName) {
+  const eventConfig = configManager.loadConfig('events');
+  return Object.hasOwn(eventConfig, eventName);
+}
+
 module.exports = {
   loadEvents,
   reloadAllEvents,
   setEventEnabled,
   isEventEnabled,
+  eventExists,
   reloadEvent,
 };
