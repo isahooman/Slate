@@ -4,7 +4,7 @@ const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('dis
 module.exports = {
   name: 'permissions',
   usage: 'permissions',
-  category: 'Owner',
+  category: 'owner',
   aliases: ['perms'],
   allowDM: false,
   description: `Check the bot's permissions`,

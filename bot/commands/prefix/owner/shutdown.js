@@ -3,7 +3,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'shutdown',
   usage: 'shutdown [true]',
-  category: 'Owner',
+  category: 'owner',
   aliases: ['sd'],
   allowDM: true,
   description: 'Terminates the bot.',

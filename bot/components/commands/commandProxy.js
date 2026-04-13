@@ -91,6 +91,4 @@ function subproxyChannel(channel, disclaimerFn) {
 module.exports = {
   proxyMessage,
   proxyInteraction,
-  proxyMessageEdit,
-  subproxyChannel,
 };

@@ -1,7 +1,7 @@
 module.exports = {
   name: 'fail',
   usage: 'fail',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Intentionally throw an error for testing.',
   cooldowns: {

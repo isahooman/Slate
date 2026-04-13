@@ -4,7 +4,7 @@ module.exports = {
   name: 'logtoggle',
   usage: 'log <level>',
   aliases: ['ltoggle', 'togglelog'],
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Toggles logging for the specified level',
   execute(message, args) {

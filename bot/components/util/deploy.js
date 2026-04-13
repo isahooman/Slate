@@ -55,22 +55,31 @@ async function loadCommandFiles(directory) {
 }
 
 /**
- * Deploys slash commands
+ * Reads config values and creates the REST client.
+ * @returns {{ clientId: string, guildId: string, rest: REST }|null} Config object or null if required config is missing.
  * @author isahooman
  */
-async function deployCommands() {
-  // Get configuration values
+function getRestConfig() {
   const clientId = configManager.getConfigValue('config', 'clientId');
   const token = configManager.getConfigValue('config', 'token');
   const guildId = configManager.getConfigValue('config', 'guildId');
 
-  // Validate required configuration
   if (!clientId || !token) {
     logger.error('Missing required configuration: clientId or token');
-    return;
+    return null;
   }
 
-  const rest = new REST({ version: '10' }).setToken(token);
+  return { clientId, guildId, rest: new REST({ version: '10' }).setToken(token) };
+}
+
+/**
+ * Deploys slash commands
+ * @author isahooman
+ */
+async function deployCommands() {
+  const config = getRestConfig();
+  if (!config) return;
+  const { clientId, guildId, rest } = config;
 
   try {
     // Load and deploy global commands
@@ -114,18 +123,9 @@ async function deployCommands() {
  * @author isahooman
  */
 async function undeploy() {
-  // Get configuration values
-  const clientId = configManager.getConfigValue('config', 'clientId');
-  const token = configManager.getConfigValue('config', 'token');
-  const guildId = configManager.getConfigValue('config', 'guildId');
-
-  // Validate required configuration
-  if (!clientId || !token) {
-    logger.error('Missing required configuration: clientId or token');
-    return;
-  }
-
-  const rest = new REST({ version: '10' }).setToken(token);
+  const config = getRestConfig();
+  if (!config) return;
+  const { clientId, guildId, rest } = config;
 
   try {
     logger.info('Started unregistering global commands.');

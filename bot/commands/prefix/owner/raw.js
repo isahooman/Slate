@@ -4,7 +4,7 @@ const util = require('node:util');
 module.exports = {
   name: 'raw',
   usage: 'reply to a message with the command',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Gets the raw message data of the replied message',
 

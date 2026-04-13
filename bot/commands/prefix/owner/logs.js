@@ -6,7 +6,7 @@ const { readFile } = require('#components/core/fileHandler.js');
 module.exports = {
   name: 'logs',
   usage: 'logs <number of lines>',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Retrieve the latest bot logs.',
   cooldowns: {

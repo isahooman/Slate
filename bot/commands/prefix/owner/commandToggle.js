@@ -5,7 +5,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'commandtoggle',
   usage: 'commandtoggle [type] <command_name>',
-  category: 'Owner',
+  category: 'owner',
   aliases: ['ctoggle', 'togglecommand'],
   allowDM: true,
   description: 'Toggles the specified command',

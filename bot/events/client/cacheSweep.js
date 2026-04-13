@@ -2,10 +2,10 @@ const logger = require('#components/util/logger.js');
 
 module.exports = {
   name: 'cacheSweep',
-  execute(type, number) {
+  execute(type, count) {
     logger.info(`Cache Sweep;
       Type: ${type},
-      Number of Items Cleared: ${number}
+      Number of Items Cleared: ${count}
     `);
   },
 };

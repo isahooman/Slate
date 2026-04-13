@@ -5,7 +5,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'prefix',
   usage: 'prefix <new prefix>',
-  category: 'Owner',
+  category: 'owner',
   aliases: ['setprefix'],
   allowDM: true,
   description: 'Changes the bot\'s prefix.',

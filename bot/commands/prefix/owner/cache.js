@@ -6,7 +6,7 @@ const { cache } = require('#bot');
 module.exports = {
   name: 'cache',
   usage: 'cache <clear/refresh/stats>',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Cache management',
   execute(message, args) {

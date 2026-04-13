@@ -6,8 +6,8 @@ const { loadEvents } = require('#components/util/events.js');
 const { deployCommands, undeploy } = require('#components/util/deploy.js');
 const logger = require('#components/util/logger.js');
 const configManager = require('#components/configManager.js');
-let cooldownBuilder = require('#components/commands/cooldown.js');
-let cache = new (require('#components/util/cache.js'));
+const cooldownBuilder = require('#components/commands/cooldown.js');
+const cache = new (require('#components/util/cache.js'));
 
 /**
  * Processes intent configuration
@@ -136,6 +136,9 @@ exports.cache = cache;
 safeStart();
 
 // Attempt to reconnect to Discord if the client died.
+/**
+ *
+ */
 async function attemptReconnect() {
   if (!exports.client.user) try {
     const startTime = Date.now();
@@ -158,17 +161,17 @@ process
     logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
   })
 
-  .on('uncaughtException', async (err, origin) => {
+  .on('uncaughtException', async(err, origin) => {
     logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
     await attemptReconnect();
   })
 
-  .on('unhandledRejection', async (reason, message) => {
+  .on('unhandledRejection', async(reason, message) => {
     logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
     await attemptReconnect();
   })
 
-  .on('SIGINT', async () => {
+  .on('SIGINT', async() => {
     logger.info('Received SIGINT. Shutting down...');
 
     // Get undeployOnExit configuration

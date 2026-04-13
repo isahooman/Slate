@@ -8,11 +8,11 @@ const prefixes = ['\'', '$', ',', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?'
 module.exports = {
   name: 'botclear',
   usage: 'bc [number of messages]',
-  category: 'Owner',
+  category: 'owner',
   aliases: ['bc'],
   allowDM: false,
   description: 'Clears bot messages',
-  execute: async (message, args) => {
+  execute: async(message, args) => {
     try {
       // Get the number of messages to scan from args, default to 30
       const messagesToScan = parseInt(args[0]) || 30;
@@ -37,11 +37,11 @@ module.exports = {
       const confirmationMessage = await message.channel.send(`Cleared ${deletableMessages.size} messages.`);
       setTimeout(() => {
         confirmationMessage.delete().catch(e => {
-          throw Error(`Error deleting confirmation message: ${e.message}`);
+          throw new Error(`Error deleting confirmation message: ${e.message}`);
         });
       }, 5000);
     } catch (error) {
-      throw Error(`Error executing bc command: ${error.message}`);
+      throw new Error(`Error executing bc command: ${error.message}`);
     }
   },
 };

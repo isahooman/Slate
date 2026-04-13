@@ -3,7 +3,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'logtest',
   usage: 'logtest <message>',
-  category: 'Owner',
+  category: 'owner',
   description: 'Test logger levels',
   allowDM: true,
   execute(message, args) {

@@ -2,6 +2,8 @@ const logger = require('#components/util/logger.js');
 const { EmbedBuilder } = require('discord.js');
 const Search = require('#components/util/search.js');
 
+const search = new Search();
+
 const badges = {
   // Misc
   Staff: 'Discord Staff',
@@ -48,7 +50,6 @@ module.exports = {
 
     try {
       // Find target user - default to message author if no query
-      const search = new Search();
       const users = userQuery ? await search.member(message, userQuery) : [message.member];
 
       if (!users?.length) return message.channel.send({ content: 'Could not find any matching users.' });

@@ -79,6 +79,10 @@ function isLevelEnabled(level) {
   return configManager.getConfigValue('logging', `toggle.${level}`);
 }
 
+// Pre-compiled regex for consoleFormat
+const TIMESTAMP_REGEX = /^\[(.*?)\]/;
+const LEVEL_REGEX = /^\s*<(.*?)>/;
+
 /**
  * Apply color formatting to a log message
  * @param {string} message - The message to format
@@ -102,14 +106,14 @@ function consoleFormat(message, level) {
   let position = 0;
 
   // Format timestamp section: [YYYY-MM-DD HH:mm:ss]
-  const timestampMatch = message.match(/^\[(.*?)\]/);
+  const timestampMatch = message.match(TIMESTAMP_REGEX);
   if (timestampMatch) {
     formattedMessage += `${textColor}[${timestampColor}${timestampMatch[1]}${textColor}]`;
     position = timestampMatch[0].length;
   }
 
   // Format log level section: <LEVEL>
-  const levelMatch = message.substring(position).match(/^\s*<(.*?)>/);
+  const levelMatch = message.substring(position).match(LEVEL_REGEX);
   if (levelMatch) {
     formattedMessage += `${textColor} <${levelColor}${levelMatch[1]}${textColor}>`;
     position += levelMatch[0].length;
@@ -202,17 +206,15 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   const formattedMessage = consoleFormat(logText, level);
   process.stdout.write(formattedMessage + '\n');
 
-  try {
-    // Log file output (without colors)
-    fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
-  } catch {
-    try {
+  // Log file output (without colors) — async to avoid blocking the event loop
+  fs.promises.appendFile(logFile, `<${timestamp}> <${level}> ${message}\n`)
+    .catch(() => {
       ensureDirectories();
-      fs.appendFileSync(logFile, `<${timestamp}> <${level}> ${message}\n`);
-    } catch (retryErr) {
+      return fs.promises.appendFile(logFile, `<${timestamp}> <${level}> ${message}\n`);
+    })
+    .catch(retryErr => {
       process.stderr.write(`Failed to write to log file: ${retryErr.message}`);
-    }
-  }
+    });
 
   const botConfig = configManager.loadConfig('config');
   if (level === levels.START && botConfig.notifyOnReady) sendReadyNotification(message, module.exports);

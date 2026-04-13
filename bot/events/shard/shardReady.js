@@ -2,8 +2,8 @@ const logger = require('#components/util/logger.js');
 
 module.exports = {
   name: 'shardReady',
-  execute(id, unavailableGuilds = false) {
-    logger.info(`Shard ${id} is ready!`);
+  execute(shardId, unavailableGuilds = false) {
+    logger.info(`Shard ${shardId} is ready!`);
     if (unavailableGuilds) logger.info(`Unavailable guilds: ${unavailableGuilds}`);
   },
 };

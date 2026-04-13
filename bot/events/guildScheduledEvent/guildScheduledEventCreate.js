@@ -4,7 +4,7 @@ module.exports = {
   name: 'guildScheduledEventCreate',
   execute(event) {
     logger.info(`Guild Scheduled Event Created;
-      Server: ${event.guild.name} | ${event.guildId}
+      Server: ${event.guild?.name} | ${event.guildId}
       Name: ${event.name} | ${event.id},
       Start Time: ${event.scheduledStartTimestamp},
       End Time: ${event.scheduledEndTimestamp || 'N/A'},

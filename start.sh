@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set +x
-
 # Ensure output directory exists
 mkdir -p ./output
 
@@ -16,7 +14,7 @@ echo "Node.js packages updated."
 echo "Node.js packages updated." >> ./output/bot.log
 
 restart_count=0
-restart_time=0
+restart_time=$(date +%s)
 
 while true; do
   echo "Starting..."
@@ -37,7 +35,7 @@ while true; do
   echo "====================================" >> ./output/bot.log
   echo "" >> ./output/bot.log
 
-  current_time=$(( $(date +%H) * 3600 + $(date +%M) * 60 + $(date +%S) ))
+  current_time=$(date +%s)
   time_difference=$(( current_time - restart_time ))
 
   if [ "$time_difference" -le 15 ]; then

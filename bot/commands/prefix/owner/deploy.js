@@ -3,7 +3,7 @@ const { deployCommands } = require('#components/util/deploy.js');
 module.exports = {
   name: 'deploy',
   usage: 'deploy',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Deploy all slash commands.',
   cooldowns: {

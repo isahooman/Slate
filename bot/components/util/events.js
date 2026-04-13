@@ -21,19 +21,12 @@ async function loadEvents(client) {
     const eventConfig = configManager.loadConfig('events');
     let configUpdated = false;
 
-    // Keep track of existing events
-    const existingEventNames = new Set(eventFiles.map(file => path.basename(file, '.js')));
+    const existingEventNames = new Set();
 
-    // Remove orphaned config entries
-    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
-      delete eventConfig[configEventName];
-      configUpdated = true;
-      logger.warn(`Event [${configEventName}] found in config but no file exists, removing from config.`);
-    }
-
-    // Loop through each event file
+    // Single pass: track existing events and load them
     for (const file of eventFiles) {
       const eventName = path.basename(file, '.js');
+      existingEventNames.add(eventName);
 
       // Check if the event exists in the config file, default to true if not
       if (eventConfig[eventName] === undefined) {
@@ -55,6 +48,13 @@ async function loadEvents(client) {
       } else {
         logger.debug(`Event [${eventName}] is disabled in config, skipping load.`);
       }
+    }
+
+    // Remove orphaned config entries
+    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
+      delete eventConfig[configEventName];
+      configUpdated = true;
+      logger.warn(`Event [${configEventName}] found in config but no file exists, removing from config.`);
     }
 
     // Save config if any changes were made
@@ -83,20 +83,12 @@ async function reloadAllEvents(client) {
     const eventConfig = configManager.loadConfig('events');
     let configUpdated = false;
 
-    // Keep track of existing event names
-    const existingEventNames = new Set(eventFiles.map(file => path.basename(file, '.js')));
+    const existingEventNames = new Set();
 
-    // Remove orphaned config entries
-    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
-      delete eventConfig[configEventName];
-      configUpdated = true;
-      logger.debug(`Event [${configEventName}] found in config but no file exists, removing from config.`);
-    }
-
-    // Loop through each event file
+    // Single pass: track existing events and reload them
     for (const file of eventFiles) {
-      // Extract the event name from the file path
       const eventName = path.basename(file, '.js');
+      existingEventNames.add(eventName);
 
       // Check if the event is enabled and reload it
       if (eventConfig[eventName] === true) {
@@ -129,6 +121,13 @@ async function reloadAllEvents(client) {
           listeners.delete(file);
         }
       }
+    }
+
+    // Remove orphaned config entries
+    for (const configEventName in eventConfig) if (!existingEventNames.has(configEventName)) {
+      delete eventConfig[configEventName];
+      configUpdated = true;
+      logger.debug(`Event [${configEventName}] found in config but no file exists, removing from config.`);
     }
 
     // Save config if any orphaned entries were removed

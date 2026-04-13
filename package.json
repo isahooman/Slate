@@ -1,6 +1,6 @@
 {
   "name": "slate",
-  "version": "4.12",
+  "version": "4.12.0",
   "description": "A Discord.js Bot Startup Codebase",
   "keywords": [
     "node",
@@ -25,7 +25,8 @@
   },
   "devDependencies": {
     "eslint": "^10.2.0",
-    "eslint-plugin-jsdoc": "^62.9.0"
+    "eslint-plugin-jsdoc": "^62.9.0",
+    "globals": "^17.5.0"
   },
   "engines": {
     "node": ">=18.0.0",

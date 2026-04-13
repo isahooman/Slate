@@ -37,7 +37,7 @@ const cleanNumber = num => (~~(num * 100) / 100).toFixed(2);
 module.exports = {
   name: 'eval',
   usage: 'eval <code>',
-  category: 'Owner',
+  category: 'owner',
   allowDM: true,
   description: 'Evaluates code',
 

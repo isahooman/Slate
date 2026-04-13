@@ -179,12 +179,15 @@ function isPrefixCommandEnabled(commandName) {
 function findNearestCommand(input, commands, type) {
   let nearestCommand = null;
   let highestSimilarity = -1;
-
-  if (type === 'prefix') commands.forEach(cmd => {
-    if (cmd.aliases && cmd.aliases.includes(input)) nearestCommand = { ...cmd, type };
-  });
+  let aliasCandidate = null;
+  let aliasHighestSimilarity = -1;
 
   commands.forEach((cmd, cmdName) => {
+    // Check alias exact match (prefix only)
+    if (type === 'prefix' && cmd.aliases && cmd.aliases.includes(input))
+      nearestCommand = { ...cmd, type };
+
+    // Check command name prefix match
     if (cmdName.startsWith(input)) {
       const similarity = cmdName.length - input.length;
       if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
@@ -192,17 +195,22 @@ function findNearestCommand(input, commands, type) {
         nearestCommand = { ...cmd, type };
       }
     }
-  });
 
-  if (!nearestCommand && type === 'prefix') commands.forEach(cmd => {
-    if (cmd.aliases && cmd.aliases.some(alias => alias.startsWith(input))) {
-      const similarity = cmd.aliases.find(alias => alias.startsWith(input)).length - input.length;
-      if (similarity >= 0 && (similarity < highestSimilarity || highestSimilarity === -1)) {
-        highestSimilarity = similarity;
-        nearestCommand = { ...cmd, type };
+    // Collect alias matches for prefix commands 
+    if (type === 'prefix' && cmd.aliases) {
+      const matchingAlias = cmd.aliases.find(alias => alias.startsWith(input));
+      if (matchingAlias) {
+        const similarity = matchingAlias.length - input.length;
+        if (similarity >= 0 && (similarity < aliasHighestSimilarity || aliasHighestSimilarity === -1)) {
+          aliasHighestSimilarity = similarity;
+          aliasCandidate = { ...cmd, type };
+        }
       }
     }
   });
+
+  // Fall back to best alias prefix match if no direct match was found
+  if (!nearestCommand && aliasCandidate) nearestCommand = aliasCandidate;
 
   return nearestCommand;
 }
