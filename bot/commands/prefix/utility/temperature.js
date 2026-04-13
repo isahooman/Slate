@@ -8,8 +8,7 @@ module.exports = {
   aliases: ['temp'],
   allowDM: true,
   description: 'convert temperature between different scales.',
-  execute(message) {
-    const args = message.content.split(' ').slice(1);
+  execute(message, args) {
     if (args.length !== 2) {
       logger.warn(`[Temperature Command] Invalid usage! Please use: ${this.usage}`);
       return message.channel.send(`Invalid usage! Please use:\n \`${this.usage}\``);

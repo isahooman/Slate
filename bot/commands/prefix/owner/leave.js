@@ -4,8 +4,8 @@ module.exports = {
   category: 'Owner',
   allowDM: false,
   description: 'Make the bot leave the current server',
-  async execute(message) {
-    if (message.content.includes('-y')) leaveServer();
+  async execute(message, args) {
+    if (args.includes('-y')) leaveServer();
     else try {
       // Ask for confirmation and wait for response
       await message.reply('Are you sure you want to make the bot leave this server? (y/n)');

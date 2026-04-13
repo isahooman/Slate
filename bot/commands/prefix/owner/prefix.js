@@ -9,9 +9,9 @@ module.exports = {
   aliases: ['setprefix'],
   allowDM: true,
   description: 'Changes the bot\'s prefix.',
-  execute(message) {
-    // Extract the new prefix from the message content.
-    const newPrefix = message.content.split(' ')[1];
+  execute(message, args) {
+    // Extract the new prefix from the args.
+    const newPrefix = args[0];
 
     // Check if a new prefix was provided.
     if (!newPrefix) {
