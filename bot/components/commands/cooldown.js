@@ -9,272 +9,102 @@ const slashCheck = object => {
 
 /**
  * Cooldown Handler
- * @author EthanLawr
+ * @author isahooman
  */
 class Cooldown {
-  constructor() {
+  constructor(type) {
     this.data = new Collection();
-  }
-}
-
-class User extends Cooldown {
-  /**
-   * Adds a cooldown to a user
-   * @param {string} userID User ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True is successful
-   * @author EthanLawr
-   */
-  add(userID, commandData) {
-    commandData = slashCheck(commandData);
-    if (this.data.get(userID)) {
-      this.data.get(userID).cooldowns.push({ name: commandData.name, time: Date.now() + commandData.cooldowns.user });
-      setTimeout(() => {
-        this.data.set(userID, {
-          id: userID,
-          cooldowns: this.data.get(userID).cooldowns.filter(x => x.name !== commandData.name),
-        });
-      }, commandData.cooldowns.user);
-      return true;
-    }
-    this.data.set(userID, {
-      id: userID,
-      cooldowns: [
-        {
-          name: commandData.name,
-          time: Date.now() + commandData.cooldowns.user,
-        },
-      ],
-    });
-    setTimeout(() => {
-      if (this.data.get(userID).cooldowns.filter(x => x.name !== commandData.name).length === 0) this.data.delete(userID);
-      else this.data.set(userID, {
-        id: userID,
-        cooldowns: this.data.get(userID).cooldowns.filter(x => x.name !== commandData.name),
-      });
-    }, commandData.cooldowns.user);
-    return true;
+    this.type = type;
   }
 
   /**
-   * Returns User Cooldown information
-   * @param {string} userID User ID Snowflake
-   * @returns {boolean} True if data exists
-   * @author EthanLawr
-   */
-  get(userID) {
-    if (this.data.get(userID)) return this.data.get(userID);
-    return false;
-  }
-
-  /**
-   * Adds a cooldown to a user
-   * @param {string} userID User ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True is successful
-   * @author EthanLawr
-   */
-  find(userID, commandData) {
-    commandData = slashCheck(commandData);
-    if (this.data.get(userID)) if (this.data.get(userID).cooldowns.find(data => data.name === commandData.name)) return this.data.get(userID).cooldowns.find(data => data.name === commandData.name);
-    return false;
-  }
-
-  /**
-   * Returns remaining cooldown time for a user command
-   * @param {string} userID User ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {number} Remaining milliseconds (0 if no active cooldown)
-   */
-  remaining(userID, commandData) {
-    const cooldownData = this.find(userID, commandData);
-    if (!cooldownData) return 0;
-    return Math.max(0, cooldownData.time - Date.now());
-  }
-
-  /**
-   * Checks to see if there is a user cooldown for a command
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True if exists
-   */
-  enabled(commandData) {
-    if (!commandData.cooldowns || !commandData.cooldowns.user) return false;
-    return commandData.cooldowns.user > 0;
-  }
-}
-
-class Guild extends Cooldown {
-  /**
-   * Adds a cooldown to a guild
-   * @param {string} guildID Guild ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True is successful
-   * @author EthanLawr
-   */
-  add(guildID, commandData) {
-    commandData = slashCheck(commandData);
-    if (this.data.get(guildID)) {
-      this.data.get(guildID).cooldowns.push({ name: commandData.name, time: Date.now() + commandData.cooldowns.guild });
-      setTimeout(() => {
-        this.data.set(guildID, {
-          id: guildID,
-          cooldowns: this.data.get(guildID).cooldowns.filter(x => x.name !== commandData.name),
-        });
-      }, commandData.cooldowns.guild);
-      return true;
-    }
-    this.data.set(guildID, {
-      id: guildID,
-      cooldowns: [
-        {
-          name: commandData.name,
-          time: Date.now() + commandData.cooldowns.guild,
-        },
-      ],
-    });
-    setTimeout(() => {
-      if (this.data.get(guildID).cooldowns.filter(x => x.name !== commandData.name).length === 0) this.data.delete(guildID);
-      else this.data.set(guildID, {
-        id: guildID,
-        cooldowns: this.data.get(guildID).cooldowns.filter(x => x.name !== commandData.name),
-      });
-    }, commandData.cooldowns.guild);
-    return true;
-  }
-
-  /**
-   * Returns Guild Cooldown information
-   * @param {string} guildID Guild ID Snowflake
-   * @returns {boolean} True if data exists
-   * @author EthanLawr
-   */
-  get(guildID) {
-    if (this.data.get(guildID)) return this.data.get(guildID);
-    return false;
-  }
-
-  /**
-   * Finds a guild command cooldown entry
-   * @param {string} guildID Guild ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {object|boolean} Cooldown entry or false if none exists
-   */
-  find(guildID, commandData) {
-    commandData = slashCheck(commandData);
-    const guildData = this.data.get(guildID);
-    if (guildData) return guildData.cooldowns.find(data => data.name === commandData.name) || false;
-    return false;
-  }
-
-  /**
-   * Returns remaining cooldown time for a guild command
-   * @param {string} guildID Guild ID Snowflake
-   * @param {object} commandData Command Object Data
-   * @returns {number} Remaining milliseconds (0 if no active cooldown)
-   */
-  remaining(guildID, commandData) {
-    const cooldownData = this.find(guildID, commandData);
-    if (!cooldownData) return 0;
-    return Math.max(0, cooldownData.time - Date.now());
-  }
-
-  /**
-   * Checks to see if there is a guild cooldown for a command
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True if exists
-   */
-  enabled(commandData) {
-    if (!commandData.cooldowns || !commandData.cooldowns.guild) return false;
-    return commandData.cooldowns.guild > 0;
-  }
-}
-class Global extends Cooldown {
-  /**
-   * Adds a cooldown globally
-   * @param {object} commandData Command Object Data
+   * Adds a cooldown for a command.
+   * @param {string|null} id - User/Guild ID Snowflake, or null for global
+   * @param {object} commandData - Command Object Data
    * @returns {boolean} True if successful
-   * @author EthanLawr
+   * @author isahooman
    */
-  add(commandData) {
+  add(id, commandData) {
     commandData = slashCheck(commandData);
-    if (this.data.get(commandData.name)) {
-      this.data.get(commandData.name).cooldowns.push({ name: commandData.name, time: Date.now() + commandData.cooldowns.global });
-      setTimeout(() => {
-        this.data.set(commandData.name, {
-          id: commandData.name,
-          cooldowns: this.data.get(commandData.name).cooldowns.filter(x => x.name !== commandData.name),
-        });
-      }, commandData.cooldowns.global);
-      return true;
-    }
-    this.data.set(commandData.name, {
-      id: commandData.name,
-      cooldowns: [
-        {
-          name: commandData.name,
-          time: Date.now() + commandData.cooldowns.global,
-        },
-      ],
-    });
+    // If no snowflake was passed, use the command name as the key
+    if (!id) id = commandData.name;
+
+    // Get cooldown duration from command data
+    const duration = commandData.cooldowns[this.type];
+
+    // Store the command name and the time when the cooldown expires
+    const entry = { name: commandData.name, time: Date.now() + duration };
+    const existing = this.data.get(id);
+    if (existing) existing.cooldowns.push(entry);
+    else this.data.set(id, { id, cooldowns: [entry] });
+
+    // Schedule cooldown removal
     setTimeout(() => {
-      if (this.data.get(commandData.name).cooldowns.filter(x => x.name !== commandData.name).length === 0) this.data.delete(commandData.name);
-      else this.data.set(commandData.name, {
-        id: commandData.name,
-        cooldowns: this.data.get(commandData.name).cooldowns.filter(x => x.name !== commandData.name),
-      });
-    }, commandData.cooldowns.global);
+      const current = this.data.get(id);
+      if (!current) return;
+      const filtered = current.cooldowns.filter(x => x.name !== commandData.name);
+      if (filtered.length === 0) this.data.delete(id);
+      else this.data.set(id, { id, cooldowns: filtered });
+    }, duration);
+
     return true;
   }
 
   /**
-   * Gets a global cooldown
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True if exists
-   * @author EthanLawr
+   * Returns cooldown information.
+   * @param {string|null} id - User/Guild ID Snowflake, or null for global
+   * @param {object} commandData - Command Object Data
+   * @returns {{ id: string, cooldowns: object[] }|false} Cooldown data
+   * @author isahooman
    */
-  get(commandData) {
+  get(id, commandData) {
     commandData = slashCheck(commandData);
-    if (this.data.get(commandData.name)) return this.data.get(commandData.name);
+    const key = id || commandData.name;
+    return this.data.get(key) || false;
+  }
+
+  /**
+   * Finds a cooldown entry for a command.
+   * @param {string|null} id - User/Guild ID Snowflake, or null for global
+   * @param {object} commandData - Command Object Data
+   * @returns {{ name: string, time: number }|false} Cooldown entry
+   * @author isahooman
+   */
+  find(id, commandData) {
+    commandData = slashCheck(commandData);
+    if (!id) id = commandData.name;
+
+    const entry = this.data.get(id);
+    if (entry) return entry.cooldowns.find(d => d.name === commandData.name) || false;
     return false;
   }
 
   /**
-   * Finds a global command cooldown entry
-   * @param {object} commandData Command Object Data
-   * @returns {object|boolean} Cooldown entry or false if none exists
+   * Returns remaining cooldown time for a command.
+   * @param {string|null} id - User/Guild ID Snowflake, or null for global
+   * @param {object} commandData - Command Object Data
+   * @returns {number} Remaining time in milliseconds
    */
-  find(commandData) {
-    commandData = slashCheck(commandData);
-    const globalData = this.data.get(commandData.name);
-    if (globalData) return globalData.cooldowns.find(data => data.name === commandData.name) || false;
-    return false;
-  }
-
-  /**
-   * Returns remaining cooldown time for a global command
-   * @param {object} commandData Command Object Data
-   * @returns {number} Remaining milliseconds (0 if no active cooldown)
-   */
-  remaining(commandData) {
-    const cooldownData = this.find(commandData);
+  remaining(id, commandData) {
+    const cooldownData = this.find(id, commandData);
     if (!cooldownData) return 0;
     return Math.max(0, cooldownData.time - Date.now());
   }
 
   /**
-   * Checks to see if there is a global cooldown for a command
-   * @param {object} commandData Command Object Data
-   * @returns {boolean} True if exists
+   * Checks if a cooldown is enabled for a command.
+   * @param {object} commandData - Command Object Data
+   * @returns {boolean} True if enabled
    */
   enabled(commandData) {
-    if (!commandData.cooldowns || !commandData.cooldowns.global) return false;
-    return commandData.cooldowns.global > 0;
+    commandData = slashCheck(commandData);
+    if (!commandData.cooldowns || !commandData.cooldowns[this.type]) return false;
+    return commandData.cooldowns[this.type] > 0;
   }
 }
 
 module.exports = {
-  user: new User(),
-  guild: new Guild(),
-  global: new Global(),
+  user: new Cooldown('user'),
+  guild: new Cooldown('guild'),
+  global: new Cooldown('global'),
 };
-

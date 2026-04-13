@@ -354,33 +354,33 @@ function handleCooldowns(context, command, type) {
     msg => context.reply(msg).catch(error => logger.error(`Failed to send cooldown message: ${error.message}`)) :
     msg => context.reply({ content: msg, ephemeral: true }).catch(error => logger.error(`Failed to send cooldown message: ${error.message}`));
 
-  // Check user cooldown
-  if (cooldown.user.enabled(command)) {
-    const remaining = cooldown.user.remaining(userId, command);
-    if (remaining > 0) {
-      replyMethod(`You still have to wait for ${formatCooldownTime(remaining)} to use this command again.`);
-      return false;
-    }
-    cooldown.user.add(userId, command);
-  }
+  // Check all cooldowns for the command
+  const userEnabled = cooldown.user.enabled(command);
+  const guildEnabled = guildId && cooldown.guild.enabled(command);
+  const globalEnabled = cooldown.global.enabled(command);
 
-  // Check guild cooldown
-  if (!guildId || !cooldown.guild.enabled(command)) return true;
-  const guildRemaining = cooldown.guild.remaining(guildId, command);
+  const userRemaining = userEnabled ? cooldown.user.remaining(userId, command) : 0;
+  const guildRemaining = guildEnabled ? cooldown.guild.remaining(guildId, command) : 0;
+  const globalRemaining = globalEnabled ? cooldown.global.remaining(null, command) : 0;
+
+  // Block if any cooldown is active, report the relavant one (user > guild > global)
+  if (userRemaining > 0) {
+    replyMethod(`You still have to wait for ${formatCooldownTime(userRemaining)} to use this command again.`);
+    return false;
+  }
   if (guildRemaining > 0) {
     replyMethod(`This command is on a server wide cooldown for the next ${formatCooldownTime(guildRemaining)}.`);
     return false;
   }
-  cooldown.guild.add(guildId, command);
-
-  // Check global cooldown
-  if (!cooldown.global.enabled(command)) return true;
-  const globalRemaining = cooldown.global.remaining(command);
   if (globalRemaining > 0) {
     replyMethod(`This command is on a global cooldown for the next ${formatCooldownTime(globalRemaining)}.`);
     return false;
   }
-  cooldown.global.add(command);
+
+  // No cooldowns active, add new cooldowns
+  if (userEnabled) cooldown.user.add(userId, command);
+  if (guildEnabled) cooldown.guild.add(guildId, command);
+  if (globalEnabled) cooldown.global.add(null, command);
 
   return true;
 }
