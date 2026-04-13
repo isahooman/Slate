@@ -12,7 +12,7 @@ module.exports = {
     if (oldRole.color !== newRole.color) logDetails.push(`Color: ${oldRole.color} -> ${newRole.color}`);
 
     // Check role permissions
-    if (oldRole.permissions.bitfield !== newRole.permissions.bitfield) logDetails.push(`Permissions Changed`);
+    if (oldRole.permissions?.bitfield !== newRole.permissions?.bitfield) logDetails.push(`Permissions Changed`);
 
     // Check role position
     if (oldRole.position !== newRole.position) logDetails.push(`Position: ${oldRole.position} -> ${newRole.position}`);

@@ -9,7 +9,7 @@ module.exports = {
     if (oldEmoji.name !== newEmoji.name) logDetails.push(`Name: ${oldEmoji.name} -> ${newEmoji.name}`);
 
     // Check emoji roles
-    if (oldEmoji.roles.cache !== newEmoji.roles.cache) {
+    if (oldEmoji.roles?.cache && newEmoji.roles?.cache) {
       const addedRoles = newEmoji.roles.cache.filter(role => !oldEmoji.roles.cache.has(role.id));
       const removedRoles = oldEmoji.roles.cache.filter(role => !newEmoji.roles.cache.has(role.id));
 

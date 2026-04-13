@@ -13,7 +13,7 @@ module.exports = {
     if (oldMember.nickname !== newMember.nickname) logDetails.push(`Nickname: ${oldMember.nickname || 'None'} -> ${newMember.nickname || 'None'}`);
 
     // Check roles
-    if (oldMember.roles.cache !== newMember.roles.cache) {
+    if (oldMember.roles?.cache && newMember.roles?.cache) {
       const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
       const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
       if (addedRoles.size > 0) logDetails.push(`Added Roles: ${addedRoles.map(role => role.name).join(', ')}`);
