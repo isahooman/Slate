@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 
 const { Client, GatewayIntentBits } = require('discord.js');
 const { loadCommands } = require('#components/commands/commands.js');
@@ -145,7 +145,7 @@ process
     logger.warn(`${warning.name}\n${warning.message}\n${warning.stack}`);
   })
 
-  .on('uncaughtException', async(err, origin) => {
+  .on('uncaughtException', async (err, origin) => {
     const startTime = Date.now();
     logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
     // Attempt to reconnect if the client died.
@@ -160,7 +160,7 @@ process
     else logger.info('Client is logged in, skipping reconnect.');
   })
 
-  .on('unhandledRejection', async(reason, message) => {
+  .on('unhandledRejection', async (reason, message) => {
     const startTime = Date.now();
     logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
     // Attempt to reconnect if the client died.
@@ -175,7 +175,7 @@ process
     else logger.info('Client is logged in, skipping reconnect.');
   })
 
-  .on('SIGINT', async() => {
+  .on('SIGINT', async () => {
     logger.info('Received SIGINT. Shutting down...');
 
     // Get undeployOnExit configuration

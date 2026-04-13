@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const { readRecursive } = require('../core/fileHandler.js');
 const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const logger = require('./logger.js');

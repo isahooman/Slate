@@ -1,5 +1,5 @@
 const { Collection } = require('discord.js');
-const path = require('path');
+const path = require('node:path');
 const logger = require('../util/logger.js');
 const { readRecursive } = require('../core/fileHandler.js');
 const configManager = require('../configManager');

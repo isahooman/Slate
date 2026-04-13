@@ -1,5 +1,5 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 const JSON5 = require('json5');
 
 class ConfigManager {
@@ -96,7 +96,7 @@ class ConfigManager {
     // Navigate through the object properties
     for (let i = 0; i < keys.length - 1; i++) current = current[keys[i]] = current[keys[i]] || {};
     // Set the property to the new value
-    current[keys[keys.length - 1]] = value;
+    current[keys.at(-1)] = value;
     // Save the updated configuration
     return this.saveConfig(configType, config);
   }

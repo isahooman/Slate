@@ -1,11 +1,10 @@
 const JSON5 = require('json5');
 const logger = require('../util/logger.js');
-const path = require('path');
-const fs = require('fs');
-const { promisify } = require('util');
-const { pipeline, Readable } = require('stream');
-const { createWriteStream, appendFile } = require('fs');
-const pipelineAsync = promisify(pipeline);
+const path = require('node:path');
+const fs = require('node:fs');
+const { pipeline } = require('node:stream/promises');
+const { Readable } = require('node:stream');
+const { createWriteStream } = require('node:fs');
 
 const maxSize = 1.9 * 1024 * 1024 * 1024; // 1.9GB limit to avoid the 2GB fs limit
 
@@ -24,19 +23,19 @@ async function readFile(filePath) {
     if (fileExtension === '.json5') {
       // If the file extension is .json5, read and parse asynchronously
       logger.debug(`File extension is .json5, reading and parsing asynchronously`);
-      const raw = await promisify(fs.readFile)(filePath, 'utf-8');
+      const raw = await fs.promises.readFile(filePath, 'utf-8');
       return JSON5.parse(raw);
     } else {
       logger.debug(`File extension is not .json5, checking file size`);
       try {
-        const stats = await promisify(fs.stat)(filePath);
+        const stats = await fs.promises.stat(filePath);
         logger.debug(`File size: ${stats.size}`);
         if (stats.size > maxSize) {
           // If the file size exceeds the `maxSize` limit, return a message
           return `File is too large to read.`;
         } else {
           // If the file size is within the limit, use fs.readFile
-          const data = await promisify(fs.readFile)(filePath, 'utf-8');
+          const data = await fs.promises.readFile(filePath, 'utf-8');
           return data;
         }
       } catch (error) {
@@ -62,7 +61,7 @@ async function writeFile(filePath, data) {
   logger.debug(`Writing data to file: ${filePath}`);
   try {
     const fileExtension = path.extname(filePath).toLowerCase();
-    const stats = await promisify(fs.stat)(filePath);
+    const stats = await fs.promises.stat(filePath);
     // If the file size exceeds maxSize, use writeLargeFile
     if (stats.size > maxSize) {
       await writeLargeFile(filePath, data);
@@ -75,11 +74,11 @@ async function writeFile(filePath, data) {
           return value;
         };
         const json5Data = JSON5.stringify(data, null, 2, replacer);
-        await promisify(fs.writeFile)(filePath, json5Data, 'utf-8');
+        await fs.promises.writeFile(filePath, json5Data, 'utf-8');
       } else {
         // If the file is not .json5, use fs.appendFile
         logger.debug(`File extension is not .json5, using fs.appendFile`);
-        await promisify(appendFile)(filePath, data, 'utf-8');
+        await fs.promises.appendFile(filePath, data, 'utf-8');
       }
   } catch (error) {
     logger.error(`Error writing file at ${filePath}: ${error.message}`);
@@ -111,7 +110,7 @@ async function writeLargeFile(filePath, data) {
     });
 
     // Send the data from the read stream to the write stream
-    await pipelineAsync(readableStream, writeStream);
+    await pipeline(readableStream, writeStream);
     logger.debug(`Finished writing data to large file: ${filePath}`);
   } catch (error) {
     logger.error(`Error writing data to large file at ${filePath}: ${error.message}`);
@@ -130,7 +129,7 @@ async function writeLargeFile(filePath, data) {
 async function readDirectory(directory) {
   logger.debug(`Reading directory: ${directory}`);
   try {
-    const files = await promisify(fs.readdir)(directory);
+    const files = await fs.promises.readdir(directory);
     // Initializes an array to store the file paths.
     const filePaths = [];
 
@@ -140,7 +139,7 @@ async function readDirectory(directory) {
       const filePath = path.join(directory, file);
       logger.debug(`Checking file: ${filePath}`);
       // Gets the file stats
-      const stats = await promisify(fs.stat)(filePath);
+      const stats = await fs.promises.stat(filePath);
 
       // Checks if the item is a directory.
       if (!stats.isDirectory()) {
@@ -169,7 +168,7 @@ async function readDirectory(directory) {
 async function readRecursive(directory) {
   logger.debug(`Recursively reading directory: ${directory}`);
   try {
-    const files = await promisify(fs.readdir)(directory);
+    const files = await fs.promises.readdir(directory);
     // Initialize an array to store the file paths
     const filePaths = [];
 
@@ -177,7 +176,7 @@ async function readRecursive(directory) {
     for (const file of files) {
       // Construct the full path to the file
       const filePath = path.join(directory, file);
-      const stats = await promisify(fs.stat)(filePath);
+      const stats = await fs.promises.stat(filePath);
 
       // Check if the item is a directory
       if (stats.isDirectory()) {
@@ -209,7 +208,7 @@ async function readRecursive(directory) {
 async function deleteFile(filePath) {
   logger.debug(`Deleting file: ${filePath}`);
   try {
-    await promisify(fs.unlink)(filePath);
+    await fs.promises.unlink(filePath);
     logger.debug(`File deleted: ${filePath}`);
   } catch (error) {
     logger.error(`Error deleting file at ${filePath}: ${error.message}`);

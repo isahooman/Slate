@@ -2,7 +2,7 @@ const logger = require('../util/logger.js');
 const configManager = require('../configManager');
 const createDisclaimerProxy = require('./commandWrapper.js');
 const { cooldown } = require('#bot');
-const path = require('path');
+const path = require('node:path');
 
 /**
  * Checks if a user or server is blacklisted

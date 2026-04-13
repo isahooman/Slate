@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { formatDuration } = require('#components/util/time.js');
 const { client, cache } = require('#bot');
-const os = require('os');
+const os = require('node:os');
 const logger = require('#components/util/logger.js');
 
 module.exports = {

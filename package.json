@@ -28,7 +28,7 @@
     "eslint-plugin-jsdoc": "^62.9.0"
   },
   "engines": {
-    "node": ">=16.20.2",
+    "node": ">=18.0.0",
     "npm": ">=8.19.4"
   },
   "os": [

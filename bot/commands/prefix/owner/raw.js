@@ -1,5 +1,5 @@
 const logger = require('#components/util/logger.js');
-const util = require('util');
+const util = require('node:util');
 
 module.exports = {
   name: 'raw',

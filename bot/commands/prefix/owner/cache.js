@@ -1,6 +1,6 @@
 const logger = require('#components/util/logger.js');
 const { EmbedBuilder } = require('discord.js');
-const { inspect } = require('util');
+const { inspect } = require('node:util');
 const { cache } = require('#bot');
 
 module.exports = {

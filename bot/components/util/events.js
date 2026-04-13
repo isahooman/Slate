@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const logger = require('./logger.js');
 const { readRecursive } = require('../core/fileHandler.js');
 const configManager = require('../configManager');

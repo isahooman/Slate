@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const configManager = require('../configManager');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const { formatFileTimestamp } = require('./time.js');
 
 const outputDir = path.join(__dirname, '..', '..', '..', 'output');
@@ -317,7 +317,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
         { name: 'Error', value: `\`\`\`\n${messageText}\n\`\`\`` },
       );
 
-    // Prepare error report for prefix commands
+      // Prepare error report for prefix commands
     } else if (commandType === 'prefix' && commandInfo.context) {
       const context = commandInfo.context;
 

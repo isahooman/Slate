@@ -1,5 +1,5 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 const { formatTimestamp } = require('./time.js');
 const { sendErrorReport, sendReadyNotification } = require('./report.js');
 const configManager = require('../configManager');
