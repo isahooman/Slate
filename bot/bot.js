@@ -135,6 +135,19 @@ exports.cache = cache;
 // Start the bot
 safeStart();
 
+// Attempt to reconnect to Discord if the client died.
+async function attemptReconnect() {
+  if (!exports.client.user) try {
+    const startTime = Date.now();
+    logger.info('Attempting to reconnect to Discord...');
+    await exports.client.login(configManager.getConfigValue('config', 'token'));
+    logger.info(`Successfully reconnected in ${Date.now() - startTime}ms!`);
+  } catch (error) {
+    logger.error('Failed to reconnect:', error);
+  }
+  else logger.info('Client is logged in, skipping reconnect.');
+}
+
 // Process Events
 process
   .on('exit', message => {
@@ -146,33 +159,13 @@ process
   })
 
   .on('uncaughtException', async (err, origin) => {
-    const startTime = Date.now();
     logger.error(`Caught exception: ${err}\nException origin: ${origin}\nStack Trace: ${err.stack}`);
-    // Attempt to reconnect if the client died.
-    if (!exports.client.user) try {
-      logger.info('Attempting to reconnect to Discord...');
-      await exports.client.login(configManager.getConfigValue('config', 'token'));
-      const endTime = Date.now();
-      logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
-    } catch (error) {
-      logger.error('Failed to reconnect:', error);
-    }
-    else logger.info('Client is logged in, skipping reconnect.');
+    await attemptReconnect();
   })
 
   .on('unhandledRejection', async (reason, message) => {
-    const startTime = Date.now();
     logger.error(`Unhandled Rejection at:${message}\nReason:${reason.stack}`);
-    // Attempt to reconnect if the client died.
-    if (!exports.client.user) try {
-      logger.info('Attempting to reconnect to Discord...');
-      await exports.client.login(configManager.getConfigValue('config', 'token'));
-      const endTime = Date.now();
-      logger.info(`Successfully reconnected in ${endTime - startTime}ms!`);
-    } catch (error) {
-      logger.error('Failed to reconnect:', error);
-    }
-    else logger.info('Client is logged in, skipping reconnect.');
+    await attemptReconnect();
   })
 
   .on('SIGINT', async () => {
