@@ -17,19 +17,25 @@ module.exports = {
     // Usage stats
     logger.debug('[Stats Command] Fetching CPU usage');
     const cpuStartTime = Date.now();
-    const cpuUsage = await new Promise(resolve => {
-      const sample1 = os.cpus();
-      setTimeout(() => {
-        const sample2 = os.cpus();
-        let idle = 0, total = 0;
-        for (let i = 0; i < sample1.length; i++) {
-          for (const type of ['user', 'nice', 'sys', 'idle', 'irq']) total += sample2[i].times[type] - sample1[i].times[type];
+    let cpuUsage;
+    try {
+      cpuUsage = await new Promise(resolve => {
+        const sample1 = os.cpus();
+        if (!sample1 || sample1.length === 0) return resolve('N/A');
+        setTimeout(() => {
+          const sample2 = os.cpus();
+          let idle = 0, total = 0;
+          for (let i = 0; i < sample1.length; i++) {
+            for (const type of ['user', 'nice', 'sys', 'idle', 'irq']) total += sample2[i].times[type] - sample1[i].times[type];
 
-          idle += sample2[i].times.idle - sample1[i].times.idle;
-        }
-        resolve(((1 - idle / total) * 100).toFixed(2));
-      }, 100);
-    });
+            idle += sample2[i].times.idle - sample1[i].times.idle;
+          }
+          resolve(total === 0 ? 'N/A' : ((1 - idle / total) * 100).toFixed(2));
+        }, 100);
+      });
+    } catch {
+      cpuUsage = 'N/A';
+    }
     logger.debug(`[Stats Command] CPU usage fetched: ${cpuUsage}% (Time taken: ${Date.now() - cpuStartTime}ms)`);
 
     logger.debug('[Stats Command] Fetching memory usage');
