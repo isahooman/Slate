@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const moment = require('moment');
+const { formatTimestamp } = require('./time.js');
 const { sendErrorReport, sendReadyNotification } = require('./report.js');
 const configManager = require('../configManager');
 const { toAnsi, resetAnsi } = require('./colors.js');
@@ -27,7 +27,7 @@ const levels = {
  * @param {string} message - The message to log.
  */
 function consoleOut(message) {
-  const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
+  const timestamp = formatTimestamp();
   process.stdout.write(`[${timestamp}] ${message}\n`);
 }
 
@@ -195,7 +195,7 @@ function logMessage(level, message, commandType = 'unknown', commandInfo = {}) {
   // Ensure message is a string
   if (typeof message !== 'string') return;
 
-  const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
+  const timestamp = formatTimestamp();
   const logText = `[${timestamp}] <${level}> ${message}`;
 
   // Format console output with colors
