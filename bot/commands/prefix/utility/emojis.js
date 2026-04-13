@@ -1,7 +1,6 @@
 const { AttachmentBuilder } = require('discord.js');
 const logger = require('#components/util/logger.js');
 const archiver = require('archiver');
-const fetch = import('node-fetch');
 
 module.exports = {
   name: 'emojis',
@@ -29,7 +28,7 @@ module.exports = {
         (async() => {
           // Download each emoji
           for (const emoji of emojis.values()) try {
-            const response = await (await fetch).default(emoji.imageURL());
+            const response = await fetch(emoji.imageURL());
             if (!response.ok) {
               logger.warn(`Failed to download emoji ${emoji.name}: ${response.status} ${response.statusText}`);
               continue;
