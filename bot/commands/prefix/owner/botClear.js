@@ -1,6 +1,6 @@
 const logger = require('#components/util/logger.js');
 
-const prefixes = ['\'', '$', ',', '-', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0,
+const prefixes = ['\'', '$', ',', 't!', 't@', '!', '+', '_', ';', '.', '?', 's?', 'p!', 'r.', 'do.', 0,
   '-', '$$', '&&', 'a!', 'b!', 'c!', 'd!', 'e!', 'f!', 'g!', 'h!', 'i!', 'j!', 'k!', 'l!', 'm!', 'n!', 'o!', 'p!',
   'q!', 'r!', 's!', 't!', 'u!', 'v!', 'w!', 'x!', 'y!', 'z!', '/', '//', '\\', '=', '>', '->', '`', ', ', '|', '[',
   ']', 'ay!', 'r-', 'r+'];
@@ -12,7 +12,7 @@ module.exports = {
   aliases: ['bc'],
   allowDM: false,
   description: 'Clears bot messages',
-  execute: async(message, args) => {
+  execute: async (message, args) => {
     try {
       // Get the number of messages to scan from args, default to 30
       const messagesToScan = parseInt(args[0]) || 30;
