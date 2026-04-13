@@ -33,17 +33,12 @@ module.exports = {
     logger.debug("This is an example debugging message.");
 
     // Send a response
-    // Option 1
-    message.channel.send(`<@${message.author.id}> This is example text.`);
-    // Option 2, This will create a reply to the user and ping them
+    // Option 1 - Send a message to the channel
+    message.channel.send("This is example text");
+    // Option 2 - Mention the user in the message
+    message.channel.send(`<@${message.author.id}> This is example text`);
+    // Option 3 - Reply directly to the user's message
     message.reply("This is example text");
-    // Option 3, This ends the command file short.
-    return message.channel.send({ content: "This is message content" });
-    // Option 4, This will make it so only the command user can see this message
-    return message.channel.send({
-      content: "This is message content",
-      ephemeral: true,
-    });
   },
 };
 ```

@@ -59,29 +59,34 @@
 
 - Owner<br>
   - <span style="color:lightgreen;">BotClear</span> - Mass deletes bot commands used in the current channel.<br>
+  - <span style="color:lightgreen;">Cache</span> - Cache management.<br>
   - <span style="color:lightgreen;">CommandToggle</span> - Toggles the given command.<br>
   - <span style="color:lightgreen;">Deploy</span> - Deploys global and guild slash commands.<br>
   - <span style="color:lightgreen;">Eval</span> - Evaluates given code.<br>
   - <span style="color:lightgreen;">EventToggle</span> - Toggles the given Discord.js event.<br>
   - <span style="color:lightgreen;">Fail</span> - Tests a given error.<br>
+  - <span style="color:lightgreen;">Leave</span> - Make the bot leave the current server.<br>
   - <span style="color:lightgreen;">Logs</span> - Retrieves the latest bot logs.<br>
   - <span style="color:lightgreen;">LogTest</span> - Tests each logger level.<br>
   - <span style="color:lightgreen;">LogToggle</span> - Toggles logging for the specified level.<br>
+  - <span style="color:lightgreen;">Permissions</span> - Check the bot's permissions.<br>
+  - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
   - <span style="color:lightgreen;">Raw</span> - Relays the raw data of the replied message.<br>
   - <span style="color:lightgreen;">Reload</span> - Reloads a either a given command or all commands.<br>
   - <span style="color:lightgreen;">Shutdown</span> - Shuts the bot down gracefully.<br>
-  - <span style="color:lightgreen;">Test</span> - Test slash command with subcommands and options.<br>
-  - <span style="color:lightgreen;">Prefix</span> - Change the bot's prefix as needed.<br>
 - Miscellaneous<br>
   - <span style="color:lightgreen;">Ping</span> - Shows the bot uptime as well as the bots connection to Discord.<br>
 - Info<br>
-  - <span style="color:lightgreen;">About</span> - Shows information about the bot.<br>
+  - <span style="color:lightgreen;">Stats</span> - Displays bot process statistics.<br>
+  - <span style="color:lightgreen;">UserInfo</span> - Shows information about the given user.<br>
 - Utility
-  - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
   - <span style="color:lightgreen;">Avatar</span> - Fetch the provided user's avatar.<br>
   - <span style="color:lightgreen;">Banner</span> - Fetch the provided user's banner.<br>
-  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<<br>
-  - <span style="color:lightgreen;">Math</span> - Solve the provided math equation.<br>
+  - <span style="color:lightgreen;">BugReport</span> - Report a bug.<br>
+  - <span style="color:lightgreen;">Emojis</span> - Send all emojis from the current server in a zip file.<br>
+  - <span style="color:lightgreen;">Enlarge</span> - Enlarge the provided emoji.<br>
+  - <span style="color:lightgreen;">Suggest</span> - Make a suggestion.<br>
+  - <span style="color:lightgreen;">Temperature</span> - Convert the provided temperature.<br>
 - Fun
   - <span style="color:lightgreen;">CoinFlip</span> - Flip a Coin!<br>
   - <span style="color:lightgreen;">Number</span> - Generate a random number within a given range.

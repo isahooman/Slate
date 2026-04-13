@@ -37,13 +37,13 @@ module.exports = {
     await interaction.reply(`This is a reply example message`);
   },
   // The following executions are on a per command basis and fully optional.
-  executeButton(interaction, client) {
+  async executeButton(interaction, client) {
     await interaction.reply('This is an example reply message');
   },
-  executeStringSelectMenu(interaction, client) {
+  async executeStringSelectMenu(interaction, client) {
     await interaction.reply('This is an example reply message');
   },
-  executeModalSubmit(interaction, client) {
+  async executeModalSubmit(interaction, client) {
     await interaction.reply('This is an example reply message');
   }
 

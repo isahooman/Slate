@@ -4,8 +4,10 @@ Table of Contents
 
 - [Example Configurations](#example-configurations)
   - [blacklist.json5](#blacklistjson5)
+  - [commands.json5](#commandsjson5)
   - [config.json5](#configjson5)
   - [events.json5](#eventsjson5)
+  - [intents.json5](#intentsjson5)
   - [logging.json5](#loggingjson5)
   - [status.json5](#statusjson5)
 
@@ -22,6 +24,42 @@ Table of Contents
   }
 }
 ```
+
+- `users`
+  - Array of Strings: `["496360025099337727"]`
+  - User IDs that are entered into here refer to users the bot will not allow to use commands.
+- `servers`
+  - Object: Contains two arrays, `leave` and `ignore`.
+    - `leave`
+      - Array of Strings: `["496360025099337727"]`
+      - Server IDs that are entered into here refer to servers the bot will automatically leave upon joining.
+    - `ignore`
+      - Array of Strings: `["496360025099337727"]`
+      - Server IDs that are entered into here refer to servers the bot will not allow to use commands.
+
+## commands.json5
+
+[Back to top](#example-configurations)
+
+```json5
+{
+  slash: {
+    ping: true,
+    reload: false,
+    // ...
+  },
+  prefix: {
+    ping: true,
+    reload: false,
+    // ...
+  },
+}
+```
+
+- `slash`
+  - Object: Each key is a slash command name. Set to `true` to enable or `false` to disable.
+- `prefix`
+  - Object: Each key is a prefix command name. Set to `true` to enable or `false` to disable.
 
 - `users`
   - Array of Strings: `["496360025099337727"]`
@@ -58,6 +96,8 @@ Table of Contents
 
   // whether or not slash commands will be redeployed when the bot starts
   deployOnStart: true,
+  // (not recommended to avoid rate limits) whether or not slash commands will be cleared when the bot is stopped
+  undeployOnExit: false,
 
   // whether or not the bot will send a message when it's online and ready
   notifyOnReady: true,
@@ -97,6 +137,9 @@ Table of Contents
 - `deployOnStart`
   - Boolean: `true` or `false`
   - This refers to whether or not the bot should deploy commands upon starting
+- `undeployOnExit`
+  - Boolean: `true` or `false`
+  - This refers to whether or not the bot should undeploy slash commands when it shuts down (not recommended, may hit rate limits)
     <br><br>
 - `notifyOnReady`
   - Boolean: `true` or `false`
