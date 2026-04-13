@@ -5,7 +5,7 @@ const { cache } = require('#bot');
 module.exports = {
   name: 'reload',
   category: 'Owner',
-  usage: 'reload <slash/prefix/events/cache> or <command name> or logger',
+  usage: 'reload <slash/prefix/events/cache> or <command name>',
   description: 'Reloads a command, all commands, or events.',
   allowDM: true,
   async execute(message, args) {
