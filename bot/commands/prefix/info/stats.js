@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { formatDuration } = require('#components/util/time.js');
 const { client, cache } = require('#bot');
-const { cpu, mem } = require('node-os-utils');
+const os = require('os');
 const logger = require('#components/util/logger.js');
 
 module.exports = {
@@ -17,18 +17,29 @@ module.exports = {
     // Usage stats
     logger.debug('[Stats Command] Fetching CPU usage');
     const cpuStartTime = Date.now();
-    const cpuUsage = (await cpu.usage()).toFixed(2);
+    const cpuUsage = await new Promise(resolve => {
+      const sample1 = os.cpus();
+      setTimeout(() => {
+        const sample2 = os.cpus();
+        let idle = 0, total = 0;
+        for (let i = 0; i < sample1.length; i++) {
+          for (const type of ['user', 'nice', 'sys', 'idle', 'irq']) total += sample2[i].times[type] - sample1[i].times[type];
+
+          idle += sample2[i].times.idle - sample1[i].times.idle;
+        }
+        resolve(((1 - idle / total) * 100).toFixed(2));
+      }, 100);
+    });
     logger.debug(`[Stats Command] CPU usage fetched: ${cpuUsage}% (Time taken: ${Date.now() - cpuStartTime}ms)`);
 
     logger.debug('[Stats Command] Fetching memory usage');
     const memoryStartTime = Date.now();
-    const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024 / 1024).toFixed(2);
-    logger.debug(`[Stats Command] Memory usage fetched: ${memoryUsage}GB (Time taken: ${Date.now() - memoryStartTime}ms)`);
-
-    logger.debug('[Stats Command] Fetching total system memory');
-    const totalSysMemStartTime = Date.now();
-    const totalSysMem = ((await mem.info()).totalMemMb / 1024).toFixed(2);
-    logger.debug(`[Stats Command] Total system memory fetched: ${totalSysMem}GB (Time taken: ${Date.now() - totalSysMemStartTime}ms)`);
+    const heapUsedBytes = process.memoryUsage().heapUsed;
+    const heapUsedGB = heapUsedBytes / 1024 / 1024 / 1024;
+    const memoryUsage = heapUsedGB >= 1 ?
+      `${heapUsedGB.toFixed(2)}GB` :
+      `${(heapUsedBytes / 1024 / 1024).toFixed(2)}MB`;
+    logger.debug(`[Stats Command] Memory usage fetched: ${memoryUsage} (Time taken: ${Date.now() - memoryStartTime}ms)`);
 
     // Command counts
     logger.debug('[Stats Command] Fetching command counts');
@@ -67,7 +78,7 @@ module.exports = {
       .setTitle('Bot Statistics')
       .addFields(
         { name: 'CPU Usage', value: `${cpuUsage}%`, inline: true },
-        { name: 'Memory Usage', value: `${memoryUsage}GB/${totalSysMem}GB`, inline: true },
+        { name: 'Memory Usage', value: memoryUsage, inline: true },
         { name: '‎', value: `‎`, inline: true },
         { name: 'Prefix Commands', value: `${prefixCommandsCount}`, inline: true },
         { name: 'Slash Commands', value: `${slashCommandsCount}`, inline: true },
