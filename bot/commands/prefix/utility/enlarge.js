@@ -14,12 +14,18 @@ module.exports = {
       return message.channel.send('Please provide an emoji.');
     }
 
-    // Extract the emoji ID from the provided emoji.
-    const emoji = args[0].replace(/<a?:(.*?):(\d+)>/g, '$2');
+    // Get the emoji match from the message content.
+    const emojiMatch = message.content.match(/<a?:(.*?):(\d+)>/);
+    if (!emojiMatch) {
+      logger.warn(`[Enlarge Command] Invalid or unicode emoji provided in: ${message.guild ? message.guild.name : 'DM'}`);
+      return message.channel.send('Please provide a valid custom Discord emoji.');
+    }
+
+    // Extract the emoji name and ID from the match.
+    const emojiName = emojiMatch[1];
+    const emoji = emojiMatch[2];
     // Create emoji URL using the emoji ID.
     const url = `https://cdn.discordapp.com/emojis/${emoji}.png?size=256`;
-    // Get the emoji name from the message content.
-    const emojiName = message.content.match(/<a?:(.*?):(\d+)>/)[1];
 
     logger.debug(`[Enlarge Command] Enlarging emoji ${emoji} in ${message.guild ? message.guild.name : 'DM'}`);
 
