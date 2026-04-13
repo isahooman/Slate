@@ -1,5 +1,5 @@
-const moment = require('moment'); require('moment-duration-format');
 const { EmbedBuilder } = require('discord.js');
+const { formatDuration } = require('#components/util/time.js');
 const { client, cache } = require('#bot');
 const { cpu, mem } = require('node-os-utils');
 const logger = require('#components/util/logger.js');
@@ -56,8 +56,8 @@ module.exports = {
     // Uptime
     logger.debug('[Stats Command] Calculating uptime');
     const uptimeCalculationStartTime = Date.now();
-    const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]');
-    const botUptime = moment.duration(client.uptime, 'milliseconds').format('d[d] h[h] m[m] s[s]');
+    const uptime = formatDuration(Math.floor(process.uptime()));
+    const botUptime = formatDuration(Math.floor(client.uptime / 1000));
     logger.debug(`[Stats Command] Uptime calculated: Uptime - ${uptime}, Bot Uptime - ${botUptime} (Time taken: ${Date.now() - uptimeCalculationStartTime}ms)`);
 
     // Build stats embed

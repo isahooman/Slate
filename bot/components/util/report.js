@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const configManager = require('../configManager');
 const fs = require('fs');
 const path = require('path');
-const moment = require('moment');
+const { formatFileTimestamp } = require('./time.js');
 
 const outputDir = path.join(__dirname, '..', '..', '..', 'output');
 const errorDir = path.join(outputDir, 'err');
@@ -352,7 +352,7 @@ async function sendErrorReport(messageText, commandType = 'unknown', commandInfo
       if (!fs.existsSync(errorDir)) fs.mkdirSync(errorDir, { recursive: true });
 
       // Create a filename with date-time and error details
-      const timestamp = moment().format('YYYY-MM-DD_HH-mm');
+      const timestamp = formatFileTimestamp();
       let cmdName = 'unknown';
 
       if (commandType === 'slash' && commandInfo.interaction) cmdName = commandInfo.interaction.commandName;

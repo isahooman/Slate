@@ -64,8 +64,8 @@ class ConfigManager {
       // Write new configuration to file
       writeJSON5(configPath, config);
 
-      // Invalidate cache so next loadConfig reads the new value
-      this.cache.delete(configType);
+      // Update cache to always return fresh data
+      this.cache.set(configType, config);
 
       // Notify all listeners about the change
       this.notifyListeners(configType, config);

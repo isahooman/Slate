@@ -1,6 +1,6 @@
-const moment = require('moment'); require('moment-duration-format');
 const logger = require('#components/util/logger.js');
 const { EmbedBuilder } = require('discord.js');
+const { formatDuration } = require('#components/util/time.js');
 
 module.exports = {
   name: 'ping', // Command name
@@ -10,10 +10,15 @@ module.exports = {
   nsfw: false, // Mark command as non nsfw, this allows the command to be used in any channel.
   allowDM: true, // If the command is allowed to be used in direct messages or not
   description: 'Check the bot\'s response time.', // Brief description of what the command does
+  cooldowns: { // Cooldown settings for the command
+    user: 5000, // Per-user cooldown in milliseconds
+    guild: null, // Per-server cooldown in milliseconds
+    global: null, // Global cooldown in milliseconds
+  },
   execute(message) {
     const startTime = Date.now(); // Record start time
     logger.debug(`[Ping Command] Start time recorded: ${startTime}`);
-    const uptime = moment.duration(process.uptime(), 'seconds').format('d[d] h[h] m[m] s[s]'); // Get uptime from the node process
+    const uptime = formatDuration(Math.floor(process.uptime())); // Get uptime from the node process
     logger.debug(`[Ping Command] Uptime calculated: ${uptime}`);
     const botPing = message.client.ws.ping; // Get response time from the client
     logger.debug(`[Ping Command] Websocket ping retrieved: ${botPing}ms`);
