@@ -16,7 +16,7 @@ module.exports = {
       if (arg === 'clear' || arg === 'refresh' || arg === 'reload') {
         logger.info('[Cache Command] Clearing cache.');
         cache.rebuildAll(message.client);
-        message.reply('Cache refreshed!');
+        message.reply('Cache reloaded!');
       } else if (arg === 'stats' || !arg) {
         logger.info('[Cache Command] Displaying cache stats.');
         // Display cache stats

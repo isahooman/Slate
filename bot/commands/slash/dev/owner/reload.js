@@ -15,7 +15,6 @@ module.exports = {
         { name: 'Events', value: 'events' },
         { name: 'Slash', value: 'slash' },
         { name: 'Prefix', value: 'prefix' },
-        { name: 'Logger', value: 'logger' },
         { name: 'Cache', value: 'cache' },
       )),
   category: 'owner',
@@ -43,7 +42,7 @@ module.exports = {
       cache.rebuildAll(interaction.client);
 
       logger.info('[Reload Command] Cache successfully reloaded.');
-      await interaction.reply('Cache was reloaded!');
+      await interaction.reply('Cache reloaded!');
     } else if (commandName) {
       logger.debug(`[Reload Command] Attempting to find command: ${commandName}`);
       // Search for commands by name within both command types
@@ -84,7 +83,7 @@ module.exports = {
       cache.rebuildAll(interaction.client);
 
       logger.debug('[Reload Command] Everything has been reloaded.');
-      interaction.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n- Logger');
+      interaction.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache');
     }
   },
 };

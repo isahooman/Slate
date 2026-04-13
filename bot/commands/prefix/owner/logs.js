@@ -19,7 +19,7 @@ module.exports = {
 
       if (isNaN(linesToRetrieve) || linesToRetrieve <= 0) {
         logger.debug('[Logs Command] Invalid number of lines requested');
-        return message.reply('Please enter a valid number of lines to retrieve.');
+        return message.reply('Please enter a valid number of lines.');
       }
 
       // Read the log file

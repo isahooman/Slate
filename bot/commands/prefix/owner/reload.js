@@ -74,7 +74,7 @@ module.exports = {
       cache.rebuildAll(message.client);
 
       logger.debug('[Reload Command] Everything has been reloaded.');
-      message.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n');
+      message.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache');
     }
   },
 };
