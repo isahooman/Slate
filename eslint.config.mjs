@@ -1,6 +1,7 @@
-const jsdocPlugin = require('eslint-plugin-jsdoc');
+import jsdocPlugin from 'eslint-plugin-jsdoc';
+import globals from 'globals';
 
-module.exports = [
+export default [
   {
     ignores: ['node_modules/**', 'output/**'],
   },
@@ -9,7 +10,7 @@ module.exports = [
       ecmaVersion: 2020,
       sourceType: 'module',
       globals: {
-        ...require('globals').node,
+        ...globals.node,
       },
     },
     plugins: {
@@ -59,11 +60,6 @@ module.exports = [
       'no-label-var': 'error',
       'no-shadow': 'error',
       'no-undef-init': 'error',
-      'callback-return': 'error',
-      'handle-callback-err': 'error',
-      'no-mixed-requires': 'error',
-      'no-new-require': 'error',
-      'no-path-concat': 'error',
       'array-bracket-spacing': 'warn',
       'block-spacing': 'warn',
       'brace-style': ['warn', '1tbs', { allowSingleLine: true }],
@@ -136,8 +132,8 @@ module.exports = [
     files: ['gui/**/*.js'],
     languageOptions: {
       globals: {
-        ...require('globals').browser,
-        ...require('globals').node,
+        ...globals.browser,
+        ...globals.node,
       },
     },
     rules: {
