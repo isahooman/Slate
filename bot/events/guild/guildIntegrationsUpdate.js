@@ -3,7 +3,7 @@ const logger = require('#components/util/logger.js');
 module.exports = {
   name: 'guildIntegrationsUpdate',
   execute(guild) {
-    const updatedIntegrations = guild.integrations.cache.array();
+    const updatedIntegrations = [...guild.integrations.cache.values()];
 
     logger.info(`Guild integrations updated;
       Guild Name: ${guild.name} | ${guild.id},

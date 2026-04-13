@@ -13,7 +13,6 @@ module.exports = {
         Members: ${guild.memberCount},
         Owner: ${owner.user.tag} | ${owner.user.id},
         Created At: ${guild.createdAt.toISOString()},
-        Region: ${guild.region},
         Verification Level: ${guild.verificationLevel},
         Features: ${guild.features.join(', ') || 'N/A'},
         Large Guild: ${guild.large ? 'Yes' : 'No'},

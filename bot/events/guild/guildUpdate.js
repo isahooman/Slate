@@ -3,14 +3,14 @@ const { cache } = require('#bot');
 
 module.exports = {
   name: 'guildUpdate',
-  execute(oldGuild, newGuild) {
+  async execute(oldGuild, newGuild) {
     const logDetails = [];
 
-    // Check region
-    if (oldGuild.region !== newGuild.region) logDetails.push(`Region: ${oldGuild.region} -> ${newGuild.region}`);
-
     // Check owner
-    if (oldGuild.ownerID !== newGuild.ownerID) logDetails.push(`Owner: ${oldGuild.owner.user.tag} | ${oldGuild.ownerID} -> ${newGuild.owner.user.tag} | ${newGuild.ownerID}`);
+    if (oldGuild.ownerId !== newGuild.ownerId) {
+      const newOwner = await newGuild.fetchOwner();
+      logDetails.push(`Owner: ${oldGuild.ownerId} -> ${newOwner.user.tag} | ${newGuild.ownerId}`);
+    }
 
     // Check verification level
     if (oldGuild.verificationLevel !== newGuild.verificationLevel) logDetails.push(`Verification Level: ${oldGuild.verificationLevel} -> ${newGuild.verificationLevel}`);
