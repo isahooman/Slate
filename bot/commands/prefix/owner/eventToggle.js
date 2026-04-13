@@ -1,4 +1,4 @@
-const { setEventEnabled, isEventEnabled, eventExists, reloadAllEvents } = require('#components/core/loader.js');
+const { setEventEnabled, isEventEnabled, eventExists, reloadAllEvents } = require('#components/util/events.js');
 const logger = require('#components/util/logger.js');
 
 module.exports = {

@@ -1,4 +1,5 @@
-const { reloadAllEvents, reloadAllCommands, findNearestCommand, reloadCommand } = require('#components/core/loader.js');
+const { reloadAllCommands, findNearestCommand, reloadCommand } = require('#components/commands/commands.js');
+const { reloadAllEvents } = require('#components/util/events.js');
 const logger = require('#components/util/logger.js');
 const { cache } = require('#bot');
 

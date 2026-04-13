@@ -1,7 +1,9 @@
 const path = require('path');
 
 const { Client, GatewayIntentBits } = require('discord.js');
-const { loadAll, deployCommands, undeploy } = require('#components/core/loader.js');
+const { loadCommands } = require('#components/commands/commands.js');
+const { loadEvents } = require('#components/util/events.js');
+const { deployCommands, undeploy } = require('#components/util/deploy.js');
 const logger = require('#components/util/logger.js');
 const configManager = require('#components/configManager.js');
 let cooldownBuilder = require('#components/commands/cooldown.js');
@@ -91,7 +93,8 @@ async function startBot(bot) {
   }
 
   // Load all events and commands
-  await loadAll(bot);
+  await loadCommands(bot);
+  await loadEvents(bot);
 
   // Redeploy slash commands on startup
   const deployOnStart = configManager.getConfigValue('config', 'deployOnStart', false);

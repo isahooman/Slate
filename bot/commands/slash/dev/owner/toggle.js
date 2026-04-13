@@ -1,4 +1,5 @@
-const { reloadAllEvents, togglePrefixCommand, toggleSlashCommand, setEventEnabled, isEventEnabled, eventExists, isPrefixCommandEnabled, isSlashCommandEnabled, reloadEvent, findNearestCommand } = require('#components/core/loader.js');
+const { togglePrefixCommand, toggleSlashCommand, isPrefixCommandEnabled, isSlashCommandEnabled, findNearestCommand } = require('#components/commands/commands.js');
+const { reloadAllEvents, setEventEnabled, isEventEnabled, eventExists, reloadEvent } = require('#components/util/events.js');
 const { SlashCommandBuilder } = require('discord.js');
 const logger = require('#components/util/logger.js');
 

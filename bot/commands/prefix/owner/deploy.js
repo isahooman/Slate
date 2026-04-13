@@ -1,4 +1,4 @@
-const { deployCommands } = require('#components/core/loader.js');
+const { deployCommands } = require('#components/util/deploy.js');
 
 module.exports = {
   name: 'deploy',

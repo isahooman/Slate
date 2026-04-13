@@ -1,5 +1,5 @@
 const configManager = require('#components/configManager.js');
-const { reloadEvent } = require('#components/core/loader.js');
+const { reloadEvent } = require('#components/util/events.js');
 const logger = require('#components/util/logger.js');
 
 module.exports = {
