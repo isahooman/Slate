@@ -1,7 +1,7 @@
 const logger = require('#components/util/logger.js');
 
 module.exports = {
-  name: 'shardReconnnecting',
+  name: 'shardReconnecting',
   execute(id) {
     logger.info(`Shard ${id} is attempting to reconnect.`);
   },
