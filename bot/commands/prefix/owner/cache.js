@@ -15,18 +15,7 @@ module.exports = {
     try {
       if (arg === 'clear' || arg === 'refresh' || arg === 'reload') {
         logger.info('[Cache Command] Clearing cache.');
-        // Clear existing cache data
-        cache.guilds.clear();
-        cache.channels.clear();
-        cache.threads.clear();
-        cache.members.clear();
-        // Gather new data
-        cache.cacheServers(message.client);
-        cache.cacheChannels(message.client);
-        cache.cacheThreads(message.client);
-        message.client.guilds.cache.forEach(guild => {
-          cache.cacheMembers(guild);
-        });
+        cache.rebuildAll(message.client);
         message.reply('Cache refreshed!');
       } else if (arg === 'stats' || !arg) {
         logger.info('[Cache Command] Displaying cache stats.');

@@ -151,6 +151,24 @@ class CacheHandler {
   }
 
   /**
+   * Clears all cache maps and rebuilds the full cache.
+   * @param {client} client - Discord Client
+   * @author isahooman
+   */
+  rebuildAll(client) {
+    this.guilds.clear();
+    this.channels.clear();
+    this.threads.clear();
+    this.members.clear();
+    this.cacheServers(client);
+    this.cacheChannels(client);
+    this.cacheThreads(client);
+    client.guilds.cache.forEach(guild => {
+      this.cacheMembers(guild);
+    });
+  }
+
+  /**
    * Gets a cached guild by its ID.
    * @param {Snowflake} guildId The ID of the guild to retrieve.
    * @returns {Guild | undefined} The cached guild, or undefined if not found.

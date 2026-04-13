@@ -6,17 +6,12 @@ const configManager = require('#components/configManager.js');
 module.exports = {
   name: 'clientReady',
   once: true,
-  async execute(client) {
+  execute(client) {
     logger.start(`Logged in as ${client.user.tag}!`);
     logger.debug('Bot is ready and online.');
 
     // Cache servers, channels, threads and users on startup
-    cache.cacheServers(client);
-    cache.cacheChannels(client);
-    cache.cacheThreads(client);
-    client.guilds.cache.forEach(guild => {
-      cache.cacheMembers(guild);
-    });
+    cache.rebuildAll(client);
 
     // Set the bot status status
     const updateStatus = () => {
@@ -66,6 +61,5 @@ module.exports = {
     // Update status on startup and then once every 3 minutes
     updateStatus();
     setInterval(updateStatus, 180000);
-
   },
 };

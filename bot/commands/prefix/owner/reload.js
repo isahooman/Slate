@@ -15,18 +15,7 @@ module.exports = {
     // Reload the cache
     if (arg === 'cache') {
       logger.info('[Reload Command] Reloading cache.');
-      // Clear existing cache data
-      cache.guilds.clear();
-      cache.channels.clear();
-      cache.threads.clear();
-      cache.members.clear();
-      // Gather new data
-      cache.cacheServers(message.client);
-      cache.cacheChannels(message.client);
-      cache.cacheThreads(message.client);
-      message.client.guilds.cache.forEach(guild => {
-        cache.cacheMembers(guild);
-      });
+      cache.rebuildAll(message.client);
 
       message.channel.send('Cache reloaded!');
       logger.debug('[Reload Command] Cache reloaded successfully.');
@@ -82,18 +71,7 @@ module.exports = {
       logger.info(`[Reload Command] Reloading all events.`);
       reloadAllEvents(message.client);
       // Refresh cache
-      // Clear existing cache data
-      cache.guilds.clear();
-      cache.channels.clear();
-      cache.threads.clear();
-      cache.members.clear();
-      // Gather new data
-      cache.cacheServers(message.client);
-      cache.cacheChannels(message.client);
-      cache.cacheThreads(message.client);
-      message.client.guilds.cache.forEach(guild => {
-        cache.cacheMembers(guild);
-      });
+      cache.rebuildAll(message.client);
 
       logger.debug('[Reload Command] Everything has been reloaded.');
       message.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n');

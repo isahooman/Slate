@@ -40,17 +40,7 @@ module.exports = {
       logger.info('[Reload Command] All prefix commands successfully reloaded.');
     } else if (type === 'cache') {
       logger.info('[Reload Command] Reloading cache.');
-      cache.guilds.clear();
-      cache.channels.clear();
-      cache.threads.clear();
-      cache.members.clear();
-      // Gather new data
-      cache.cacheServers(interaction.client);
-      cache.cacheChannels(interaction.client);
-      cache.cacheThreads(interaction.client);
-      interaction.client.guilds.cache.forEach(guild => {
-        cache.cacheMembers(guild);
-      });
+      cache.rebuildAll(interaction.client);
 
       logger.info('[Reload Command] Cache successfully reloaded.');
       await interaction.reply('Cache was reloaded!');
@@ -91,18 +81,7 @@ module.exports = {
       logger.info(`[Reload Command] Reloading all events.`);
       reloadAllEvents(interaction.client);
       // Refresh cache
-      // Clear existing cache data
-      cache.guilds.clear();
-      cache.channels.clear();
-      cache.threads.clear();
-      cache.members.clear();
-      // Gather new data
-      cache.cacheServers(interaction.client);
-      cache.cacheChannels(interaction.client);
-      cache.cacheThreads(interaction.client);
-      interaction.client.guilds.cache.forEach(guild => {
-        cache.cacheMembers(guild);
-      });
+      cache.rebuildAll(interaction.client);
 
       logger.debug('[Reload Command] Everything has been reloaded.');
       interaction.reply('Reloaded:\n- Slash Commands\n- Prefix Commands\n- Events\n- Cache\n- Logger');
