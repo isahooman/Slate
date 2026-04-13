@@ -1,4 +1,4 @@
-const { readJSON5, writeJSON5 } = require('../json5Parser');
+const JSON5 = require('json5');
 const logger = require('../util/logger.js');
 const path = require('path');
 const fs = require('fs');
@@ -22,9 +22,10 @@ async function readFile(filePath) {
   try {
     const fileExtension = path.extname(filePath).toLowerCase();
     if (fileExtension === '.json5') {
-      // If the file extension is .json5, use readJSON5
-      logger.debug(`File extension is .json5, using readJSON5`);
-      return readJSON5(filePath);
+      // If the file extension is .json5, read and parse asynchronously
+      logger.debug(`File extension is .json5, reading and parsing asynchronously`);
+      const raw = await promisify(fs.readFile)(filePath, 'utf-8');
+      return JSON5.parse(raw);
     } else {
       logger.debug(`File extension is not .json5, checking file size`);
       try {
@@ -68,9 +69,13 @@ async function writeFile(filePath, data) {
     } else
       // Check the file extension to determine the write method
       if (fileExtension === '.json5') {
-        // If the file extension is .json5, use writeJSON5
-        logger.debug(`File extension is .json5, using writeJSON5`);
-        await writeJSON5(filePath, data);
+        logger.debug(`File extension is .json5, writing asynchronously`);
+        const replacer = (key, value) => {
+          if (typeof value === 'object' && value !== null) return Object.keys(value).length === 0 ? '{\n}' : '';
+          return value;
+        };
+        const json5Data = JSON5.stringify(data, null, 2, replacer);
+        await promisify(fs.writeFile)(filePath, json5Data, 'utf-8');
       } else {
         // If the file is not .json5, use fs.appendFile
         logger.debug(`File extension is not .json5, using fs.appendFile`);

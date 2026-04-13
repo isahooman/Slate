@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { readJSON5, writeJSON5 } = require('./json5Parser');
+const JSON5 = require('json5');
 
 class ConfigManager {
   constructor(configBasePath = './config') {
@@ -37,7 +37,7 @@ class ConfigManager {
 
     try {
       // Check if the file exists and read it
-      const config = fs.existsSync(configPath) ? readJSON5(configPath) : {};
+      const config = fs.existsSync(configPath) ? JSON5.parse(fs.readFileSync(configPath, 'utf-8')) : {};
       this.cache.set(configType, config);
       return config;
     } catch (error) {
@@ -62,7 +62,11 @@ class ConfigManager {
       if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
 
       // Write new configuration to file
-      writeJSON5(configPath, config);
+      const replacer = (key, value) =>
+        typeof value === 'object' && value !== null ?
+          Object.keys(value).length === 0 ? '{\n}' : '' :
+          value;
+      fs.writeFileSync(configPath, JSON5.stringify(config, null, 2, replacer), 'utf-8');
 
       // Update cache to always return fresh data
       this.cache.set(configType, config);
