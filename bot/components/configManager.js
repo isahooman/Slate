@@ -62,11 +62,7 @@ class ConfigManager {
       if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
 
       // Write new configuration to file
-      const replacer = (key, value) =>
-        typeof value === 'object' && value !== null ?
-          Object.keys(value).length === 0 ? '{\n}' : '' :
-          value;
-      fs.writeFileSync(configPath, JSON5.stringify(config, null, 2, replacer), 'utf-8');
+      fs.writeFileSync(configPath, JSON5.stringify(config, null, 2), 'utf-8');
 
       // Update cache to always return fresh data
       this.cache.set(configType, config);
