@@ -76,9 +76,9 @@ async function writeFile(filePath, data) {
         const json5Data = JSON5.stringify(data, null, 2, replacer);
         await fs.promises.writeFile(filePath, json5Data, 'utf-8');
       } else {
-        // If the file is not .json5, use fs.appendFile
-        logger.debug(`File extension is not .json5, using fs.appendFile`);
-        await fs.promises.appendFile(filePath, data, 'utf-8');
+        // If the file is not .json5, use fs.writeFile
+        logger.debug(`File extension is not .json5, using fs.writeFile`);
+        await fs.promises.writeFile(filePath, data, 'utf-8');
       }
   } catch (error) {
     logger.error(`Error writing file at ${filePath}: ${error.message}`);
